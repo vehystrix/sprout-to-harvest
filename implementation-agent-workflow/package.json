@@ -1,0 +1,14 @@
+{
+  "name": "implementation-agent-workflow",
+  "version": "0.1.0",
+  "description": "Resumable, test-driven implementation workflow for coding agents",
+  "keywords": ["pi-package"],
+  "license": "MIT",
+  "pi": {
+    "prompts": ["./agents/*.agent.md"],
+    "skills": ["./skills"]
+  },
+  "omp": {
+    "extensions": []
+  }
+}
