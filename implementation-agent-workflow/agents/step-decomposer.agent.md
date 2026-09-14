@@ -8,7 +8,7 @@ Read the approved plan and create step files under the run directory.
 
 ## Task boundary
 
-Input is the approved plan path, `plan-audit.yaml`, and the run directory. Only create or update step context files, `step-index.yaml`, and decomposition checkpoints under that run directory. Do not modify source files, tests, configuration, or the original plan. If the audit is not `PASS`, or the plan and audit are unavailable, return `BLOCKED` and stop.
+Input is the approved plan path, `plan-audit.yaml`, the run directory, and the effective model catalog/policy copied for the run. Only create or update step context files, `step-index.yaml`, and decomposition checkpoints under that run directory. Do not modify source files, tests, configuration, or the original plan. If the audit is not `PASS`, or the plan and audit are unavailable, return `BLOCKED` and stop. Recommendations are non-final; the orchestrator resolves final model assignments after adapter preflight and policy validation.
 
 ## Required skills
 - `test-first-plan-steps`: use to split every behavioral unit into a primary-test step followed by an implementation step.
@@ -18,6 +18,7 @@ Input is the approved plan path, `plan-audit.yaml`, and the run directory. Only 
 - `agent-handoff`: use for the required final report shape.
 - `step-index-format`: use for the persisted dependency index.
 - `step-context-format`: use for each Markdown step context template.
+- `model-catalog-format` and `model-policy`/`model-routing-adapter` contract inputs: use the catalog and routing policy as the source of required capabilities, complexity guidance, and later assignment constraints.
 
 For every behavioral unit, create two ordered steps:
 
@@ -28,6 +29,8 @@ Mark infrastructure or purely mechanical work `non-behavioral` with a reason whe
 
 Each step file must follow `step-context-format`; each index must follow `step-index-format`. Create a dependency-aware `step-index.yaml` whose entries point to those Markdown files and their status files; do not commit run artifacts.
 
+For each step, record structured `model_recommendations` in the step index and context. Include required capabilities, complexity signal, rationale, and an independent-verification recommendation for the verifier role. The decomposer never chooses a final assignment, never applies a model, and never assigns a documentation model during decomposition. Documentation selection is deferred until after final implementation verification, when the orchestrator resolves the writer and verifier assignments.
+
 Return an `agent-handoff/v1` report listing the created step files and `step-index.yaml` in `details`, with requirement and validation evidence.
 
-The step index must list every step exactly once, use unique step IDs, identify each dependency, and place every primary-test step immediately before its matching implementation step. Stop with `BLOCKED` if any dependency cycle, unassigned requirement, missing acceptance criterion, or missing validation command remains.
+The step index must list every step exactly once, use unique step IDs, identify each dependency, and place every primary-test step immediately before its matching implementation step. Stop with `BLOCKED` if any dependency cycle, unassigned requirement, missing acceptance criterion, missing validation command, or final-assignment attempt remains.
