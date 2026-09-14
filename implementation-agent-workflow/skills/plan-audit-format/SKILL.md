@@ -4,7 +4,7 @@ description: "Defines the persisted YAML structure for plan-audit results."
 ---
 # Plan Audit Format
 
-Use this skill when the Plan Auditor writes or the orchestrator reads `.agent-work/<run-id>/plan-audit.yaml`.
+Use this skill when the Plan Auditor writes `.agent-work/<run-id>/plan-audit.yaml`.
 
 ## Structure
 

@@ -4,7 +4,7 @@ description: "Defines the YAML schema for the durable workflow run ledger in .ag
 ---
 # Run Ledger Format
 
-Use this skill whenever the orchestrator creates or reads `.agent-work/<run-id>/run.yaml`.
+Use this skill whenever the orchestrator creates `.agent-work/<run-id>/run.yaml`.
 
 ## Purpose
 

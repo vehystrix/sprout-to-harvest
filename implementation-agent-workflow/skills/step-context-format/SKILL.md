@@ -4,7 +4,7 @@ description: "Defines the Markdown template and writing guidance for implementat
 ---
 # Step Context Format
 
-Use this skill when the decomposer creates or an implementer reads `steps/<step-id>.md`.
+Use this skill when the decomposer creates `steps/<step-id>.md`.
 
 ## Frontmatter
 

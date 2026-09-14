@@ -4,7 +4,7 @@ description: "Defines the Markdown templates for plan-level source and user docu
 ---
 # Documentation Context Format
 
-Use this skill when the Plan Auditor creates or the orchestrator reads the plan-level documentation context under `.agent-work/<run-id>/documentation/`.
+Use this skill when the Plan Auditor creates the plan-level documentation context under `.agent-work/<run-id>/documentation/`.
 
 The context is a flexible Markdown brief distilled from the immutable plan. It identifies documentation obligations without claiming that planned behavior was implemented. The final implementation and verified repository state are authoritative when they differ from this brief.
 

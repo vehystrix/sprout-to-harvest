@@ -4,7 +4,7 @@ description: "Defines the Markdown template and guidance for persisted documenta
 ---
 # Documentation Assignment Format
 
-Use this skill when the orchestrator creates or a Documentation Agent reads `documentation/<assignment-id>.md`.
+Use this skill when the orchestrator creates `documentation/<assignment-id>.md`.
 
 ## Frontmatter
 

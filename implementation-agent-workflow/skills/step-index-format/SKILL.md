@@ -4,7 +4,7 @@ description: "Defines the YAML schema for the dependency-aware implementation st
 ---
 # Step Index Format
 
-Use this skill whenever the decomposer writes or an agent reads `.agent-work/<run-id>/step-index.yaml`.
+Use this skill whenever the decomposer writes `.agent-work/<run-id>/step-index.yaml`.
 
 ## Schema
 

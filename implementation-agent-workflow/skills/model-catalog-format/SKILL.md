@@ -4,7 +4,7 @@ description: "Defines the repository model catalog and routing policy schema use
 ---
 # Model Catalog and Policy Format
 
-Use this skill whenever the orchestrator, a guided config helper, or a validation step reads or writes the repository-level model catalog and policy. These files are configuration inputs to the workflow, not runtime state, and they stay outside `.agent-work/` until the orchestrator copies and validates the effective run versions.
+Use this skill whenever the orchestrator or a guided config helper writes or edits the repository-level model catalog and policy. These files are configuration inputs to the workflow, not runtime state, and they stay outside `.agent-work/` until the orchestrator copies and validates the effective run versions.
 
 ## File locations
 

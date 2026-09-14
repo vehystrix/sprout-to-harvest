@@ -4,7 +4,7 @@ description: "Defines the YAML schema for per-step durable execution status."
 ---
 # Step Status Format
 
-Use this skill when the orchestrator creates or reads `steps/<step-id>-status.yaml`.
+Use this skill when the orchestrator creates `steps/<step-id>-status.yaml`.
 
 ## Schema
 

@@ -4,7 +4,7 @@ description: "Defines the persisted YAML structure and user-facing response temp
 ---
 # Final Report Format
 
-Use this skill when the orchestrator writes or a verifier reads `.agent-work/<run-id>/final-report.yaml`.
+Use this skill when the orchestrator writes `.agent-work/<run-id>/final-report.yaml`.
 
 ## Structure
 
