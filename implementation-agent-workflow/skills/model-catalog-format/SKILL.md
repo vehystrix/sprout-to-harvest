@@ -42,8 +42,7 @@ models:
       - execute
     hosts:
       copilot: Claude Opus 4.8 (copilot)
-      oh_my_pi: anthropic/claude-opus-4-8
-      pi: null
+      omp: anthropic/claude-opus-4-8
 ```
 
 Each catalog entry must satisfy these requirements:

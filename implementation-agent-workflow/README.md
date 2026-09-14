@@ -92,6 +92,103 @@ Skip plan audit: false
 
 The orchestrator writes all handoff files, reports, and checkpoints under `.agent-work/`. It never commits those files. Add `.agent-work/` to `.git/info/exclude` if desired.
 
+## Model configuration and routing
+
+Portable model selection is configured separately from workflow roles. The repository
+catalog and policy normally live at:
+
+```text
+.implementation-agent/model-catalog.yaml
+.implementation-agent/model-policy.yaml
+```
+
+Use the separately invocable [`model-configuration`](skills/model-configuration/SKILL.md)
+skill to create or edit them. It asks for structured capabilities, tier, cost,
+`context_window`, tools, host mappings, role requirements, fallback chains, retry
+behavior, and `require_application`. It validates the complete YAML result, preserves
+unrelated fields during field-level merges, and requires confirmation before writing.
+Model IDs and host mappings are data, never executable commands. The catalog and policy
+schemas are defined by [`model-catalog-format`](skills/model-catalog-format/SKILL.md).
+
+A minimal catalog entry and role policy look like this:
+
+```yaml
+# .implementation-agent/model-catalog.yaml
+models:
+  - id: coding-standard
+    capabilities: [coding, testing]
+    tier: 1
+    cost: medium
+    context_window: 128000
+    tools: [read, search, edit, execute]
+    hosts:
+      copilot: Code Model (copilot)
+      omp: anthropic/claude-sonnet-4-5
+```
+
+```yaml
+# .implementation-agent/model-policy.yaml
+model_policy:
+  roles:
+    implementer:
+      required_capabilities: [coding, testing]
+      minimum_tier: 1
+      default: coding-standard
+  fallback: cheap-general
+  retry:
+    preserve_assignment: true
+    allow_escalation: false
+  host:
+    require_application: false
+```
+
+These repository files are configuration inputs, not run state. After confirmed
+invocation overrides are merged and validated, the orchestrator freezes effective copies
+under `.agent-work/<run-id>/model-catalog.yaml` and
+`.agent-work/<run-id>/model-policy.yaml`. Resumed runs use those copies rather than
+silently rereading changed repository files. An invocation override requires a complete
+effective-configuration display and explicit confirmation; declining it blocks the run
+before delegation.
+
+### Runtime evidence
+
+The portable `requested` ID, adapter `resolved` model, `fallback`, `applied` result,
+`runtime_model`, `warning`, and `evidence` are separate facts in the run records. A
+resolved model is not necessarily an applied model. The adapter contract in
+[`model-routing-adapter`](skills/model-routing-adapter/SKILL.md) defines these evidence
+levels:
+
+- `adapter-confirmed`: deterministic confirmation from the adapter;
+- `host-reported`: the host exposed a runtime model without confirming the override;
+- `self-reported`: the delegated agent reported what it observed;
+- `unknown`: no runtime model evidence was available.
+
+Only `adapter-confirmed` supports the strongest claim that a requested model was
+applied. A fallback, default model, host mismatch, or unavailable application mechanism
+must include a warning with the exact reason. With `require_application: true`, an
+unconfirmed application blocks rather than silently continuing. Retries preserve the
+assignment by default; escalation requires explicit policy approval and a new attempt
+record.
+
+### Host support and scope
+
+Copilot and the Oh-My-Pi (`omp`) adapter have separate responsibilities. Copilot may
+use generated agent profiles when that is the supported selection mechanism. Oh-My-Pi may
+use its host model selectors for overrides and role-specific assignments. In both cases, the
+workflow must report adapter and host evidence rather than infer that a portable ID was
+used.
+
+The Pi harness does not support model selection, so it is intentionally not included in
+the adapter list. Pi runs must not claim dynamic selection or `applied: true` without
+evidence.
+
+This release establishes the portable contracts, guided configuration, persistence
+rules, and documentation for a later executable resolver and adapter integration. The
+configuration skill does not apply models at runtime, and this documentation does not
+claim that routing has been applied merely because a catalog entry or host mapping
+exists. See the [dynamic model selection design](docs/superpowers/specs/2026-09-14-dynamic-model-selection-design.md)
+for the full ownership and evidence model.
+
 ## Inter-agent communication
 
 Every delegated agent returns exactly one `agent-handoff/v1` report, as defined by the [`agent-handoff`](skills/agent-handoff/SKILL.md) format skill. The report is the sole communication contract between agents; role-specific results are carried in its requirement, validation, artifact, and blocker fields.
