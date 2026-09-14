@@ -15,8 +15,23 @@ schema: documentation-assignment/v1
 run_id: run-001
 assignment_id: source-api-loader
 assignment_type: source | user
+model_assignments:
+  writer:
+    portable_id: documentation-standard
+  verifier:
+    portable_id: reasoning-pro
 ---
 ```
+
+The YAML frontmatter includes independent writer and verifier model assignments. The assignments are selected only after the implementation has been verified and the final documentation obligation is known; they are not chosen during the earlier planning stage. Model evidence belongs in the assignment metadata, not in the Markdown body, which remains dedicated to documentation scope and verified facts.
+
+Validation rules:
+
+- `model_assignments.writer.portable_id` and `model_assignments.verifier.portable_id` are required.
+- Writer and verifier assignments must be independent; a verifier may use a stronger model than the writer, but it cannot be a duplicate of the same assignment without a policy rationale.
+- The writer assignment is created only after implementation evidence is available and verified.
+- The verifier assignment is selected independently and may use a stronger reasoning model subject to policy and host availability.
+- The Markdown body must contain only the documentation brief, scope, acceptance criteria, and instructions; it must not restate model evidence or runtime selection details.
 
 ## Template
 
@@ -43,3 +58,7 @@ List files and concerns outside this assignment. Do not turn a documentation ass
 ```
 
 Write factual, audience-specific guidance. Source assignments explain contracts and invariants maintainers or consumers rely on; user assignments explain workflows and expected outcomes. Include a small command or usage example when prose alone could leave invocation details ambiguous. Do not persist assignments as YAML or extensionless text.
+
+## Validation
+
+Require YAML frontmatter with `kind`, `schema`, `run_id`, `assignment_id`, `assignment_type`, and the `model_assignments` block. The `model_assignments` block must include `writer` and `verifier`, each with a `portable_id` value. The body is reserved for the documentation brief and verified facts; model selection and evidence must live in the frontmatter metadata. The writer and verifier assignments are selected only after final implementation verification, and the assignment must record model evidence rather than prose claims.
