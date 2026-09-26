@@ -98,10 +98,27 @@ dependency_order:
   - step-001-implementation
 ```
 
-Each step ID is unique and appears exactly once. `type` is `primary-test`, `implementation`, or `non-behavioral`. Paths are relative to the run directory. Dependencies must name existing steps and form an acyclic graph. `dependency_order` lists every step exactly once, with each dependency before its dependent.
+Each step ID is unique and appears exactly once. `type` is
+`primary-test`, `implementation`, or `non-behavioral`. Paths are
+relative to the run directory. Dependencies must name existing steps
+and form an acyclic graph. `dependency_order` lists every step
+exactly once, with each dependency before its dependent.
 
-`model_recommendations` is optional and records the decomposer's non-final guidance. `model_assignments` is required for orchestrator-resolved runtime assignments. The original recommendation remains auditable in the step index, while the final resolved assignment is the operational value used for delegation. Documentation model selection is not part of the step decomposition contract.
+`model_recommendations` is optional and records the decomposer's
+non-final guidance. `model_assignments` is required for
+orchestrator-resolved runtime assignments. The original recommendation
+remains auditable in the step index, while the final resolved assignment
+is the operational value used for delegation. Documentation model
+selection is not part of the step decomposition contract.
 
 ## Validation
 
-Validate that every step has a Markdown context file, a YAML status-file path, a status, and at least one context requirement, acceptance criterion, and validation command. A behavioral unit must have its primary-test step immediately before its implementation step. Validate that each step records either a `model_recommendations` block or an explicit `null` explanation, and that each step has a `model_assignments` section with normalized `portable_id`, `source`, `applied`, `adapter`, and `evidence` values for the implementer and verifier roles.
+Validate that every step has a Markdown context file, a YAML
+status-file path, a status, and at least one context requirement,
+acceptance criterion, and validation command. A behavioral unit must
+have its primary-test step immediately before its implementation
+step. Validate that each step records either a `model_recommendations`
+block or an explicit `null` explanation, and that each step has a
+`model_assignments` section with normalized `portable_id`, `source`,
+`applied`, `adapter`, and `evidence` values for the implementer and
+verifier roles.

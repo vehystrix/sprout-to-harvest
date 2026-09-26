@@ -8,7 +8,8 @@ Use this skill when the Plan Auditor writes `.agent-work/<run-id>/plan-audit.yam
 
 ## Structure
 
-The file is a complete `agent-handoff/v1` YAML report. Its role-specific `details` value must use this shape:
+The file is a complete `agent-handoff/v1` YAML report. Its role-specific
+`details` value must use this shape:
 
 ```yaml
 schema: agent-handoff/v1
@@ -51,10 +52,19 @@ blockers: []
 resume_from: null
 ```
 
-`details.status` must match the top-level `status`. Use `PASS` only when no clarification is required. Use `NEEDS_CLARIFICATION` only when `required_questions` is non-empty. Use `BLOCKED` for missing or unreadable inputs.
+`details.status` must match the top-level `status`. Use `PASS` only when no
+clarification is required. Use `NEEDS_CLARIFICATION` only when
+`required_questions` is non-empty. Use `BLOCKED` for missing or unreadable inputs.
 
-`documentation_context` is a pointer to the plan-level Markdown briefs for later documentation assignments. `status` is `PROVIDED` when both context files exist, `EMPTY` when the audit found no documentation obligation, and `UNAVAILABLE` when the audit was skipped. The referenced files contain the flexible documentation guidance; the implementation remains authoritative.
+`documentation_context` is a pointer to the plan-level Markdown briefs for later
+documentation assignments. `status` is `PROVIDED` when both context files exist,
+`EMPTY` when the audit found no documentation obligation, and `UNAVAILABLE` when the
+audit was skipped. The referenced files contain the flexible documentation guidance;
+the implementation remains authoritative.
 
 ## Validation
 
-Require all `agent-handoff/v1` fields, the five audit detail fields, the `documentation_context` pointer with `status`, `source_file`, and `user_file`, evidence for every requirement and validation item, `changed_files: []`, `commits: []`, and `resume_from: null`.
+Require all `agent-handoff/v1` fields, the five audit detail fields, the
+`documentation_context` pointer with `status`, `source_file`, and `user_file`, evidence
+for every requirement and validation item, `changed_files: []`, `commits: []`, and
+`resume_from: null.`

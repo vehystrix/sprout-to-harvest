@@ -1,10 +1,13 @@
 # Implementation Agent Workflow
 
-A resumable, test-driven workflow for implementing a design specification or implementation plan with isolated subagents.
+A resumable, test-driven workflow for implementing a design specification or implementation
+plan with isolated subagents.
 
 ## Why this exists
 
-Large plans become easier to execute when each step has a small context, explicit acceptance criteria, persistent status, and an independent verification pass. This bundle provides the agents and skills for that workflow without duplicating files across tool-specific directories.
+Large plans become easier to execute when each step has a small context, explicit acceptance
+criteria, persistent status, and an independent verification pass. This bundle provides the
+agents and skills for that workflow without duplicating files across tool-specific directories.
 
 The workflow:
 
@@ -19,11 +22,15 @@ The workflow:
 
 - `agents/`: canonical custom agent definitions.
 - `skills/`: canonical reusable workflow skills.
-- `package.json`: Pi/oh-my-pi package manifest. It exposes the same agent Markdown as prompt resources and the same skills as Agent Skills.
-- `plugin.json`: Copilot plugin manifest. It exposes the same `agents/` and `skills/` directories without copying them into a project.
+- `package.json`: Pi/oh-my-pi package manifest. It exposes the same agent Markdown as prompt
+resources and the same skills as Agent Skills.
+- `plugin.json`: Copilot plugin manifest. It exposes the same `agents/` and `skills/`
+directories without copying them into a project.
 - `.agent-work/`: created by the orchestrator at runtime; keep it untracked.
 
-There is deliberately no separate copy for Copilot CLI or Pi/oh-my-pi. Copilot CLI installs the repository as a plugin, while Pi and oh-my-pi install it as a Pi package. Both manifests point to the same `agents/` and `skills/` directories.
+There is deliberately no separate copy for Copilot CLI or Pi/oh-my-pi. Copilot CLI installs the
+repository as a plugin, while Pi and oh-my-pi install it as a Pi package. Both manifests point
+to the same `agents/` and `skills/` directories.
 
 ## Install for Pi or oh-my-pi
 
@@ -45,11 +52,14 @@ Use the project-local form when the workflow should apply to one repository only
 pi install -l git:github.com/OWNER/implementation-agent-workflow
 ```
 
-The installed package contributes the workflow skills and exposes the eight role files as prompt resources. The role files are not copied into a second Pi-specific directory.
+The installed package contributes the workflow skills and exposes the eight role files as
+prompt resources. The role files are not copied into a second Pi-specific directory.
 
 ## Install as a Copilot plugin
 
-Copilot CLI installs plugins from a GitHub repository, Git URL, marketplace, or local directory. The root `plugin.json` points Copilot at the canonical `agents/` and `skills/` directories, so no project files need to be copied or linked.
+Copilot CLI installs plugins from a GitHub repository, Git URL, marketplace, or local
+directory. The root `plugin.json` points Copilot at the canonical `agents/` and `skills/`
+directories, so no project files need to be copied or linked.
 
 From a GitHub repository:
 
@@ -77,11 +87,14 @@ For a marketplace installation:
 copilot plugin install implementation-agent-workflow@MARKETPLACE-NAME
 ```
 
-After changing a local plugin, reinstall it because Copilot CLI caches installed plugin components. Use `/agent` and `/skills list` inside a Copilot session to verify discovery.
+After changing a local plugin, reinstall it because Copilot CLI caches installed plugin
+components. Use `/agent` and `/skills list` inside a Copilot session to verify discovery.
 
 ## Running the workflow
 
-Start the orchestrator with the plan path and optional audit/retry settings. In VS Code or Copilot CLI, select `Implementation Orchestrator`. In Pi/oh-my-pi, invoke the installed prompt corresponding to `implementation-orchestrator.agent.md`. The agent input should contain:
+Start the orchestrator with the plan path and optional audit/retry settings. In VS Code or
+Copilot CLI, select `Implementation Orchestrator`. In Pi/oh-my-pi, invoke the installed prompt
+corresponding to `implementation-orchestrator.agent.md`. The agent input should contain:
 
 ```text
 Plan: path/to/plan.md
@@ -90,7 +103,8 @@ Maximum retries per verification loop: 2
 Skip plan audit: false
 ```
 
-The orchestrator writes all handoff files, reports, and checkpoints under `.agent-work/`. It never commits those files. Add `.agent-work/` to `.git/info/exclude` if desired.
+The orchestrator writes all handoff files, reports, and checkpoints under `.agent-work/`. It
+never commits those files. Add `.agent-work/` to `.git/info/exclude` if desired.
 
 ## Model configuration and routing
 
@@ -147,8 +161,8 @@ invocation overrides are merged and validated, the orchestrator freezes effectiv
 under `.agent-work/<run-id>/model-catalog.yaml` and
 `.agent-work/<run-id>/model-policy.yaml`. Resumed runs use those copies rather than
 silently rereading changed repository files. An invocation override requires a complete
-effective-configuration display and explicit confirmation; declining it blocks the run
-before delegation.
+effective-configuration display and explicit confirmation; declining it cancels the write and
+leaves the repository files unchanged.
 
 ### Runtime evidence
 
@@ -202,30 +216,44 @@ evidence levels, and assignment field contracts remain unchanged - only the mech
 changed from TypeScript bridges to catalog YAML lookup + `model` field delegation gated
 by a one-time capability probe.
 
-This release replaces the original compiled adapter approach with a config-and-
-documentation model plus a one-time capability probe per run. The TypeScript adapter
-plans (OMP adapter, Copilot adapter) have been removed. Model routing now operates
-entirely through catalog YAML, policy YAML, per-delegation `model` fields where the
-host exposes them, and plain documentation in the model-routing-adapter skill. See
-[Model Routing Simplified Plan](docs/superpowers/plans/2026-09-16-model-routing-simplified-plan.md) for the complete design.
-
 ## Inter-agent communication
 
-Every delegated agent returns exactly one `agent-handoff/v1` report, as defined by the [`agent-handoff`](skills/agent-handoff/SKILL.md) format skill. The report is the sole communication contract between agents; role-specific results are carried in its requirement, validation, artifact, and blocker fields.
+Every delegated agent returns exactly one `agent-handoff/v1` report, as defined by the
+[`agent-handoff`](skills/agent-handoff/SKILL.md) format skill. The report is the sole
+communication contract between agents; role-specific results are carried in its requirement,
+validation, artifact, and blocker fields.
 
-Required top-level fields are `schema`, `agent`, `task`, `status`, `summary`, `inputs`, `details`, `requirements`, `validation`, `artifacts`, `repository`, `blockers`, and `resume_from`. Role-specific payloads go under `details`. File-modifying agents list all changed files and commits. Read-only agents use empty change and commit lists. Every requirement and validation result includes evidence.
+Required top-level fields are `schema`, `agent`, `task`, `status`, `summary`, `inputs`,
+`details`, `requirements`, `validation`, `artifacts`, `repository`, `blockers`, and
+`resume_from`. Role-specific payloads go under `details`. File-modifying agents list all
+changed files and commits. Read-only agents use empty change and commit lists. Every
+requirement and validation result includes evidence.
 
-The orchestrator validates the schema, role-allowed status, status-specific fields, and evidence before consuming a result. A missing or malformed handoff is persisted as `BLOCKED`; success is never inferred from an agent narrative, changed files, or an absent validation result. `VERIFIED` is reserved for verifier roles with executable evidence for every material requirement.
+The orchestrator validates the schema, role-allowed status, status-specific fields, and
+evidence before consuming a result. A missing or malformed handoff is persisted as `BLOCKED`;
+success is never inferred from an agent narrative, changed files, or an absent validation
+result. `VERIFIED` is reserved for verifier roles with executable evidence for every material
+requirement.
 
-The retry limit counts repair attempts after the initial attempt. For example, a limit of `2` permits at most three implementer attempts for one verification loop. `INCOMPLETE` consumes one repair attempt; `BLOCKED`, malformed handoffs, and `NEEDS_CLARIFICATION` stop the workflow without consuming a repair attempt. A step is `completed` only after its verifier returns `VERIFIED`.
+The retry limit counts repair attempts after the initial attempt. For example, a limit of `2`
+permits at most three implementer attempts for one verification loop. `INCOMPLETE` consumes one
+repair attempt; `BLOCKED`, malformed handoffs, and `NEEDS_CLARIFICATION` stop the workflow
+without consuming a repair attempt. A step is `completed` only after its verifier returns
+`VERIFIED`.
 
 ## Details: full workflow
 
-The workflow is coordinated by `Implementation Orchestrator`. The orchestrator owns sequencing, persistent status, retry limits, and user-facing reports. Specialist agents do the plan reading and repository work in isolated contexts. The orchestrator should read summaries and reports rather than loading the entire plan into its own context.
+The workflow is coordinated by `Implementation Orchestrator`. The orchestrator owns sequencing,
+persistent status, retry limits, and user-facing reports. Specialist agents do the plan reading
+and repository work in isolated contexts. The orchestrator should read summaries and reports
+rather than loading the entire plan into its own context.
 
 ### 1. Start the run
 
-The orchestrator receives the plan path, run directory, retry limit, and optional `Skip plan audit` setting. It creates an untracked run directory such as `.agent-work/run-001/` and writes the initial `run.yaml` using [`run-ledger-format`](skills/run-ledger-format/SKILL.md) before starting another agent.
+The orchestrator receives the plan path, run directory, retry limit, and optional
+`Skip plan audit` setting. It creates an untracked run directory such as `.agent-work/run-001/`
+and writes the initial `run.yaml` using
+[`run-ledger-format`](skills/run-ledger-format/SKILL.md) before starting another agent.
 
 The run directory contains the durable coordination state:
 
@@ -249,11 +277,17 @@ The run directory contains the durable coordination state:
 	final-report.yaml
 ```
 
-Every status update records the phase, step, attempt, assigned agent, status, branch, last known commit, changed files, validation evidence, timestamps, blockers, and resume instructions. YAML is used for machine-validated state and reports. Step and documentation context use Markdown with required YAML frontmatter and stable headings. No extensionless, JSON, or ad hoc text artifacts are permitted. YAML state and reports are written atomically. The run directory is never committed.
+Every status update records the phase, step, attempt, assigned agent, status, branch, last
+known commit, changed files, validation evidence, timestamps, blockers, and resume
+instructions. YAML is used for machine-validated state and reports. Step and documentation
+context use Markdown with required YAML frontmatter and stable headings. No extensionless,
+JSON, or ad hoc text artifacts are permitted. YAML state and reports are written atomically.
+The run directory is never committed.
 
 ### 2. Prepare Git isolation
 
-When the target workspace is a Git repository, `Implementation Orchestrator` uses `git-isolated-implementation` before any file-modifying subagent starts:
+When the target workspace is a Git repository, `Implementation Orchestrator` uses
+`git-isolated-implementation` before any file-modifying subagent starts:
 
 1. Require no tracked staged or unstaged changes.
 2. Preserve all existing untracked files.
@@ -261,11 +295,14 @@ When the target workspace is a Git repository, `Implementation Orchestrator` use
 4. Create and record a new implementation branch.
 5. Keep all implementation commits on that branch.
 
-If a subagent needs multiple experimental commits, it creates a temporary child branch and merges the verified result back into the implementation branch. The orchestrator never resets or discards unrelated work.
+If a subagent needs multiple experimental commits, it creates a temporary child branch and
+merges the verified result back into the implementation branch. The orchestrator never resets
+or discards unrelated work.
 
 ### 3. Audit the plan: `Plan Auditor` (Subagent A)
 
-Unless the user explicitly skips the audit, the orchestrator starts `Plan Auditor` with the plan. The agent uses `plan-audit` and `requirements-traceability` to check:
+Unless the user explicitly skips the audit, the orchestrator starts `Plan Auditor` with the
+plan. The agent uses `plan-audit` and `requirements-traceability` to check:
 
 - Contradictions and missing requirements.
 - Blocking ambiguity and undefined external interfaces.
@@ -273,57 +310,90 @@ Unless the user explicitly skips the audit, the orchestrator starts `Plan Audito
 - Hidden dependencies and unnecessary complexity.
 - Missing acceptance criteria or validation commands.
 
-The auditor writes `plan-audit.yaml` using [`plan-audit-format`](skills/plan-audit-format/SKILL.md), with `PASS`, `NEEDS_CLARIFICATION`, or `BLOCKED`, plus findings, required questions, external interfaces, and validation gaps.
+The auditor writes `plan-audit.yaml` using
+[`plan-audit-format`](skills/plan-audit-format/SKILL.md), with `PASS`, `NEEDS_CLARIFICATION`,
+or `BLOCKED`, plus findings, required questions, external interfaces, and validation gaps.
 
-If the result is `NEEDS_CLARIFICATION` or `BLOCKED`, the orchestrator reports the findings to the user and stops. No implementation work begins. A `PASS` permits decomposition.
+If the result is `NEEDS_CLARIFICATION` or `BLOCKED`, the orchestrator reports the findings to
+the user and stops. No implementation work begins. A `PASS` permits decomposition.
 
-The audit also creates separate Markdown briefs for source and user documentation under `documentation/`, using [`documentation-context-format`](skills/documentation-context-format/SKILL.md). `plan-audit.yaml` records their paths and status. The orchestrator carries the relevant brief into later documentation assignments, where it is reconciled with the verified implementation and changed files. This prevents documentation agents from rereading the complete plan while keeping the implementation authoritative.
+The audit also creates separate Markdown briefs for source and user documentation under
+`documentation/`, using
+[`documentation-context-format`](skills/documentation-context-format/SKILL.md).
+`plan-audit.yaml` records their paths and status. The orchestrator carries the relevant brief
+into later documentation assignments, where it is reconciled with the verified implementation
+and changed files. This prevents documentation agents from rereading the complete plan while
+keeping the implementation authoritative.
 
 ### 4. Decompose the plan: `Step Decomposer` (Subagent B)
 
-The orchestrator starts `Step Decomposer` with the approved plan and audit result. The agent uses `plan-decomposition`, `test-first-plan-steps`, `requirements-traceability`, and `persistent-workflow-state`.
+The orchestrator starts `Step Decomposer` with the approved plan and audit result. The agent
+uses `plan-decomposition`, `test-first-plan-steps`, `requirements-traceability`, and
+`persistent-workflow-state`.
 
 For every behavioral unit, the decomposer creates two ordered context files:
 
-1. **Primary-test step:** defines the external behavior, writes focused tests, and proves they fail for the intended reason.
-2. **Implementation step:** implements the behavior required by those primary tests and may add justified supplementary tests.
+1. **Primary-test step:** defines the external behavior, writes focused tests, and proves they
+fail for the intended reason.
+2. **Implementation step:** implements the behavior required by those primary tests and may add
+justified supplementary tests.
 
-Purely mechanical or infrastructure work may be marked `non-behavioral`, but the context file must explain why a failing test is not meaningful.
+Purely mechanical or infrastructure work may be marked `non-behavioral`, but the context file
+must explain why a failing test is not meaningful.
 
-Each `steps/<step-id>.md` file follows [`step-context-format`](skills/step-context-format/SKILL.md), including explanatory guidance and examples for its objective, requirement IDs, dependencies, interfaces, likely files, implementation scope, acceptance criteria, validation commands, expected failure or success, exclusions, and commit expectations. The decomposer writes `step-index.yaml` using [`step-index-format`](skills/step-index-format/SKILL.md) with dependency order, and reports a concise step list to the orchestrator.
+Each `steps/<step-id>.md` file follows
+[`step-context-format`](skills/step-context-format/SKILL.md), including explanatory guidance
+and examples for its objective, requirement IDs, dependencies, interfaces, likely files,
+implementation scope, acceptance criteria, validation commands, expected failure or success,
+exclusions, and commit expectations. The decomposer writes `step-index.yaml` using
+[`step-index-format`](skills/step-index-format/SKILL.md) with dependency order, and reports a
+concise step list to the orchestrator.
 
 ### 5. Execute and verify each step
 
-The orchestrator processes the dependency-ordered steps one at a time. A dependent step does not start until its predecessor is verified.
+The orchestrator processes the dependency-ordered steps one at a time. A dependent step does
+not start until its predecessor is verified.
 
 #### 5a. Implement the step: `Step Implementer` (Subagent C)
 
-Before launching the agent, the orchestrator persists the step as `running` using [`step-status-format`](skills/step-status-format/SKILL.md). `Step Implementer` reads the step context, its checkpoint, and any prior verifier report using [`step-context-format`](skills/step-context-format/SKILL.md) and [`checkpoint-format`](skills/checkpoint-format/SKILL.md). It uses:
+Before launching the agent, the orchestrator persists the step as `running` using
+[`step-status-format`](skills/step-status-format/SKILL.md). `Step Implementer` reads the step
+context, its checkpoint, and any prior verifier report using
+[`step-context-format`](skills/step-context-format/SKILL.md) and
+[`checkpoint-format`](skills/checkpoint-format/SKILL.md). It uses:
 
 - `implementation-execution` for bounded repository changes.
 - `test-driven-development` for behavioral work.
 - `test-first-plan-steps` to preserve the primary-test/implementation boundary.
 - `git-isolated-implementation` for branch and commit rules.
-- `persistent-workflow-state` and `subagent-recovery` for checkpoints and interruption handling.
+- `persistent-workflow-state` and `subagent-recovery` for checkpoints and interruption
+handling.
 - `requirements-traceability` for requirement and validation reporting.
 - `atomic-step-commit` for the final validate/commit/status sequence.
 - `systematic-debugging` when a focused check fails unexpectedly.
 
-For a primary-test step, the agent writes only the planned tests, runs them, and records the intentional failure. For an implementation step, it makes the smallest production change that passes the primary tests, adding supplementary tests only when needed for discovered edge cases or regressions.
+For a primary-test step, the agent writes only the planned tests, runs them, and records the
+intentional failure. For an implementation step, it makes the smallest production change that
+passes the primary tests, adding supplementary tests only when needed for discovered edge cases
+or regressions.
 
-When files were modified, the agent’s final sequence is:
+When files were modified, the agent's final sequence is:
 
 ```text
 run focused validation -> create step commit -> persist commit hash -> report
 ```
 
-If the agent is interrupted or blocked by connection loss, cancellation, unavailable resources, or permissions, it persists a recoverable status and leaves the workspace intact.
+If the agent is interrupted or blocked by connection loss, cancellation, unavailable resources,
+or permissions, it persists a recoverable status and leaves the workspace intact.
 
 #### 5b. Verify the step: `Step Verifier` (Subagent D)
 
-After the implementation agent returns, the orchestrator starts `Step Verifier` with the step context, implementation report, and repository state. The verifier is read-only and uses `verification-before-completion`, `requirements-traceability`, and `test-first-plan-steps`.
+After the implementation agent returns, the orchestrator starts `Step Verifier` with the step
+context, implementation report, and repository state. The verifier is read-only and uses
+`verification-before-completion`, `requirements-traceability`, and `test-first-plan-steps`.
 
-For a primary-test step, it confirms that the tests express the required behavior and fail for the intended reason. For an implementation step, it confirms that:
+For a primary-test step, it confirms that the tests express the required behavior and fail for
+the intended reason. For an implementation step, it confirms that:
 
 - Acceptance criteria are satisfied.
 - Required tests pass.
@@ -331,17 +401,25 @@ For a primary-test step, it confirms that the tests express the required behavio
 - Scope has not expanded unexpectedly.
 - External interfaces remain compatible.
 
-The verifier writes `VERIFIED`, `INCOMPLETE`, or `BLOCKED`, with requirement results, validation evidence, missing work, blockers, and a resume point.
+The verifier writes `VERIFIED`, `INCOMPLETE`, or `BLOCKED`, with requirement results,
+validation evidence, missing work, blockers, and a resume point.
 
 #### 5c. Repair an incomplete step
 
-If verification returns `INCOMPLETE`, the orchestrator starts `Step Implementer` again with the verifier report. The implementation agent repairs only that step, then commits the correction. The orchestrator reruns `Step Verifier`.
+If verification returns `INCOMPLETE`, the orchestrator starts `Step Implementer` again with the
+verifier report. The implementation agent repairs only that step, then commits the correction.
+The orchestrator reruns `Step Verifier`.
 
-This loop continues only up to the configured retry limit. A `BLOCKED` result or exhausted retry limit is reported to the user with the current branch, commit, changed files, and resume instructions. Completed and verified steps are not restarted.
+This loop continues only up to the configured retry limit. A `BLOCKED` result or exhausted
+retry limit is reported to the user with the current branch, commit, changed files, and resume
+instructions. Completed and verified steps are not restarted.
 
 ### 6. Verify the complete implementation: `Final Verifier` (Subagent E)
 
-After every step is verified, the orchestrator starts `Final Verifier` with the plan, step index, all reports, commit history, and repository state. It uses `verification-before-completion`, `requirements-traceability`, `git-isolated-implementation`, and `persistent-workflow-state`.
+After every step is verified, the orchestrator starts `Final Verifier` with the plan, step
+index, all reports, commit history, and repository state. It uses
+`verification-before-completion`, `requirements-traceability`, `git-isolated-implementation`,
+and `persistent-workflow-state`.
 
 The final verifier checks:
 
@@ -354,21 +432,33 @@ The final verifier checks:
 - `.agent-work/` and unrelated artifacts are absent from implementation commits.
 - The final branch and worktree obey the Git policy.
 
-It writes a requirement-to-test-step-to-implementation-step-to-commit-to-validation matrix and returns `VERIFIED`, `INCOMPLETE`, or `BLOCKED`.
+It writes a requirement-to-test-step-to-implementation-step-to-commit-to-validation matrix and
+returns `VERIFIED`, `INCOMPLETE`, or `BLOCKED`.
 
-If final verification fails, the orchestrator starts `Step Implementer` with the final report and affected step contexts, then reruns `Final Verifier` within the retry limit.
+If final verification fails, the orchestrator starts `Step Implementer` with the final report
+and affected step contexts, then reruns `Final Verifier` within the retry limit.
 
 ### 7. Document affected source files: `Documentation Agent` (Subagent F)
 
-Once the implementation is verified, the orchestrator builds a documentation assignment for each affected source file that needs maintainer-facing documentation. Independent assignments may run in parallel when they do not share ownership or create conflicting edits.
+Once the implementation is verified, the orchestrator builds a documentation assignment for
+each affected source file that needs maintainer-facing documentation. Independent assignments
+may run in parallel when they do not share ownership or create conflicting edits.
 
-For each assignment, `Documentation Agent` reads the relevant Markdown documentation context, implementation context, and interfaces. It uses `source-documentation`, `documentation-verification`, `requirements-traceability`, `git-isolated-implementation`, `persistent-workflow-state`, and `atomic-step-commit`. The assignment should contain the relevant requirements and context; the verified implementation is authoritative.
+For each assignment, `Documentation Agent` reads the relevant Markdown documentation context,
+implementation context, and interfaces. It uses `source-documentation`,
+`documentation-verification`, `requirements-traceability`, `git-isolated-implementation`,
+`persistent-workflow-state`, and `atomic-step-commit`. The assignment should contain the
+relevant requirements and context; the verified implementation is authoritative.
 
-It documents public interfaces, invariants, side effects, error contracts, lifecycle constraints, and non-obvious behavior. It does not narrate obvious code or change implementation behavior. Documentation changes are validated and committed separately.
+It documents public interfaces, invariants, side effects, error contracts, lifecycle
+constraints, and non-obvious behavior. It does not narrate obvious code or change
+implementation behavior. Documentation changes are validated and committed separately.
 
 ### 8. Verify source documentation: `Documentation Verifier` (Subagent G)
 
-The orchestrator starts `Documentation Verifier` for each source-documentation assignment. It uses `documentation-verification`, `source-documentation`, `requirements-traceability`, and `verification-before-completion`.
+The orchestrator starts `Documentation Verifier` for each source-documentation assignment. It
+uses `documentation-verification`, `source-documentation`, `requirements-traceability`, and
+`verification-before-completion`.
 
 The verifier checks only material issues:
 
@@ -377,17 +467,27 @@ The verifier checks only material issues:
 - Contradictions with the implementation.
 - Missing important interfaces, prerequisites, or limitations.
 
-It does not request stylistic rewrites. Failed documentation verification returns to `Documentation Agent` with the report and repeats within the retry limit.
+It does not request stylistic rewrites. Failed documentation verification returns to
+`Documentation Agent` with the report and repeats within the retry limit.
 
 ### 9. Create and verify user documentation
 
-After source documentation is stable, the orchestrator starts `Documentation Agent` for the user-facing documentation set using `documentation/user-documentation-context.md` plus verified implementation evidence. The agent uses `user-documentation`, `documentation-verification`, and `requirements-traceability` to document supported workflows, prerequisites, configuration, commands, expected results, examples, limitations, and recovery guidance without rereading the complete plan.
+After source documentation is stable, the orchestrator starts `Documentation Agent` for the
+user-facing documentation set using `documentation/user-documentation-context.md` plus verified
+implementation evidence. The agent uses `user-documentation`, `documentation-verification`, and
+`requirements-traceability` to document supported workflows, prerequisites, configuration,
+commands, expected results, examples, limitations, and recovery guidance without rereading the
+complete plan.
 
-The orchestrator then starts `Documentation Verifier` with the plan, implementation reports, public interfaces, and user documentation. It checks correctness and material completeness, not wording preferences. Failed verification returns to `Documentation Agent` and repeats within the retry limit.
+The orchestrator then starts `Documentation Verifier` with the plan, implementation reports,
+public interfaces, and user documentation. It checks correctness and material completeness, not
+wording preferences. Failed verification returns to `Documentation Agent` and repeats within
+the retry limit.
 
 ### 10. Finish and report
 
-The orchestrator performs a final repository check and writes `final-report.yaml` using [`final-report-format`](skills/final-report-format/SKILL.md). It records:
+The orchestrator performs a final repository check and writes `final-report.yaml` using
+[`final-report-format`](skills/final-report-format/SKILL.md). It records:
 
 - Plan audit result.
 - Completed and verified steps.
@@ -403,10 +503,19 @@ Only after this final status is persisted may the orchestrator report the workfl
 
 ## Recovery and Git rules
 
-If a subagent is interrupted or blocked, the orchestrator records the state and reports the blocker. Resume the existing run; do not restart completed steps. Tracked repositories must start clean and use a new implementation branch. Untracked user files are preserved. File-modifying subagents commit completed work before returning; temporary child branches are used when multiple commits are needed.
+If a subagent is interrupted or blocked, the orchestrator records the state and reports the
+blocker. Resume the existing run; do not restart completed steps. Tracked repositories must
+start clean and use a new implementation branch. Untracked user files are preserved.
+File-modifying subagents commit completed work before returning; temporary child branches are
+used when multiple commits are needed.
 
-This bundle is a workflow template, not a replacement for repository-specific tests, permissions, or host documentation.
+This bundle is a workflow template, not a replacement for repository-specific tests,
+permissions, or host documentation.
 
 ## Host capability note
 
-The shared files describe the roles and procedures. Copilot CLI loads them through `plugin.json`; Pi/oh-my-pi loads them through `package.json`. Both manifests point to the same `agents/` and `skills/` directories. Full automatic step orchestration in Pi/oh-my-pi would require a TypeScript extension, which is intentionally not duplicated into this content-only bundle yet.
+The shared files describe the roles and procedures. Copilot CLI loads them through
+`plugin.json`; Pi/oh-my-pi loads them through `package.json`. Both manifests point to the same
+`agents/` and `skills/` directories. Full automatic step orchestration in Pi/oh-my-pi would
+require a TypeScript extension, which is intentionally not duplicated into this content-only
+bundle yet.

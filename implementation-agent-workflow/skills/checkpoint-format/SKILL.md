@@ -31,4 +31,8 @@ blockers:
 resume_from: Commit the validated changes on the implementation branch.
 ```
 
-`last_completed_action` is a factual milestone, not a plan. Include enough changed-file, validation, and repository evidence for another agent to resume safely. Use `status: completed` only for a finished checkpoint; use `recoverable`, `interrupted`, or `blocked` when work needs attention.
+`last_completed_action` is a factual milestone, not a plan. Include
+enough changed-file, validation, and repository evidence for another
+agent to resume safely. Use `status: completed` only for a finished
+checkpoint; use `recoverable`, `interrupted`, or `blocked` when work
+needs attention.

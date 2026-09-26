@@ -1,10 +1,14 @@
 ---
 name: model-catalog-format
-description: "Defines the repository model catalog and routing policy schema used for dynamic model selection."
+description: "Defines the repository model catalog and routing policy schema for model selection."
 ---
 # Model Catalog and Policy Format
 
-Use this skill whenever the orchestrator or a guided config helper writes or edits the repository-level model catalog and policy. These files are configuration inputs to the workflow, not runtime state, and they stay outside `.agent-work/` until the orchestrator copies and validates the effective run versions.
+Use this skill whenever the orchestrator or a guided config helper writes
+or edits the repository-level model catalog and policy. These files are
+configuration inputs to the workflow, not runtime state, and they stay
+outside `.agent-work/` until the orchestrator copies and validates the
+effective run versions.
 
 ## File locations
 
@@ -22,7 +26,10 @@ The effective run copies live under:
 .agent-work/<run-id>/model-policy.yaml
 ```
 
-The effective copies are the authoritative runtime inputs. Repository files remain the source of truth for version control and resumed runs; the run copies are the validated configuration that was confirmed for that run.
+The effective copies are the authoritative runtime inputs. Repository
+files remain the source of truth for version control and resumed runs; the
+run copies are the validated configuration that was confirmed for that
+run.
 
 ## Catalog entry schema
 
@@ -53,9 +60,11 @@ Each catalog entry must satisfy these requirements:
 - `cost` is a policy-comparable classification such as `low`, `medium`, or `high`.
 - `context_window` is the maximum supported token window.
 - `tools` preserves the required or supported host tools for this model.
-- `hosts` is optional and maps supported adapters to host-specific selector strings.
+- `hosts` is optional and maps supported hosts to host-specific selector strings.
 
-Unknown capabilities are invalid unless the format explicitly supports a namespaced extension. Duplicate model IDs, missing required fields, invalid numeric values, and unsupported host mapping values are invalid.
+Unknown capabilities are invalid unless the format explicitly supports a
+namespaced extension. Duplicate model IDs, missing required fields,
+invalid numeric values, and unsupported host mapping values are invalid.
 
 ## Capability vocabulary
 
@@ -74,7 +83,10 @@ capabilities:
   - large-context
 ```
 
-The vocabulary is the contract used by policy matching and validation. Names are stored in normalized lowercase form and are not treated as free-form text. Catalog entries may extend the vocabulary only through an explicit namespace policy; otherwise the value is invalid.
+The vocabulary is the contract used by policy matching and validation.
+Names are stored in normalized lowercase form and are not treated as
+free-form text. Catalog entries may extend the vocabulary only through
+an explicit namespace policy; otherwise the value is invalid.
 
 ## Policy schema
 
@@ -108,30 +120,50 @@ model_policy:
     require_application: false
 ```
 
-The policy defines the role defaults, suitability requirements, fallback behavior, retry semantics, and host application requirements. It is not a host registry and it does not change runtime behavior without orchestration validation.
+The policy defines the role defaults, suitability requirements, fallback
+behavior, retry semantics, and host application requirements. It is not a
+host registry, and it does not change runtime behavior without
+orchestration validation.
 
 ## Required fields and semantic rules
 
 - `model_policy.roles.<role>.required_capabilities` is mandatory for each supported role.
 - `minimum_tier` is a positive integer or `null` when not enforced.
-- Each supported role definition may include an optional `default` portable ID naming the primary candidate for that role. A declared `default` must exist in the catalog and satisfy the role's own `required_capabilities` and `minimum_tier`; it is overridable only by a validated decomposer recommendation or user override.
-- `fallback` is a portable model ID that must exist in the catalog or be explicitly marked as a child fallback alias.
-- `retry.preserve_assignment` must be a boolean; `true` preserves the original attempt assignment by default.
-- `retry.allow_escalation` must be a boolean; `false` blocks policy escalation unless an explicit rule authorizes it.
-- `host.require_application` defaults to `false` and is used only when the host cannot or should not silently proceed without confirmation.
+- Each supported role definition may include an optional `default`
+  portable ID naming the primary candidate for that role. A declared
+  `default` must exist in the catalog and satisfy the role's own
+  `required_capabilities` and `minimum_tier`; it is overridable only by
+  a validated decomposer recommendation or user override.
+- `fallback` is a portable model ID that must exist in the catalog, or be
+  explicitly marked as a child fallback alias.
+- `retry.preserve_assignment` must be a boolean; `true` preserves the
+  original attempt assignment by default.
+- `retry.allow_escalation` must be a boolean; `false` blocks policy
+  escalation unless an explicit rule authorizes it.
+- `host.require_application` defaults to `false` and is used only when the
+  host cannot or should not silently proceed without confirmation.
 
-The workflow must reject unknown fallback references, unsuitable role overrides, invalid role names, missing capability coverage, and values that would produce a non-deterministic ranking.
+The workflow must reject unknown fallback references, unsuitable role
+overrides, invalid role names, missing capability coverage, and values
+that would produce a non-deterministic ranking.
 
 ## Override merge and validation rules
 
-Invocation overrides may change individual catalog entries or policy fields. The orchestrator must merge them by field-level semantics instead of replacing unrelated sections. The merge behavior is:
+Invocation overrides may change individual catalog entries or policy
+fields. The orchestrator must merge them by field-level semantics instead
+of replacing unrelated sections. The merge behavior is:
 
 1. Mappings are sorted by key for canonical output.
-2. Lists retain their semantic order when they are significant (for example, capability order or fallback order).
+2. Lists retain their semantic order when they are significant (for
+   example, capability order or fallback order).
 3. Scalar types are normalized before hashing or validation.
 4. The merged result is serialized and hashed using a canonicalized SHA-256 representation.
 
-The canonical representation is deterministic: equivalent YAML is normalized to a stable byte sequence before hashing. The workflow calculates a normalized fingerprint in the form `sha256:<hex>` for both catalog and policy. The exact hash is not user-facing behavior; it is evidence for resume and auditability.
+The canonical representation is deterministic: equivalent YAML is
+normalized to a stable byte sequence before hashing. The workflow
+calculates a normalized fingerprint in the form `sha256:<hex>` for both
+catalog and policy. The exact hash is not user-facing behavior; it is
+evidence for resume and auditability.
 
 Invalid overrides include:
 
@@ -143,11 +175,17 @@ Invalid overrides include:
 
 ## Legacy mode behavior
 
-Legacy mode remains a compatibility option and is treated as an explicit compatibility path, not as a dynamic routing strategy. In legacy mode, the orchestrator may preserve older selectors or compatibility rules when a host requires them, but the portable catalog and policy remain authoritative. A legacy configuration is invalid if it contradicts the routing contract or produces a non-portable assignment.
+Legacy mode remains a compatibility option and is treated as an explicit
+compatibility path, not as a dynamic routing strategy. In legacy mode, the
+orchestrator may preserve older selectors or compatibility rules when a
+host requires them, but the portable catalog and policy remain
+authoritative. A legacy configuration is invalid if it contradicts the
+routing contract or produces a non-portable assignment.
 
 ## Validation checklist
 
-A valid model catalog and policy must contain all of the following terms in a structured way:
+A valid model catalog and policy must contain all of the following terms
+in a structured way:
 
 - `models:` and `model_policy:` at the top level.
 - `required_capabilities` for each role definition.
@@ -157,4 +195,7 @@ A valid model catalog and policy must contain all of the following terms in a st
 - a deterministic `SHA-256` fingerprint calculation and canonicalized output.
 - explicit `legacy mode` handling when compatibility behavior is used.
 
-`model_policy` is the authoritative policy contract. The catalog and policy schema remain stable across host adapters; adapters translate the selected portable IDs to host-specific model names without changing the routing policy itself.
+`model_policy` is the authoritative policy contract. The catalog and
+policy schema remain stable across hosts; each host's entry in `hosts`
+translates the selected portable ID to a host-specific model name without
+changing the routing policy itself.

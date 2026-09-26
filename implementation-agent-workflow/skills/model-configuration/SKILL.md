@@ -1,6 +1,6 @@
 ---
 name: model-configuration
-description: "Guides users through creating or editing the repository model catalog and routing policy."
+description: "Guides creation and editing of the repository model catalog and routing policy."
 ---
 # Guided Model Configuration
 
@@ -166,7 +166,11 @@ not write either file when validation fails.
    fallback chain.
 8. Check the destination paths remain outside `.agent-work/` and are writable.
 
-Validation is a configuration check only. It is separate from runtime model confirmation, which happens exclusively through the orchestrator's one-time capability probe documented in [`model-routing-adapter`](../model-routing-adapter/SKILL.md); no compiled lifecycle methods exist.
+Validation is a configuration check only. It is separate from runtime model
+confirmation, which happens exclusively through the orchestrator's one-time
+capability probe documented in
+[`model-routing-adapter`](../model-routing-adapter/SKILL.md); no compiled
+lifecycle methods exist.
 
 ## Confirmation and write behavior
 

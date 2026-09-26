@@ -60,10 +60,27 @@ blockers: []
 resume_from: null
 ```
 
-Allowed statuses are `pending`, `running`, `completed`, `verification-failed`, `interrupted`, `recoverable`, `blocked`, and `abandoned`. `completed` is legal only after a verifier returns `VERIFIED`; an implementer `PASS` is not sufficient.
+Allowed statuses are `pending`, `running`, `completed`,
+`verification-failed`, `interrupted`, `recoverable`, `blocked`,
+and `abandoned`. `completed` is legal only after a verifier returns
+`VERIFIED`; an implementer `PASS` is not sufficient.
 
-`model_assignment` is the resolved assignment for the current attempt. `attempt_history` is append-only and records every attempt in chronological order. A retry preserves the previous assignment unless the policy explicitly authorizes escalation. Each history entry records the attempt number, the prior assignment snapshot, the documented outcome, and any escalation metadata: `triggered`, `prior_model`, `new_model`, and `policy_rule`.
+`model_assignment` is the resolved assignment for the current
+attempt. `attempt_history` is append-only and records every attempt
+in chronological order. A retry preserves the previous assignment
+unless the policy explicitly authorizes escalation. Each history
+entry records the attempt number, the prior assignment snapshot,
+the documented outcome, and any escalation metadata: `triggered`,
+`prior_model`, `new_model`, and `policy_rule`.
 
 ## Rules
 
-Write this file atomically before and after each delegated call. Preserve attempt counts and evidence across retries. `changed_files` contains repository-relative paths. `validation` contains exact commands, results, and evidence. A blocked or recoverable status must provide `resume_from`. The step status must never silently replace a prior assignment with a new model when a retry is a preservation move; any policy-authorized escalation must be explicit and persisted under `attempt_history[].escalation`.
+Write this file atomically before and after each delegated call.
+Preserve attempt counts and evidence across retries.
+`changed_files` contains repository-relative paths.
+`validation` contains exact commands, results, and evidence. A
+blocked or recoverable status must provide `resume_from`. The step
+status must never silently replace a prior assignment with a new
+model when a retry is a preservation move; any policy-authorized
+escalation must be explicit and persisted under
+`attempt_history[].escalation`.
