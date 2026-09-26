@@ -4,9 +4,13 @@ description: "Defines the Markdown templates for plan-level source and user docu
 ---
 # Documentation Context Format
 
-Use this skill when the Plan Auditor creates or the orchestrator reads the plan-level documentation context under `.agent-work/<run-id>/documentation/`.
+Use this skill when the Plan Auditor creates the plan-level
+documentation context under `.agent-work/<run-id>/documentation/`.
 
-The context is a flexible Markdown brief distilled from the immutable plan. It identifies documentation obligations without claiming that planned behavior was implemented. The final implementation and verified repository state are authoritative when they differ from this brief.
+The context is a flexible Markdown brief distilled from the immutable
+plan. It identifies documentation obligations without claiming that
+planned behavior was implemented. The final implementation and verified
+repository state are authoritative when they differ from this brief.
 
 ## Source Documentation Context
 
@@ -77,7 +81,8 @@ Explain what users must be able to accomplish after the planned change.
 List prerequisites, configuration, permissions, environment assumptions, and setup steps.
 
 ## Examples and Expected Results
-List commands, inputs, outputs, examples, and success indicators that the final documentation should contain.
+List commands, inputs, outputs, examples, and success indicators that
+the final documentation should contain.
 
 ## Limitations and Recovery
 Record planned limitations, failure modes, troubleshooting, migration, or recovery guidance.
@@ -91,4 +96,8 @@ List implementation files, tests, commands, or examples that should establish th
 
 ## Validation
 
-Require YAML frontmatter with `kind`, `schema`, `run_id`, and the correct `context_type`. Require every template heading, at least one requirement or an explicit statement that no documentation obligation was identified, and no claim that is supported only by the plan when implementation evidence is available.
+Require YAML frontmatter with `kind`, `schema`, `run_id`, and the
+correct `context_type`. Require every template heading, at least one
+requirement or an explicit statement that no documentation obligation
+was identified, and no claim that is supported only by the plan when
+implementation evidence is available.
