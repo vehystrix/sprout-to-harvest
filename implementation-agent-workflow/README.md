@@ -173,34 +173,41 @@ explicit policy approval and a new attempt record.
 
 ### Host support and scope
 
-Host support is determined at run time by a one-time capability probe of the active
-host's delegation tool surface, not by per-host code paths: the orchestrator checks once
-whether the host exposes a per-delegation model selector (a `model` parameter on its
-delegate/task/subagent invocation), records that probe result in the run ledger, and only
-then decides to send every delegation with or without an explicit `model`. No per-host
-code paths are required. The Pi harness does not support dynamic routing today: its
-delegation surface has no per-run model selector, so runs on Pi record `routing-unavailable` in the run ledger and proceed without a `model` field rather than adding host-specific code.
+Model delegation uses whatever per-delegation `model` mechanism the active host
+exposes. A one-time capability probe at run start confirms whether that mechanism
+works for the session and pins how evidence is obtained (delegation response payload
+or subagent self-report). Runs without a confirmed mechanism delegate without a model
+field and record routing-unavailable warnings; on Pi the static check finds no exposed
+per-delegation `model` parameter, so such runs take the routing-unavailable path.
 
-How it works: 1. portable IDs are resolved against `hosts.<active_host>` in the frozen
-catalog; 2. per-delegation model selection is used only when this run's capability probe
-status is passed, otherwise no `model` field is set and a routing-unavailable warning is
-recorded for every assignment; 3. each delegation's `evidence_channel` determines how its
-reported runtime model counts toward the `applied` result — tool-reported is strongest,
-host- or self-reported is secondary, unknown is weakest.
+The simplified approach uses zero compiled adapters. Model resolution happens entirely
+through YAML catalog lookup, a one-time capability probe, and per-delegation `model`
+field delegation:
 
-No TypeScript, no host bridges, and no Copilot adapter package extensions are required:
-routing stays configuration-driven inside this repository, with YAML catalog and policy
-files plus Markdown skills as its artifacts.
+1. The orchestrator reads the effective run copy `.agent-work/<run-id>/`
+`model-catalog.yaml` to map the selected portable ID to a host-specific
+model name via `hosts.<host>`.
+2. A one-time capability probe (a cheap self-identification delegation)
+confirms whether the active host honors per-delegation model selection and pins
+the evidence channel for the run.
+3. When confirmed, the `model` field is set on each delegation; otherwise
+no model field is set and warnings are recorded.
 
-**Migration from compiled adapters:** existing documentation referring to the old
-`preflight()`/`resolve()`/`apply()` lifecycle is obsolete; use the probe-based wording in
-[`model-routing-adapter`](skills/model-routing-adapter/SKILL.md), the orchestrator
-instructions, and this section instead. The implementation plans for the Copilot and OMP
-TypeScript adapters have been removed from `docs/superpowers/plans/`.
+No TypeScript, no host bridges, no package extensions. The catalog and policy are pure
+YAML configuration files that can be edited independently of the workflow code.
 
-This release establishes configuration files, validation behavior, templates, run-
-level evidence requirements, and the documentation assignment contract; it is a
-config-and-documentation release. See the [Model Routing Simplified Plan](docs/superpowers/plans/2026-09-16-model-routing-simplified-plan.md) for the current routing design.
+**Migration from compiled adapters:** If you previously read the OMP adapter plan or
+Copilot adapter plan, those approaches are replaced. The portable ID vocabulary,
+evidence levels, and assignment field contracts remain unchanged - only the mechanism
+changed from TypeScript bridges to catalog YAML lookup + `model` field delegation gated
+by a one-time capability probe.
+
+This release replaces the original compiled adapter approach with a config-and-
+documentation model plus a one-time capability probe per run. The TypeScript adapter
+plans (OMP adapter, Copilot adapter) have been removed. Model routing now operates
+entirely through catalog YAML, policy YAML, per-delegation `model` fields where the
+host exposes them, and plain documentation in the model-routing-adapter skill. See
+[Model Routing Simplified Plan](docs/superpowers/plans/2026-09-16-model-routing-simplified-plan.md) for the complete design.
 
 ## Inter-agent communication
 
