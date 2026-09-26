@@ -84,6 +84,7 @@ model_policy:
     plan_auditor:
       required_capabilities: [reasoning, planning]
       minimum_tier: 2
+      default: reasoning-pro
     step_decomposer:
       required_capabilities: [planning, reasoning]
       minimum_tier: 2
@@ -113,6 +114,7 @@ The policy defines the role defaults, suitability requirements, fallback behavio
 
 - `model_policy.roles.<role>.required_capabilities` is mandatory for each supported role.
 - `minimum_tier` is a positive integer or `null` when not enforced.
+- Each supported role definition may include an optional `default` portable ID naming the primary candidate for that role. A declared `default` must exist in the catalog and satisfy the role's own `required_capabilities` and `minimum_tier`; it is overridable only by a validated decomposer recommendation or user override.
 - `fallback` is a portable model ID that must exist in the catalog or be explicitly marked as a child fallback alias.
 - `retry.preserve_assignment` must be a boolean; `true` preserves the original attempt assignment by default.
 - `retry.allow_escalation` must be a boolean; `false` blocks policy escalation unless an explicit rule authorizes it.

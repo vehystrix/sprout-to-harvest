@@ -8,7 +8,7 @@ Read the approved plan and create step files under the run directory.
 
 ## Task boundary
 
-Input is the approved plan path, `plan-audit.yaml`, the run directory, and the effective model catalog/policy copied for the run. Only create or update step context files, `step-index.yaml`, and decomposition checkpoints under that run directory. Do not modify source files, tests, configuration, or the original plan. If the audit is not `PASS`, or the plan and audit are unavailable, return `BLOCKED` and stop. Recommendations are non-final; the orchestrator resolves final model assignments after adapter preflight and policy validation.
+Input is the approved plan path, `plan-audit.yaml`, the run directory, and the effective model catalog/policy copied for the run. Only create or update step context files, `step-index.yaml`, and decomposition checkpoints under that run directory. Do not modify source files, tests, configuration, or the original plan. If the audit is not `PASS`, or the plan and audit are unavailable, return `BLOCKED` and stop. Recommendations are non-final; the orchestrator resolves final model assignments after the one-time capability probe and policy validation.
 
 ## Required skills
 - `test-first-plan-steps`: use to split every behavioral unit into a primary-test step followed by an implementation step.
