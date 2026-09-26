@@ -154,40 +154,53 @@ before delegation.
 
 The portable `requested` ID, adapter `resolved` model, `fallback`, `applied` result,
 `runtime_model`, `warning`, and `evidence` are separate facts in the run records. A
-resolved model is not necessarily an applied model. The adapter contract in
+resolved model is not necessarily an applied model. The delegation guide in
 [`model-routing-adapter`](skills/model-routing-adapter/SKILL.md) defines these evidence
 levels:
 
-- `adapter-confirmed`: deterministic confirmation from the adapter;
+- `adapter-confirmed`: deterministic host or tool confirmation of the resolved model;
 - `host-reported`: the host exposed a runtime model without confirming the override;
 - `self-reported`: the delegated agent reported what it observed;
 - `unknown`: no runtime model evidence was available.
 
 Only `adapter-confirmed` supports the strongest claim that a requested model was
-applied. A fallback, default model, host mismatch, or unavailable application mechanism
-must include a warning with the exact reason. With `require_application: true`, an
-unconfirmed application blocks rather than silently continuing. Retries preserve the
-assignment by default; escalation requires explicit policy approval and a new attempt
-record.
+applied; runs without such deterministic confirmation can record at most `host-reported`
+or `self-reported` evidence for their applied results. A fallback, default model, host
+mismatch, or unavailable application mechanism must include a warning with the exact
+reason. With `require_application: true`, an unconfirmed application blocks rather than
+silently continuing. Retries preserve the assignment by default; escalation requires
+explicit policy approval and a new attempt record.
 
 ### Host support and scope
 
-Copilot and the Oh-My-Pi (`omp`) adapter have separate responsibilities. Copilot may
-use generated agent profiles when that is the supported selection mechanism. Oh-My-Pi may
-use its host model selectors for overrides and role-specific assignments. In both cases, the
-workflow must report adapter and host evidence rather than infer that a portable ID was
-used.
+Host support is determined at run time by a one-time capability probe of the active
+host's delegation tool surface, not by per-host code paths: the orchestrator checks once
+whether the host exposes a per-delegation model selector (a `model` parameter on its
+delegate/task/subagent invocation), records that probe result in the run ledger, and only
+then decides to send every delegation with or without an explicit `model`. No per-host
+code paths are required. The Pi harness does not support dynamic routing today: its
+delegation surface has no per-run model selector, so runs on Pi record `routing-unavailable` in the run ledger and proceed without a `model` field rather than adding host-specific code.
 
-The Pi harness does not support model selection, so it is intentionally not included in
-the adapter list. Pi runs must not claim dynamic selection or `applied: true` without
-evidence.
+How it works: 1. portable IDs are resolved against `hosts.<active_host>` in the frozen
+catalog; 2. per-delegation model selection is used only when this run's capability probe
+status is passed, otherwise no `model` field is set and a routing-unavailable warning is
+recorded for every assignment; 3. each delegation's `evidence_channel` determines how its
+reported runtime model counts toward the `applied` result — tool-reported is strongest,
+host- or self-reported is secondary, unknown is weakest.
 
-This release establishes the portable contracts, guided configuration, persistence
-rules, and documentation for a later executable resolver and adapter integration. The
-configuration skill does not apply models at runtime, and this documentation does not
-claim that routing has been applied merely because a catalog entry or host mapping
-exists. See the [dynamic model selection design](docs/superpowers/specs/2026-09-14-dynamic-model-selection-design.md)
-for the full ownership and evidence model.
+No TypeScript, no host bridges, and no Copilot adapter package extensions are required:
+routing stays configuration-driven inside this repository, with YAML catalog and policy
+files plus Markdown skills as its artifacts.
+
+**Migration from compiled adapters:** existing documentation referring to the old
+`preflight()`/`resolve()`/`apply()` lifecycle is obsolete; use the probe-based wording in
+[`model-routing-adapter`](skills/model-routing-adapter/SKILL.md), the orchestrator
+instructions, and this section instead. The implementation plans for the Copilot and OMP
+TypeScript adapters have been removed from `docs/superpowers/plans/`.
+
+This release establishes configuration files, validation behavior, templates, run-
+level evidence requirements, and the documentation assignment contract; it is a
+config-and-documentation release. See the [Model Routing Simplified Plan](docs/superpowers/plans/2026-09-16-model-routing-simplified-plan.md) for the current routing design.
 
 ## Inter-agent communication
 
