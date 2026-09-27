@@ -70,7 +70,7 @@ copilot plugin install OWNER/implementation-agent-workflow
 From a local checkout while developing:
 
 ```bash
-copilot plugin install ./implementation-agent-workflow
+copilot plugin install .
 ```
 
 Verify and manage the installation:

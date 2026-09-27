@@ -17,7 +17,7 @@ No compiled code, no host bridges, no package extensions, no adapter lifecycle m
 **Spec:** [2026-09-14-dynamic-model-selection-design.md](../specs/2026-09-14-dynamic-model-selection-design.md)
 
 **Prerequisites:** Complete [Model Routing Contracts Implementation Plan](2026-09-14-model-routing-contracts-plan.md) first for the portable ID vocabulary, evidence levels, and assignment field contract. The contracts define what the data *looks like*; this plan defines how to *use* it without compiled adapters.
-**Working directory:** All verification and Git commands in this plan run from the bundle root (`implementation-agent-workflow/`) inside the repository, so every path below is relative to that directory.
+**Working directory:** All verification and Git commands in this plan run from the bundle root (the repository root), so every path below is relative to that directory.
 
 ## Global Constraints
 
