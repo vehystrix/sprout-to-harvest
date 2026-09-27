@@ -1,7 +1,10 @@
 ---
 name: implementation-execution
-description: "Use when implementing one bounded step from an approved plan while
-  preserving repository conventions, scope, and validation evidence."
+description: Only use when explicitly invoked
+# description: "Use when implementing one bounded step from an approved plan while
+#   preserving repository conventions, scope, and validation evidence."
+user-invocable: false
+disable-model-invocation: true
 ---
 # Implementation Execution
 

@@ -1,6 +1,9 @@
 ---
 name: test-driven-development
-description: "Use when implementing or changing observable behavior, before writing production implementation code."
+description: Only use when explicitly invoked
+# description: "Use when implementing or changing observable behavior, before writing production implementation code."
+user-invocable: false
+disable-model-invocation: true
 ---
 # Test-Driven Development
 

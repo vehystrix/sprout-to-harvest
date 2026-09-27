@@ -1,6 +1,9 @@
 ---
 name: agent-handoff
-description: "Defines the YAML schema for every inter-agent handoff and persisted handoff report."
+description: Only use when explicitly invoked
+# description: "Defines the YAML schema for every inter-agent handoff and persisted handoff report."
+user-invocable: false
+disable-model-invocation: true
 ---
 # Agent Handoff
 

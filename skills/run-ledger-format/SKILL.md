@@ -1,6 +1,9 @@
 ---
 name: run-ledger-format
-description: "Defines the YAML schema for the durable workflow run ledger in .agent-work."
+description: Only use when explicitly invoked
+# description: "Defines the YAML schema for the durable workflow run ledger in .agent-work."
+user-invocable: false
+disable-model-invocation: true
 ---
 # Run Ledger Format
 

@@ -1,6 +1,9 @@
 ---
 name: checkpoint-format
-description: "Defines the YAML schema for resumable step checkpoints."
+description: Only use when explicitly invoked
+# description: "Defines the YAML schema for resumable step checkpoints."
+user-invocable: false
+disable-model-invocation: true
 ---
 # Checkpoint Format
 

@@ -1,8 +1,11 @@
 ---
 name: persistent-workflow-state
-description: "Use when coordinating multi-agent implementation work
-  that must survive interruption, cancellation, connection loss, or
-  process failure."
+description: Only use when explicitly invoked
+# description: "Use when coordinating multi-agent implementation work
+#   that must survive interruption, cancellation, connection loss, or
+#   process failure."
+user-invocable: false
+disable-model-invocation: true
 ---
 # Persistent Workflow State
 

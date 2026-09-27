@@ -1,6 +1,9 @@
 ---
 name: step-index-format
-description: "Defines the YAML schema for the dependency-aware implementation step index."
+description: Only use when explicitly invoked
+# description: "Defines the YAML schema for the dependency-aware implementation step index."
+user-invocable: false
+disable-model-invocation: true
 ---
 # Step Index Format
 

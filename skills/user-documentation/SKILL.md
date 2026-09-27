@@ -1,6 +1,9 @@
 ---
 name: user-documentation
-description: "Use when writing task-oriented docs for plan-driven implementations."
+description: Only use when explicitly invoked
+# description: "Use when writing task-oriented docs for plan-driven implementations."
+user-invocable: false
+disable-model-invocation: true
 ---
 # User Documentation
 

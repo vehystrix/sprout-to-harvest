@@ -1,8 +1,11 @@
 ---
 name: subagent-recovery
-description: "Use when a delegated agent is interrupted, cancelled, loses its
-  connection, encounters unavailable resources, or cannot complete because of
-  permissions or another unrecoverable error."
+description: Only use when explicitly invoked
+# description: "Use when a delegated agent is interrupted, cancelled, loses its
+#   connection, encounters unavailable resources, or cannot complete because of
+#   permissions or another unrecoverable error."
+user-invocable: false
+disable-model-invocation: true
 ---
 # Subagent Recovery
 

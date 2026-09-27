@@ -1,8 +1,11 @@
 ---
 name: model-routing-adapter
-description: "Catalog-driven delegation guide for dynamic model routing:
-  one-time capability probe, catalog lookup, conditional model field
-  delegation, and channel-keyed evidence recording."
+description: Only use when explicitly invoked
+# description: "Catalog-driven delegation guide for dynamic model routing:
+#   one-time capability probe, catalog lookup, conditional model field
+#   delegation, and channel-keyed evidence recording."
+user-invocable: false
+disable-model-invocation: true
 ---
 # Model Routing Adapter - Delegation Guide
 

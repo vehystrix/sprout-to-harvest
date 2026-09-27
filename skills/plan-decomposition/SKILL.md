@@ -1,6 +1,9 @@
 ---
 name: plan-decomposition
-description: "Use when splitting an approved implementation plan into small, ordered work units."
+description: Only use when explicitly invoked
+# description: "Use when splitting an approved implementation plan into small, ordered work units."
+user-invocable: false
+disable-model-invocation: true
 ---
 # Plan Decomposition
 

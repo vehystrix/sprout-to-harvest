@@ -1,6 +1,9 @@
 ---
 name: model-configuration
-description: "Guides creation and editing of the repository model catalog and routing policy."
+description: Only use when explicitly invoked
+# description: "Guides creation and editing of the repository model catalog and routing policy."
+user-invocable: false
+disable-model-invocation: true
 ---
 # Guided Model Configuration
 

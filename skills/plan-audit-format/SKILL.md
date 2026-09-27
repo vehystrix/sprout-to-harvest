@@ -1,6 +1,9 @@
 ---
 name: plan-audit-format
-description: "Defines the persisted YAML structure for plan-audit results."
+description: Only use when explicitly invoked
+# description: "Defines the persisted YAML structure for plan-audit results."
+user-invocable: false
+disable-model-invocation: true
 ---
 # Plan Audit Format
 

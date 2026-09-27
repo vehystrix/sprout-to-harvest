@@ -1,6 +1,9 @@
 ---
 name: documentation-verification
-description: "Use when updating or reviewing documentation after a plan-driven implementation."
+description: Only use when explicitly invoked
+# description: "Use when updating or reviewing documentation after a plan-driven implementation."
+user-invocable: false
+disable-model-invocation: true
 ---
 # Documentation Verification
 

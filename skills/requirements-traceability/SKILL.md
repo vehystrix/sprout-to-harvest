@@ -1,6 +1,9 @@
 ---
 name: requirements-traceability
-description: "Use when planning, verifying, or documenting multi-step work where every plan requirement must be accounted for."
+description: Only use when explicitly invoked
+# description: "Use when planning, verifying, or documenting multi-step work where every plan requirement must be accounted for."
+user-invocable: false
+disable-model-invocation: true
 ---
 # Requirements Traceability
 

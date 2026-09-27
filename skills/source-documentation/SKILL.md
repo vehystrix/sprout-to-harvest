@@ -1,6 +1,9 @@
 ---
 name: source-documentation
-description: "Use when documenting public interfaces, invariants, error contracts, or non-obvious behavior in affected source files."
+description: Only use when explicitly invoked
+# description: "Use when documenting public interfaces, invariants, error contracts, or non-obvious behavior in affected source files."
+user-invocable: false
+disable-model-invocation: true
 ---
 # Source Documentation
 

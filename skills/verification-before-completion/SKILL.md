@@ -1,7 +1,10 @@
 ---
 name: verification-before-completion
-description: "Use when deciding whether an implementation, test step, documentation change,
-  or workflow phase is complete."
+description: Only use when explicitly invoked
+# description: "Use when deciding whether an implementation, test step, documentation change,
+#   or workflow phase is complete."
+user-invocable: false
+disable-model-invocation: true
 ---
 # Verification Before Completion
 

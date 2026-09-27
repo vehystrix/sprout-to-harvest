@@ -1,6 +1,9 @@
 ---
 name: documentation-context-format
-description: "Defines the Markdown templates for plan-level source and user documentation context."
+description: Only use when explicitly invoked
+# description: "Defines the Markdown templates for plan-level source and user documentation context."
+user-invocable: false
+disable-model-invocation: true
 ---
 # Documentation Context Format
 

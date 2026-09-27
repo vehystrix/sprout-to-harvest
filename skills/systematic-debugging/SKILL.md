@@ -1,8 +1,11 @@
 ---
 name: systematic-debugging
-description: >-
-  Use when a test, validation command, subagent, or verifier reports an
-  unexpected failure or behavior.
+description: Only use when explicitly invoked
+# description: >-
+#   Use when a test, validation command, subagent, or verifier reports an
+#   unexpected failure or behavior.
+user-invocable: false
+disable-model-invocation: true
 ---
 # Systematic Debugging
 

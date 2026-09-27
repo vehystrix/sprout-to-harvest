@@ -21,7 +21,10 @@ The workflow:
 ## Layout
 
 - `agents/`: canonical custom agent definitions.
-- `skills/`: canonical reusable workflow skills.
+- `skills/`: canonical reusable workflow skills, hidden from automatic model discovery.
+  Every SKILL.md sets `user-invocable: false` and `disable-model-invocation: true`, so hosts that
+  honor the flags omit them from the model's discovered-skill list; each loads only when an agent instruction
+  or another skill calls it by name and stays reachable through `skill://<name>`.
 - `package.json`: Pi/oh-my-pi package manifest. It exposes the same agent Markdown as prompt
 resources and the same skills as Agent Skills.
 - `plugin.json`: Copilot plugin manifest. It exposes the same `agents/` and `skills/`
@@ -54,6 +57,9 @@ pi install -l git:github.com/OWNER/implementation-agent-workflow
 
 The installed package contributes the workflow skills and exposes the eight role files as
 prompt resources. The role files are not copied into a second Pi-specific directory.
+Because the bundled skills set `disable-model-invocation`, hosts that honor the flag omit
+them from automatic model skill discovery; they load only when a role file or another
+skill invokes them by name.
 
 ## Install as a Copilot plugin
 

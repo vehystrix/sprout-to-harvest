@@ -1,7 +1,10 @@
 ---
 name: final-report-format
-description: "Defines the persisted YAML structure and user-facing
-  response template for the final workflow report."
+description: Only use when explicitly invoked
+# description: "Defines the persisted YAML structure and user-facing
+#   response template for the final workflow report."
+user-invocable: false
+disable-model-invocation: true
 ---
 # Final Report Format
 

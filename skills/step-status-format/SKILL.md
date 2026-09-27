@@ -1,6 +1,9 @@
 ---
 name: step-status-format
-description: "Defines the YAML schema for per-step durable execution status."
+description: Only use when explicitly invoked
+# description: "Defines the YAML schema for per-step durable execution status."
+user-invocable: false
+disable-model-invocation: true
 ---
 # Step Status Format
 

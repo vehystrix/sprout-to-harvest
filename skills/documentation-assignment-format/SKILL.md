@@ -1,6 +1,9 @@
 ---
 name: documentation-assignment-format
-description: "Defines the Markdown template and guidance for persisted documentation assignments."
+description: Only use when explicitly invoked
+# description: "Defines the Markdown template and guidance for persisted documentation assignments."
+user-invocable: false
+disable-model-invocation: true
 ---
 # Documentation Assignment Format
 

@@ -1,9 +1,12 @@
 ---
 name: git-isolated-implementation
-description: >-
-  Use when implementing a plan in a Git workspace where clean changes,
-  branch isolation, commit traceability, and preservation of untracked
-  files are required.
+description: Only use when explicitly invoked
+# description: >-
+#   Use when implementing a plan in a Git workspace where clean changes,
+#   branch isolation, commit traceability, and preservation of untracked
+#   files are required.
+user-invocable: false
+disable-model-invocation: true
 ---
 # Git-Isolated Implementation
 

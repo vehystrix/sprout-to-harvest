@@ -1,7 +1,10 @@
 ---
 name: step-context-format
-description: "Defines the Markdown template and writing guidance for
-implementation step context files."
+description: Only use when explicitly invoked
+# description: "Defines the Markdown template and writing guidance for
+# implementation step context files."
+user-invocable: false
+disable-model-invocation: true
 ---
 # Step Context Format
 

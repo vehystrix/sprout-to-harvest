@@ -1,8 +1,11 @@
 ---
 name: plan-audit
-description: "Use when reviewing a design specification or implementation
-  plan before work begins and ambiguity, feasibility, interface, or scope
-  risks may block execution."
+description: Only use when explicitly invoked
+# description: "Use when reviewing a design specification or implementation
+#   plan before work begins and ambiguity, feasibility, interface, or scope
+#   risks may block execution."
+user-invocable: false
+disable-model-invocation: true
 ---
 # Plan Audit
 

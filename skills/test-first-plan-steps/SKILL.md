@@ -1,8 +1,11 @@
 ---
 name: test-first-plan-steps
-description: >-
-  Use when decomposing a behavioral implementation plan into independently
-  executable test-driven steps.
+description: Only use when explicitly invoked
+# description: >-
+#   Use when decomposing a behavioral implementation plan into independently
+#   executable test-driven steps.
+user-invocable: false
+disable-model-invocation: true
 ---
 # Test-First Plan Steps
 

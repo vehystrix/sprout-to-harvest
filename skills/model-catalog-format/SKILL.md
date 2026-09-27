@@ -1,6 +1,9 @@
 ---
 name: model-catalog-format
-description: "Defines the repository model catalog and routing policy schema for model selection."
+description: Only use when explicitly invoked
+# description: "Defines the repository model catalog and routing policy schema for model selection."
+user-invocable: false
+disable-model-invocation: true
 ---
 # Model Catalog and Policy Format
 

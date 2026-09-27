@@ -1,8 +1,11 @@
 ---
 name: atomic-step-commit
-description: >-
-  Use when a subagent has modified files and must leave a resumable,
-  reviewable step result on the implementation branch.
+description: Only use when explicitly invoked
+# description: >-
+#   Use when a subagent has modified files and must leave a resumable,
+#   reviewable step result on the implementation branch.
+user-invocable: false
+disable-model-invocation: true
 ---
 # Atomic Step Commit
 
