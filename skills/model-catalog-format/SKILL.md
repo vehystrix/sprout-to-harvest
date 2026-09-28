@@ -45,6 +45,7 @@ models:
       - verification
     tier: 3
     cost: high
+    reasoning_effort: high
     context_window: 200000
     tools:
       - read
@@ -64,10 +65,17 @@ Each catalog entry must satisfy these requirements:
 - `context_window` is the maximum supported token window.
 - `tools` preserves the required or supported host tools for this model.
 - `hosts` is optional and maps supported hosts to host-specific selector strings.
+- `reasoning_effort` is optional and deliberately not pinned to a fixed
+  vocabulary. When present, it must be a non-empty string or integer - an
+  effort level name such as `low` or `high`, or a numeric budget - chosen from
+  the settings that model's host mechanism supports. It records how much
+  reasoning effort to request for this model and never changes routing
+  requirements by itself.
 
 Unknown capabilities are invalid unless the format explicitly supports a
 namespaced extension. Duplicate model IDs, missing required fields,
-invalid numeric values, and unsupported host mapping values are invalid.
+invalid numeric values, unsupported host mapping values, and empty
+`reasoning_effort` values are invalid.
 
 ## Capability vocabulary
 
@@ -193,6 +201,8 @@ in a structured way:
 - `models:` and `model_policy:` at the top level.
 - `required_capabilities` for each role definition.
 - `context_window` on each catalog entry.
+- `reasoning_effort`, when present on a catalog entry, is a non-empty string
+  or integer (no fixed vocabulary).
 - `require_application` under the host policy.
 - `preserve_assignment` and `allow_escalation` under retry rules.
 - a deterministic `SHA-256` fingerprint calculation and canonicalized output.

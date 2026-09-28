@@ -10,6 +10,9 @@
 # (integer; larger indicates stronger default suitability), `cost` (`low`, `medium`, or
 # `high`), `context_window` (maximum supported token window), `tools` (supported host tools),
 # and `hosts` (optional mapping of active host identifiers to host-specific selector strings).
+# Optional per entry: `reasoning_effort` records the effort level or budget requested for models with a host-side control;
+# any non-empty string or integer that model's mechanism supports is valid - settings vary by model (`minimal`, `low`,
+# `high`, numeric budgets) and are not pinned to one set.
 # To add a new entry, copy any existing block below, change the `id` and its fields, and
 # keep field names consistent. Host selectors are data values — never executable commands —
 # and host mappings are declared for each host that should support per-delegation model
@@ -24,6 +27,7 @@ models:
       - verification
     tier: 3
     cost: high
+    reasoning_effort: high
     context_window: 200000
     tools:
       - read

@@ -139,10 +139,11 @@ catalog and policy normally live at:
 ```
 
 Use the separately invocable [`model-configuration`](skills/model-configuration/SKILL.md)
-skill to create or edit them. It asks for structured capabilities, tier, cost,
-`context_window`, tools, host mappings, role requirements, fallback chains, retry
-behavior, and `require_application`. It validates the complete YAML result, preserves
-unrelated fields during field-level merges, and requires confirmation before writing.
+skill to create or edit them. It asks for structured capabilities, tier, cost, optional
+`reasoning_effort` settings, `context_window`, tools, host mappings, role requirements,
+fallback chains, retry behavior, and `require_application`. It validates the complete YAML
+result, preserves unrelated fields during field-level merges, and requires confirmation
+before writing.
 Model IDs and host mappings are data, never executable commands. The catalog and policy
 schemas are defined by [`model-catalog-format`](skills/model-catalog-format/SKILL.md).
 

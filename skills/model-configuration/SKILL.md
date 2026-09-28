@@ -62,6 +62,9 @@ For each new or changed model, ask for:
   `documentation`;
 - positive integer `tier`;
 - comparable `cost` class such as `low`, `medium`, or `high`;
+- an optional `reasoning_effort` value when the model exposes a host-side
+  reasoning-effort control - effort level names such as `low`, `high`, and
+  numeric budgets vary by model; this value is not pinned to one vocabulary;
 - positive `context_window` in tokens;
 - supported or required `tools`;
 - data-only host mappings for `copilot` and/or `omp`.
@@ -99,6 +102,8 @@ models:
       - testing
     tier: 1
     cost: medium
+    # optional field; omit it for models with no host-side reasoning-effort control
+    # reasoning_effort: low
     context_window: 128000
     tools:
       - read
@@ -155,8 +160,10 @@ Validate both proposed files before asking for confirmation. Report every failur
 not write either file when validation fails.
 
 1. Parse the result as YAML mappings with the required `models:` and `model_policy:` roots.
-2. Check unique model IDs, required catalog fields, positive numeric values, normalized
-   capability names, and supported cost classes.
+2. Check unique model IDs, required catalog fields, positive numeric values,
+   normalized capability names, supported cost classes, and that any
+   `reasoning_effort` value is a non-empty string or integer - effort settings
+   vary by model and are not pinned to one vocabulary.
 3. Check each role's `required_capabilities`, `minimum_tier`, and optional default model
    against the catalog.
 4. Check fallback IDs and ordered fallback chains for missing or recursive references.
