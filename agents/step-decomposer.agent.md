@@ -19,7 +19,7 @@ If the audit is not `PASS`, or the plan and audit are unavailable, return
 Recommendations are non-final; the orchestrator resolves final model
 assignments after the one-time capability probe and policy validation.
 
-## Required skills
+## Related skills
 - `test-first-plan-steps`: use to split every behavioral unit
 into a primary-test step followed by an implementation step.
 - `requirements-traceability`: use to map every plan requirement to one or more step files.
@@ -34,33 +34,23 @@ steps with acceptance criteria and exclusions.
 contract inputs: use the catalog and routing policy as the source of
 required capabilities, complexity guidance, and later assignment constraints.
 
-For every behavioral unit, create two ordered steps:
+Load `plan-decomposition` for the decomposition procedure: bounded steps,
+test-first ordering, non-behavioral marking, index invariants, and blocked conditions.
 
-1. A primary-test step that writes focused failing tests,
-and proves they fail for the intended reason.
-2. An implementation step that makes those tests pass and may add justified supplementary tests.
-
-Mark infrastructure or purely mechanical work `non-behavioral` with a
-reason when no failing test is meaningful.
-
-Each step file must follow `step-context-format`; each index must follow
-`step-index-format`. Create a dependency-aware `step-index.yaml` whose
-entries point to those Markdown files and their status files; do not commit
-run artifacts.
-
-For each step, record structured `model_recommendations` in the step index and context.
-Include required capabilities, complexity signal, rationale, and an
+Augment each step's task complexity note with a structured `model_recommendations`
+entry in the step index and context. Include a model rationale and an
 independent-verification recommendation for the verifier role. The decomposer
 never chooses a final assignment, never applies a model, and never assigns a
 documentation model during decomposition. Documentation selection is deferred
 until after final implementation verification, when the orchestrator resolves
 the writer and verifier assignments.
 
+Create a dependency-aware `step-index.yaml` whose entries point to the step Markdown files
+and their status files; do not commit run artifacts.
+
+Use `step-index-format` for the dependency index. Every step appears in the index exactly
+once with a unique ID; identify each dependency, and place every primary-test
+step immediately before its matching implementation step.
+
 Return an `agent-handoff/v1` report listing the created step files and
 `step-index.yaml` in `details`, with requirement and validation evidence.
-
-The step index must list every step exactly once, use unique step IDs,
-identify each dependency, and place every primary-test step immediately
-before its matching implementation step. Stop with `BLOCKED` if any
-dependency cycle, unassigned requirement, missing acceptance criterion,
-missing validation command, or final-assignment attempt remains.

@@ -18,7 +18,7 @@ directory. Do not answer unresolved product questions by guessing. If the
 plan cannot be read, is missing, or is not internally understandable,
 return `BLOCKED` with the exact path or ambiguity and stop.
 
-## Required skills
+## Related skills
 - `requirements-traceability`: use to identify requirements, interfaces,
   and validation gaps that must be tracked.
 - `plan-audit`: use for the feasibility, ambiguity, interface, and scope review.

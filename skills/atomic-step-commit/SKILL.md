@@ -23,3 +23,8 @@ Commit only the assigned step and required tests. Record the commit hash
 and validation evidence. If safe rollback requires multiple commits, use a
 temporary child branch and merge the verified result into the implementation
 branch before returning.
+
+## Related skills
+
+- `agent-handoff`
+- `final-report-format`

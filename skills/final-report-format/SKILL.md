@@ -80,3 +80,7 @@ an earlier agent narrative.
 Write atomically after the final repository check. Do not report
 completion before the file exists and its schema validates. Preserve
 blockers, warnings, and `resume_from` when the run is incomplete.
+
+## Related skills
+
+- `agent-handoff`

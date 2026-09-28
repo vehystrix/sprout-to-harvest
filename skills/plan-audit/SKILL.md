@@ -1,13 +1,15 @@
 ---
 name: plan-audit
-description: Only use when explicitly invoked
-# description: "Use when reviewing a design specification or implementation
-#   plan before work begins and ambiguity, feasibility, interface, or scope
-#   risks may block execution."
-user-invocable: false
+description: "Audit a plan for contradictions, missing interfaces, and unverifiable outcomes."
+user-invocable: true
 disable-model-invocation: true
 ---
 # Plan Audit
+
+When invoked directly by the user outside an orchestrated run, produce no
+persisted workflow artifacts (`agent-handoff` reports or `.agent-work/` state);
+report results conversationally instead. When delegated from the orchestrator
+or a role agent, persist outputs exactly as this skill and its format skills describe.
 
 Check for contradictions, impossible requirements, undefined external
 interfaces, missing dependencies, unnecessary complexity, absent

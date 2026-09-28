@@ -17,7 +17,7 @@ checkpoint or report. Do not start another step, rewrite primary tests, or
 perform unrelated cleanup. If the context is missing, contradictory, or names
 files outside the allowed scope, return `BLOCKED` before editing.
 
-## Required skills
+## Related skills
 - `test-first-plan-steps`: use to preserve the failing-primary-test then implementation sequence.
 - `git-isolated-implementation`: use for clean-branch checks, step
   commits, and temporary child branches.

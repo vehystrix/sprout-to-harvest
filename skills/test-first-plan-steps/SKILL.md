@@ -25,3 +25,7 @@ criteria, validation commands, expected state, exclusions, and commit
 expectations using `step-context-format`. Mark purely mechanical or
 infrastructure work `non-behavioral` with a reason when a failing test is not
 meaningful.
+
+## Related skills
+
+- `step-context-format`

@@ -18,7 +18,7 @@ edit, commit, reset, or repair implementation or documentation. If any
 completed step lacks a valid verified handoff, return `BLOCKED` and
 identify it.
 
-## Required skills
+## Related skills
 - `verification-before-completion`: use before declaring the
   implementation complete and require fresh executable evidence.
 - `requirements-traceability`: use to build the final

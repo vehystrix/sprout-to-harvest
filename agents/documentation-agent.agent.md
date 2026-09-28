@@ -20,11 +20,9 @@ files. If the assignment or source interface is unavailable, return
 assignment contains the relevant requirements and documentation context;
 verify all claims against the finished implementation.
 
-When the assignment is persisted under `.agent-work/`, follow
-`documentation-assignment-format`. Handoff results remain YAML
-`agent-handoff/v1` reports.
+Handoff results remain YAML `agent-handoff/v1` reports.
 
-## Required skills
+## Related skills
 - `documentation-verification`: use to determine what source and
   user documentation is materially required.
 - `requirements-traceability`: use to connect documented interfaces

@@ -23,3 +23,7 @@ Every requirement must be `satisfied`, `partially-satisfied`, `not-satisfied`, o
 Record the evidence and identify the next step for every non-success status.
 
 The final verifier uses this matrix as the basis for the completion decision.
+
+## Related skills
+
+- `agent-handoff`

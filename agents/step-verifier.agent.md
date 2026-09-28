@@ -15,7 +15,7 @@ verify that step. Do not edit files, repair tests, commit changes, or infer
 missing evidence from the implementer narrative. If the context or handoff is
 unavailable, return `BLOCKED`.
 
-## Required skills
+## Related skills
 - `verification-before-completion`: use
   to require fresh executable evidence before returning `VERIFIED`.
 - `requirements-traceability`: use for requirement-by-requirement verification.

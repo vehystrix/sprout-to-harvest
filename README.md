@@ -22,9 +22,19 @@ The workflow:
 
 - `agents/`: canonical custom agent definitions.
 - `skills/`: canonical reusable workflow skills, hidden from automatic model discovery.
-  Every SKILL.md sets `user-invocable: false` and `disable-model-invocation: true`, so hosts that
-  honor the flags omit them from the model's discovered-skill list; each loads only when an agent instruction
-  or another skill calls it by name and stays reachable through `skill://<name>`.
+  Every SKILL.md sets `disable-model-invocation: true`, so hosts that honor the flag omit them
+  from the model's discovered-skill list; each loads only when an agent instruction or another skill
+  calls it by name and stays reachable through `skill://<name>`. All set
+  `user-invocable: false` except 7 user-facing entry points:
+  - `implementation-orchestrator`
+  - `model-configuration`
+  - `plan-audit`
+  - `plan-decomposition`
+  - `systematic-debugging`
+  - `test-driven-development`
+  - `verification-before-completion`
+   Each gates its workflow-specific outputs so a direct invocation produces no persisted artifacts,
+   while delegated role agents persist them as before.
 - `package.json`: Pi/oh-my-pi package manifest. It exposes the same agent Markdown as prompt
 resources and the same skills as Agent Skills.
 - `plugin.json`: Copilot plugin manifest. It exposes the same `agents/` and `skills/`
@@ -98,9 +108,15 @@ components. Use `/agent` and `/skills list` inside a Copilot session to verify d
 
 ## Running the workflow
 
-Start the orchestrator with the plan path and optional audit/retry settings. In VS Code or
-Copilot CLI, select `Implementation Orchestrator`. In Pi/oh-my-pi, invoke the installed prompt
-corresponding to `implementation-orchestrator.agent.md`. The agent input should contain:
+Start the workflow with the plan path and optional audit/retry settings. The canonical
+orchestrator instructions live in
+[`skills/implementation-orchestrator`](skills/implementation-orchestrator/SKILL.md).
+In VS Code or Copilot CLI, select `Implementation Orchestrator`; its agent file is a
+thin wrapper that explicitly invokes that skill. In Pi/oh-my-pi, invoke the installed
+prompt corresponding to `implementation-orchestrator.agent.md`.
+
+Or invoke the user-invocable `implementation-orchestrator` skill directly.
+The invocation input should contain:
 
 ```text
 Plan: path/to/plan.md

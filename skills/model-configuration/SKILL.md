@@ -1,8 +1,7 @@
 ---
 name: model-configuration
-description: Only use when explicitly invoked
-# description: "Guides creation and editing of the repository model catalog and routing policy."
-user-invocable: false
+description: "Guides creation and editing of the repository model catalog and routing policy."
+user-invocable: true
 disable-model-invocation: true
 ---
 # Guided Model Configuration
@@ -65,7 +64,7 @@ For each new or changed model, ask for:
 - comparable `cost` class such as `low`, `medium`, or `high`;
 - positive `context_window` in tokens;
 - supported or required `tools`;
-- data-only host mappings for `copilot` and `omp`.
+- data-only host mappings for `copilot` and/or `omp`.
 
 The host mapping is a selector string or `null`; it is never an executable command.
 Ask whether an active host has a usable mapping, but do not claim that the mapping was
@@ -89,7 +88,7 @@ proof that the requested model was applied. Record these answers under `fallback
 
 ## Valid configuration shape
 
-Produce structured YAML matching [`model-catalog-format`](../model-catalog-format/SKILL.md).
+Produce structured YAML matching `model-catalog-format`.
 For example:
 
 ```yaml
@@ -171,9 +170,7 @@ not write either file when validation fails.
 
 Validation is a configuration check only. It is separate from runtime model
 confirmation, which happens exclusively through the orchestrator's one-time
-capability probe documented in
-[`model-routing-adapter`](../model-routing-adapter/SKILL.md); no compiled
-lifecycle methods exist.
+capability probe documented in `model-routing-adapter`.
 
 ## Confirmation and write behavior
 
@@ -209,5 +206,9 @@ reason, and next action. Use these outcomes:
 For `BLOCKED` and `CANCELLED`, state that no effective run configuration was written.
 For `WRITTEN`, state that runtime selection still requires the orchestrator's
 one-time capability probe and evidence recording; refer to the catalog and the
-[`model-routing-adapter`](../model-routing-adapter/SKILL.md) delegation guide
-rather than inventing host behavior.
+`model-routing-adapter` delegation guide rather than inventing host behavior.
+
+## Related skills
+
+- `model-catalog-format`
+- `model-routing-adapter`

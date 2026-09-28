@@ -76,3 +76,16 @@ a verified step unless the user explicitly requests it. Preserve
 recoverable workspace changes and report blockers to the user.
 
 Never commit the run directory. Add it to `.git/info/exclude` when appropriate.
+
+## Related skills
+
+- `agent-handoff`
+- `checkpoint-format`
+- `documentation-assignment-format`
+- `documentation-context-format`
+- `final-report-format`
+- `plan-audit-format`
+- `run-ledger-format`
+- `step-context-format`
+- `step-index-format`
+- `step-status-format`

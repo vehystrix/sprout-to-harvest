@@ -28,3 +28,9 @@ A completed and verified step is never rerun automatically. A partially
 completed step is resumed using its context file and latest report. Use a
 finite retry limit for ordinary verification failures; escalate after the
 limit.
+
+## Related skills
+
+- `agent-handoff`
+- `checkpoint-format`
+- `step-status-format`

@@ -17,7 +17,7 @@ Inspect only the assigned documentation and its referenced interfaces.
 Do not edit, reformat, commit, or request stylistic changes. If the
 assignment or implementation context is unavailable, return `BLOCKED`.
 
-## Required skills
+## Related skills
 - `documentation-verification`: use to check correctness and material
   completeness without copy-editing.
 - `requirements-traceability`: use to verify that important plan
@@ -42,3 +42,4 @@ evidence from the inspected source or a fresh command. Use `INCOMPLETE`
 only for a concrete documentation correction within the assignment; use
 `BLOCKED` for missing context, contradictory source behavior, or a
 repository problem.
+

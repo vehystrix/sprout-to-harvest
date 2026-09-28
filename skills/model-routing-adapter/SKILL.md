@@ -9,16 +9,6 @@ disable-model-invocation: true
 ---
 # Model Routing Adapter - Delegation Guide
 
-## Purpose
-
-This skill is a catalog-driven delegation guide, not an adapter contract with
-compiled methods. It contains zero TypeScript extensions, no host bridges, and
-no package manifest extensions: the "adapter" is plain documentation telling
-the orchestrator how to use whatever per-delegation model-selection mechanism
-the active host's delegation tool exposes. No host name may be hardcoded into
-routing behavior - whether a run routes models emerges only from its one-time
-capability probe outcome, never from an if-branch on the active host identifier.
-
 ## Capability probe (exactly once per run)
 
 The orchestrator runs this probe exactly once per run, before plan auditing
@@ -128,7 +118,7 @@ Record `details.model_assignment` for each delegation, keyed on the probed
   self-report with `applied: false` - lower-confidence evidence, kept in the audit trail.
 
 Evidence levels in this no-adapters context are defined by
-[model-catalog-format](../model-catalog-format/SKILL.md) and constrained as follows:
+`model-catalog-format` and constrained as follows:
 
 - `adapter-confirmed`: the delegation response payload or a host API
   deterministically confirms the resolved model through a structured confirmation
@@ -193,3 +183,7 @@ A valid run using this guide shows all of the following:
 - evidence recorded per probed channel, with no dynamic-selection claim while
   routing is unavailable;
 - the single policy-fallback retry and BLOCKED semantics above honored.
+
+## Related skills
+
+- `model-catalog-format`
