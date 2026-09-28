@@ -69,7 +69,10 @@ repository and do not silently select a different run.
   the assignment before delegation, and persist the exact application result
   and evidence after delegation.
 - Run the plan auditor unless the user explicitly skips it. Stop on BLOCKED or NEEDS_CLARIFICATION.
-- Have the decomposer create ordered test-first and implementation step files.
+- Have the decomposer produce `step-index.yaml` with chunk contracts, unique
+requirement ownership, and test-first step assignments; have Step
+Documentation Writers write each chunk's step files per
+`step-context-format`.
 - Never start a dependent step until its predecessor is verified.
 - On interruption or blockage, preserve the branch and workspace, record the
   reason, report it to the user, and resume from the current step rather than
@@ -99,8 +102,10 @@ repository and do not silently select a different run.
   status is passed. When it is routing-unavailable, set no model field on any
   delegation and record a routing-unavailable warning with applied false for
   every assignment. No host name may hardcode either outcome.
-- Documentation model selection occurs only after final implementation
-  verification and only when the final documentation assignment is created.
+- Documentation loop models (`doc_writer`, `doc_verifier`) are selected during
+decomposition; their recommendations and assignments live in
+`step-index.yaml`. Source-documentation model selection (steps 10-12) remains
+deferred until after final implementation verification.
 
 Before consuming a handoff, validate the schema version, every mandatory
 top-level field, status-specific resume rules, requirement evidence,
@@ -163,13 +168,37 @@ a later phase because an earlier agent's narrative sounds complete.
    `documentation_context.status: UNAVAILABLE`; later documentation
    assignments must then be built from verified implementation evidence rather
    than a plan brief.
-5. **Decompose the plan.** Persist `phase: decomposition`, `status: running`;
-   delegate exactly once to `Step Decomposer` with the approved plan and audit
-   result. Accept only `PASS`; validate `step-index.yaml` using
-   `step-index-format`, every behavioral unit has an ordered primary-test and
-   implementation step, every `steps/<step-id>.md` follows
-   `step-context-format`, and dependencies are acyclic. On any failed check,
-   persist `blocked` and stop.
+5. **Decompose and document the plan.** Persist `phase: decomposition`,
+   `status: running`.
+   - (a) Delegate exactly once to `Step Decomposer` with the approved plan and
+     audit result. Accept only `PASS`; validate `step-index.yaml` using
+     `step-index-format`: every step has a complete `contract` block, contracts
+     are verbatim-identical across each chunk's steps, every inventory
+     requirement is assigned to exactly one chunk, dependencies form an acyclic
+     graph, and every behavioral unit keeps its primary-test step immediately
+     before its implementation step within the chunk. On any failed check,
+     persist `blocked` and stop.
+   - (b) For each chunk, run a writer then verifier loop: persist the chunk's
+     steps as `doc_status: running` before delegating `Step Documentation
+     Writer`; validate its handoff (`PASS`, `RECOVERABLE`, or `BLOCKED`) and
+     verify that every created `context_file` exists and follows
+     `step-context-format`. Persist `doc_status: verification-failed` after an
+     `INCOMPLETE` from `Step Documentation Verifier`, re-delegating the writer
+     with the findings while repair attempts remain, and persist `blocked` on
+     exhaustion or `BLOCKED`. An `INCOMPLETE` consumes one of the shared
+     per-chunk retry limit; a `BLOCKED` or malformed handoff never consumes
+     one. Persist each loop's reports as
+     `reports/decomposition-<chunk-id>-<attempt>.yaml`. Delegate chunk loops in
+     parallel only when fan-out is available, otherwise sequentially. When all
+     chunks verify, persist `doc_status: completed` for each.
+   - (c) Delegate exactly once to `Whole-Plan Verifier` with the full plan and
+     the complete requirement-assignment inventory. Route findings by class: a
+     `decomposition-gap` re-delegates `Step Decomposer` with the report, then
+     reruns only the affected chunk loops after the index is repaired; a
+     `boundary-mismatch` reruns only the affected chunks' writer loops. The
+     whole-plan pass repeats until clean within the shared retry limit; on
+     exhaustion or `BLOCKED`, persist `blocked` with the collected chunk-level
+     evidence and stop.
 6. **Select the next step.** Read `step-index.yaml` using `step-index-format`
    and choose the first step in dependency order that is not `completed`. Do
    not select a step whose dependencies are not `completed`. If all steps are
@@ -307,3 +336,6 @@ Report completed work, validation evidence, blockers, and resume instructions us
 - Final Verifier (`agents/final-verifier.agent.md`)
 - Documentation Agent (`agents/documentation-agent.agent.md`)
 - Documentation Verifier (`agents/documentation-verifier.agent.md`)
+- Step Documentation Writer (`agents/step-documentation-writer.agent.md`)
+- Step Documentation Verifier (`agents/step-documentation-verifier.agent.md`)
+- Whole-Plan Verifier (`agents/whole-plan-verifier.agent.md`)

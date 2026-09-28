@@ -72,11 +72,11 @@ Rules:
   records the exact model used for that attempt, including fallback
   and application warnings. `model_assignment` is required even when
   the assignment is unresolved or blocked.
-- Allowed role outcomes are: plan auditor `PASS` or
-  `NEEDS_CLARIFICATION` or `BLOCKED`; decomposer `PASS` or `BLOCKED`;
-  implementer/documentation agent `PASS`, `RECOVERABLE`, or `BLOCKED`;
-  step/final/documentation verifier `VERIFIED`, `INCOMPLETE`, or
-  `BLOCKED`.
+- Allowed role outcomes are: plan auditor `PASS`,
+  `NEEDS_CLARIFICATION`, or `BLOCKED`; decomposer `PASS` or `BLOCKED`;
+  implementer `PASS`, `RECOVERABLE`, or `BLOCKED`; step-documentation
+  writer `PASS`, `RECOVERABLE`, or `BLOCKED`; whole-plan and
+  step-documentation verifier `VERIFIED`, `INCOMPLETE`, or `BLOCKED`.
 - Every requirement and validation item needs evidence. A `VERIFIED`
   handoff must associate executable `PASS` validation evidence with
   every material requirement. Do not claim success from changed files

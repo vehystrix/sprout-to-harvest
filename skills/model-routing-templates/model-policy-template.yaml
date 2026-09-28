@@ -28,6 +28,18 @@ model_policy:
       required_capabilities: [planning, reasoning]
       minimum_tier: 2
       default: reasoning-pro
+    doc_writer:
+      required_capabilities: [planning, reasoning]
+      minimum_tier: 2
+      default: reasoning-pro
+    doc_verifier:
+      required_capabilities: [verification, reasoning]
+      minimum_tier: 2
+      default: reasoning-pro
+    whole_plan_verifier:
+      required_capabilities: [verification, reasoning]
+      minimum_tier: 2
+      default: reasoning-pro
     implementer:
       required_capabilities: [coding, testing]
       minimum_tier: 1

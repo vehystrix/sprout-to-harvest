@@ -33,8 +33,11 @@ The workflow:
   - `systematic-debugging`
   - `test-driven-development`
   - `verification-before-completion`
-   Each gates its workflow-specific outputs so a direct invocation produces no persisted artifacts,
-   while delegated role agents persist them as before.
+   The other six gate their workflow-specific outputs so a direct invocation produces no
+   persisted artifacts; `plan-decomposition` is the exception - a direct invocation writes
+   the deliverable implementation step files and a deletable `.work/` communication directory
+   at the user-specified location, with no workflow state. Delegated role agents persist their
+   outputs as before.
 - `package.json`: Pi/oh-my-pi package manifest. It exposes the same agent Markdown as prompt
 resources and the same skills as Agent Skills.
 - `plugin.json`: Copilot plugin manifest. It exposes the same `agents/` and `skills/`
@@ -348,29 +351,35 @@ into later documentation assignments, where it is reconciled with the verified i
 and changed files. This prevents documentation agents from rereading the complete plan while
 keeping the implementation authoritative.
 
-### 4. Decompose the plan: `Step Decomposer` (Subagent B)
+### 4. Decompose and document the plan: `Step Decomposer`, `Step Documentation Writer`,
+`Step Documentation Verifier`, `Whole-Plan Verifier`
 
 The orchestrator starts `Step Decomposer` with the approved plan and audit result. The agent
-uses `plan-decomposition`, `test-first-plan-steps`, `requirements-traceability`, and
-`persistent-workflow-state`.
+uses [`plan-decomposition`](skills/plan-decomposition/SKILL.md) to chunk the plan by behavioral
+units: each chunk owns a contract of assigned requirement IDs with verbatim plan excerpts,
+interfaces in/out, an end-state, and exclusions, and every inventory requirement is owned by
+exactly one chunk. The decomposer writes `step-index.yaml` using
+[`step-index-format`](skills/step-index-format/SKILL.md) with the contracts, dependency order,
+and model recommendations; it no longer creates step files.
 
-For every behavioral unit, the decomposer creates two ordered context files:
+For each chunk, the orchestrator runs a writer then verifier loop: `Step Documentation Writer`
+creates that chunk's `steps/<step-id>.md` files per
+[`step-context-format`](skills/step-context-format/SKILL.md), embedding the contract verbatim
+in every file; `Step Documentation Verifier` is read-only and confirms documentary
+traceability for every requirement the chunk owns. An `INCOMPLETE` sends findings back to the
+writer within a shared retry limit; exhaustion blocks the run with the chunk's evidence.
 
-1. **Primary-test step:** defines the external behavior, writes focused tests, and proves they
-fail for the intended reason.
-2. **Implementation step:** implements the behavior required by those primary tests and may add
-justified supplementary tests.
+After all chunks verify, `Whole-Plan Verifier` performs only global checks no single chunk can
+see - unassigned content, duplicate ownership, and boundary consistency against the full
+plan. A `decomposition-gap` finding re-delegates `Step Decomposer` for the affected chunks; a
+`boundary-mismatch` reruns the affected writer loops. The pass repeats until clean within the
+same retry limit.
 
-Purely mechanical or infrastructure work may be marked `non-behavioral`, but the context file
-must explain why a failing test is not meaningful.
-
-Each `steps/<step-id>.md` file follows
-[`step-context-format`](skills/step-context-format/SKILL.md), including explanatory guidance
-and examples for its objective, requirement IDs, dependencies, interfaces, likely files,
-implementation scope, acceptance criteria, validation commands, expected failure or success,
-exclusions, and commit expectations. The decomposer writes `step-index.yaml` using
-[`step-index-format`](skills/step-index-format/SKILL.md) with dependency order, and reports a
-concise step list to the orchestrator.
+You can also run this pipeline directly as a user: invoke
+[`plan-decomposition`](skills/plan-decomposition/SKILL.md) with the plan and an Output
+directory. It writes the deliverable step files directly under that directory (no nested
+`steps/` subdirectory, no workflow state) and keeps its communication reports in a deletable
+`<output-dir>/.work/`; re-invoking the same inputs resumes from verified chunks.
 
 ### 5. Execute and verify each step
 
