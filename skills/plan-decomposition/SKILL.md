@@ -84,11 +84,6 @@ The whole-plan pass reruns until clean. The retry limit is shared across all
 outer iterations of this pipeline; exhaustion blocks the run and flags the
 user with the chunk-level evidence collected so far.
 
-If the plan is too large to fit one context, writers work from their chunk
-contract plus verbatim excerpts alone; loss detection then lives entirely in
-the whole-plan pass, which reads the full plan in windows against the
-inventory.
-
 ## Direct-invocation protocol (user mode)
 
 Communication with subagents uses fixed `agent-handoff/v1` documents in both

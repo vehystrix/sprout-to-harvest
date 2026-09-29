@@ -360,7 +360,7 @@ units: each chunk owns a contract of assigned requirement IDs with verbatim plan
 interfaces in/out, an end-state, and exclusions, and every inventory requirement is owned by
 exactly one chunk. The decomposer writes `step-index.yaml` using
 [`step-index-format`](skills/step-index-format/SKILL.md) with the contracts, dependency order,
-and model recommendations; it no longer creates step files.
+and model recommendations.
 
 For each chunk, the orchestrator runs a writer then verifier loop: `Step Documentation Writer`
 creates that chunk's `steps/<step-id>.md` files per

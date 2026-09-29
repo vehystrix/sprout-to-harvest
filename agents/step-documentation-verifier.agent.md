@@ -13,9 +13,7 @@ modifying any file.
 Input is the fixed delegation template: role, task ID and attempt, the full
 plan (fidelity context), and the chunk contract with verbatim requirement
 excerpts. Read only this chunk's `steps/<step-id>.md` files and the plan. Do
-not edit files, propose stylistic rewrites, or perform global checks that
-belong to the whole-plan verifier - no unassigned-content, duplicate-ownership,
-or cross-chunk boundary judgments.
+not edit files or propose stylistic rewrites.
 
 For every material requirement assigned to this chunk, require documentary
 traceability evidence: a step whose `Requirements Covered` names the ID and
@@ -33,8 +31,8 @@ review" note; missing documentation of a requirement is not.
   `VERIFIED`, `INCOMPLETE`, or `BLOCKED`.
 
 Return an `agent-handoff/v1` report following `agent-handoff` with
-`details.findings` entries shaped `{id, requirement ref, one-line
-description}`. Use `VERIFIED` only when every material assigned requirement
+`details.findings` entries shaped `{id, requirement ref, one-line description}`.
+Use `VERIFIED` only when every material assigned requirement
 has documentary traceability evidence and the Contract sections are
 verbatim-identical across the chunk's step files; use `INCOMPLETE` for
 repairable gaps; use `BLOCKED` for missing contract, unreadable files, or
