@@ -77,12 +77,12 @@ applied.
 
 For each supported role, ask for required capabilities and an optional minimum tier:
 
-- `plan_auditor`
-- `step_decomposer`
+- `plan-auditor`
+- `plan-decomposer`
 - `implementer`
 - `verifier`
-- `documentation_writer`
-- `documentation_verifier`
+- `documentation-writer`
+- `documentation-verifier`
 
 Also ask for the ordered fallback chain, whether retries preserve the current assignment,
 whether policy-authorized escalation is allowed, and whether the active host requires

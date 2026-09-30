@@ -12,8 +12,8 @@ disable-model-invocation: true
 Use `agent-handoff` for every subagent result. Use
 `run-ledger-format`, `step-status-format`,
 `checkpoint-format`, `plan-audit-format`,
-`step-index-format`, `step-context-format`,
-`documentation-assignment-format`, and
+`chunk-index-format`, `requirements-inventory-format`,
+`step-context-format`, `documentation-assignment-format`, and
 `final-report-format` for the corresponding persisted files.
 Validate each format before copying its status, evidence,
 artifacts, blockers, or resume point into the run ledger; an
@@ -35,7 +35,8 @@ these explicit formats and filename patterns:
 | Run ledger | `run.yaml` | `run-ledger-format` |
 | Plan audit | `plan-audit.yaml` | `plan-audit-format` |
 | Documentation context | `documentation/source-documentation-context.md` and `documentation/user-documentation-context.md` | `documentation-context-format` |
-| Step index | `step-index.yaml` | `step-index-format` |
+| Chunk index | `chunk-index.yaml` | `chunk-index-format` |
+| Requirement inventory | `requirements-inventory.yaml` | `requirements-inventory-format` |
 | Step context | `steps/<step-id>.md` | `step-context-format` |
 | Step status | `steps/<step-id>-status.yaml` | `step-status-format` |
 | Checkpoint | `checkpoints/<step-id>.yaml` | `checkpoint-format` |
@@ -84,8 +85,9 @@ Never commit the run directory. Add it to `.git/info/exclude` when appropriate.
 - `documentation-assignment-format`
 - `documentation-context-format`
 - `final-report-format`
+- `chunk-index-format`
 - `plan-audit-format`
+- `requirements-inventory-format`
 - `run-ledger-format`
 - `step-context-format`
-- `step-index-format`
 - `step-status-format`

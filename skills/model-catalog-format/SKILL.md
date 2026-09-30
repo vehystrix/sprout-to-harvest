@@ -104,11 +104,11 @@ an explicit namespace policy; otherwise the value is invalid.
 ```yaml
 model_policy:
   roles:
-    plan_auditor:
+    plan-auditor:
       required_capabilities: [reasoning, planning]
       minimum_tier: 2
       default: reasoning-pro
-    step_decomposer:
+    plan-decomposer:
       required_capabilities: [planning, reasoning]
       minimum_tier: 2
     implementer:
@@ -117,10 +117,10 @@ model_policy:
     verifier:
       required_capabilities: [verification, reasoning]
       minimum_tier: 2
-    documentation_writer:
+    documentation-writer:
       required_capabilities: [documentation]
       minimum_tier: 1
-    documentation_verifier:
+    documentation-verifier:
       required_capabilities: [documentation, verification]
       minimum_tier: 2
   fallback: cheap-general

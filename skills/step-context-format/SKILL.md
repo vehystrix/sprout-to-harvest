@@ -8,8 +8,10 @@ disable-model-invocation: true
 ---
 # Step Context Format
 
-Use this skill when defining a chunk contract, and when step-documentation
-writers create or verifiers validate `steps/<step-id>.md`.
+Use this skill when the decomposer defines a chunk contract, and when
+chunk writers create or verifiers validate `steps/<step-id>.md`. The
+`Contract` section's requirement excerpts come verbatim from the run's
+`requirements-inventory.yaml`.
 
 ## Frontmatter
 

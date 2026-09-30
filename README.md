@@ -18,12 +18,20 @@ The workflow:
 5. Uses a clean implementation branch when Git is available.
 6. Documents the finished implementation and verifies the documentation.
 
+## Terms
+
+- **Chunk**: one behavioral or non-behavioral unit of work owned by exactly one writer,
+  described in `chunk-index.yaml`.
+- **Step**: one executable step inside a chunk; test-first steps come before their
+  implementation steps. Each is written as `steps/<step-id>.md` per
+  [`step-context-format`](skills/step-context-format/SKILL.md).
+
 ## Layout
 
 - `agents/`: canonical custom agent definitions.
 - `skills/`: canonical reusable workflow skills, hidden from automatic model discovery.
   Every SKILL.md sets `disable-model-invocation: true`, so hosts that honor the flag omit them
-  from the model's discovered-skill list; each loads only when an agent instruction or another skill
+  from the model's discovered-skill list; each loads only when an agent instruction
   calls it by name and stays reachable through `skill://<name>`. All set
   `user-invocable: false` except 7 user-facing entry points:
   - `implementation-orchestrator`
@@ -290,7 +298,8 @@ The run directory contains the durable coordination state:
 	documentation/
 		source-documentation-context.md
 		user-documentation-context.md
-	step-index.yaml
+	requirements-inventory.yaml
+	chunk-index.yaml
 	steps/
 		<step-id>.md
 		<step-id>-status.yaml
@@ -340,6 +349,9 @@ The auditor writes `plan-audit.yaml` using
 [`plan-audit-format`](skills/plan-audit-format/SKILL.md), with `PASS`, `NEEDS_CLARIFICATION`,
 or `BLOCKED`, plus findings, required questions, external interfaces, and validation gaps.
 
+It also extracts the complete requirement inventory, including implied-only
+requirements; on a PASS it writes `requirements-inventory.yaml` and records
+the path in its handoff. The orchestrator records that path for decomposition.
 If the result is `NEEDS_CLARIFICATION` or `BLOCKED`, the orchestrator reports the findings to
 the user and stops. No implementation work begins. A `PASS` permits decomposition.
 
@@ -351,34 +363,38 @@ into later documentation assignments, where it is reconciled with the verified i
 and changed files. This prevents documentation agents from rereading the complete plan while
 keeping the implementation authoritative.
 
-### 4. Decompose and document the plan: `Step Decomposer`, `Step Documentation Writer`,
-`Step Documentation Verifier`, `Whole-Plan Verifier`
+### 4. Decompose and document the plan: `Plan Decomposer`, `Chunk Writer`, `Chunk Verifier`,
+`Whole-Plan Verifier`
 
-The orchestrator starts `Step Decomposer` with the approved plan and audit result. The agent
-uses [`plan-decomposition`](skills/plan-decomposition/SKILL.md) to chunk the plan by behavioral
-units: each chunk owns a contract of assigned requirement IDs with verbatim plan excerpts,
-interfaces in/out, an end-state, and exclusions, and every inventory requirement is owned by
-exactly one chunk. The decomposer writes `step-index.yaml` using
-[`step-index-format`](skills/step-index-format/SKILL.md) with the contracts, dependency order,
-and model recommendations.
+The orchestrator delegates decomposition exactly once to `Plan Decomposer`. The decomposer owns
+the whole phase, using [`plan-decomposition`](skills/plan-decomposition/SKILL.md) and the plan's
+requirement inventory: it chunks the plan by behavioral units - each chunk owns a contract of
+assigned requirement IDs with verbatim plan excerpts, interfaces in/out, an end-state, and
+exclusions, and every inventory requirement is owned by exactly one chunk - writes
+`chunk-index.yaml` using [`chunk-index-format`](skills/chunk-index-format/SKILL.md) with the
+dependency order and model recommendations, then runs each chunk's writer and verifier loop.
 
-For each chunk, the orchestrator runs a writer then verifier loop: `Step Documentation Writer`
-creates that chunk's `steps/<step-id>.md` files per
-[`step-context-format`](skills/step-context-format/SKILL.md), embedding the contract verbatim
-in every file; `Step Documentation Verifier` is read-only and confirms documentary
-traceability for every requirement the chunk owns. An `INCOMPLETE` sends findings back to the
-writer within a shared retry limit; exhaustion blocks the run with the chunk's evidence.
+For each chunk, `Chunk Writer` creates that chunk's `steps/<step-id>.md` files per
+[`step-context-format`](skills/step-context-format/SKILL.md), embedding the contract verbatim in
+every file; `Chunk Verifier` is read-only and confirms documentary traceability for every
+requirement the chunk owns. Each writer and verifier loop gets its own repair cap -
+the same `L` passed to implementation and documentation loops; counters are fresh
+per loop instance, so no chunk starves another of repairs. An exhausted allowance
+blocks the run with that chunk's evidence.
 
-After all chunks verify, `Whole-Plan Verifier` performs only global checks no single chunk can
-see - unassigned content, duplicate ownership, and boundary consistency against the full
-plan. A `decomposition-gap` finding re-delegates `Step Decomposer` for the affected chunks; a
-`boundary-mismatch` reruns the affected writer loops. The pass repeats until clean within the
-same retry limit.
+After all chunks verify, `Whole-Plan Verifier` performs only global checks no single
+chunk can see - unassigned content, duplicate ownership, and boundary consistency
+against the full plan. A `decomposition-gap` finding - one requiring a change to
+chunk assignments or boundaries - is repaired by the decomposer itself, which reruns
+the affected writer and verifier loops; a `boundary-mismatch` reruns the affected
+writer loops only. Each repair runs as a fresh loop instance under the same cap.
+Whole-plan verifications total at most `L + 1`; only then does the decomposer return
+before moving on.
 
 You can also run this pipeline directly as a user: invoke
 [`plan-decomposition`](skills/plan-decomposition/SKILL.md) with the plan and an Output
-directory. It writes the deliverable step files directly under that directory (no nested
-`steps/` subdirectory, no workflow state) and keeps its communication reports in a deletable
+directory. It writes the deliverable `chunk-index.yaml`, step files, and derived
+`requirements-inventory.yaml` directly under that directory (no nested `steps/` subdirectory, no
 `<output-dir>/.work/`; re-invoking the same inputs resumes from verified chunks.
 
 ### 5. Execute and verify each step

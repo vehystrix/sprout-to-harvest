@@ -30,6 +30,7 @@ details:
   external_interfaces: []
   required_questions: []
   validation_gaps: []
+  requirements_inventory_path: .agent-work/run-001/requirements-inventory.yaml
   documentation_context:
     status: PROVIDED
     source_file: documentation/source-documentation-context.md
@@ -64,10 +65,17 @@ documentation assignments. `status` is `PROVIDED` when both context files exist,
 `EMPTY` when the audit found no documentation obligation, and `UNAVAILABLE` when the
 audit was skipped. The referenced files contain the flexible documentation guidance;
 the implementation remains authoritative.
+`requirements_inventory_path` points to the run's `requirements-inventory.yaml`,
+which the auditor itself persists on a `PASS` audit: the complete list of
+requirements extracted from the plan, including implied-only requirements with no
+dedicated section, each carrying `id`, a one-line `name`, and the verbatim plan
+`excerpt`. Cross-cutting requirements are split into `<parent-id><suffix>`
+sub-requirements at extraction time. A non-PASS audit records no path; when the
+audit is absent or skipped, the decomposer derives and writes the file instead.
 
 ## Validation
 
-Require all `agent-handoff/v1` fields, the five audit detail fields, the
+Require all `agent-handoff/v1` fields, the six audit detail fields,
 `documentation_context` pointer with `status`, `source_file`, and `user_file`, evidence
 for every requirement and validation item, `changed_files: []`, `commits: []`, and
 `resume_from: null.`

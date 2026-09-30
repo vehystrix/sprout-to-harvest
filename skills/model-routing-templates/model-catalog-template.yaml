@@ -20,7 +20,7 @@
 
 models:
   - id: reasoning-pro
-    # Serves plan_auditor, step_decomposer, and verifier (tier >= 2 with reasoning coverage).
+    # Serves plan-auditor, plan-decomposer, and verifier (tier >= 2 with reasoning coverage).
     capabilities:
       - reasoning
       - planning
@@ -54,7 +54,7 @@ models:
       copilot: Code Model (copilot)
 
   - id: doc-verification
-    # Serves documentation_verifier; a tier >= 2 entry carrying both `documentation` and
+    # Serves documentation-verifier; a tier >= 2 entry carrying both `documentation` and
     # `verification` is required, or that role would be unsatisfiable.
     capabilities:
       - documentation
@@ -70,7 +70,7 @@ models:
       copilot: Claude Sonnet 4.5 (copilot)
 
   - id: documentation-standard
-    # Serves documentation_writer (tier >= 1 with documentation coverage).
+    # Serves documentation-writer (tier >= 1 with documentation coverage).
     capabilities:
       - documentation
     tier: 1

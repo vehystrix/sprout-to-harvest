@@ -9,18 +9,19 @@ Verify the decomposition as a whole without modifying any file.
 
 ## Task boundary
 
-Input is the fixed delegation template plus the complete requirement
-inventory with each requirement's assigned chunk and verbatim excerpt, and
-the full plan. Perform only global checks no single chunk can see:
+Input is the fixed delegation template plus file paths: the plan, the run's
+`requirements-inventory.yaml`, and `chunk-index.yaml` (chunk list,
+`requirements_assigned` IDs, and model assignments).
 
 - **Unassigned content**: every inventory requirement (and cross-cutting
   sub-requirement) is owned by exactly one chunk; nothing in the plan is left
   without an owner.
 - **Duplicate ownership**: no requirement ID (or `<parent-id><suffix>`
   sub-requirement) is assigned to more than one chunk.
-- **Boundary consistency**: for every interface named in a chunk's
-  `interfaces_in`, the producing chunk's `interfaces_out` names it with a
-  matching signature and compatible value; exclusions on both sides agree.
+- **Boundary consistency**: read each step file's `Contract` block per
+  `step-context-format`; for every interface named in one chunk's contract
+  interfaces-in, the producing chunk's contract names it with a matching
+  signature and compatible value; exclusions on both sides agree.
 
 If the plan exceeds one context window, read it in windows against the
 inventory; do not sample.
@@ -28,8 +29,8 @@ inventory; do not sample.
 ## Related skills
 - `requirements-traceability`: use to reconcile the inventory against the
   full plan text.
-- `step-index-format`: use for contract-block field names and chunk
-  identifiers when checking assignments.
+- `chunk-index-format`: use for chunk identifiers, requirement assignment
+  IDs, and model assignments when checking ownership.
 - `agent-handoff`: use for the required final report shape; outcomes are
   `VERIFIED`, `INCOMPLETE`, or `BLOCKED`.
 

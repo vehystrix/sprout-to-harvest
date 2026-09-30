@@ -20,23 +20,23 @@
 
 model_policy:
   roles:
-    plan_auditor:
+    plan-auditor:
       required_capabilities: [reasoning, planning]
       minimum_tier: 2
       default: reasoning-pro
-    step_decomposer:
+    plan-decomposer:
       required_capabilities: [planning, reasoning]
       minimum_tier: 2
       default: reasoning-pro
-    doc_writer:
+    chunk-writer:
       required_capabilities: [planning, reasoning]
       minimum_tier: 2
       default: reasoning-pro
-    doc_verifier:
+    chunk-verifier:
       required_capabilities: [verification, reasoning]
       minimum_tier: 2
       default: reasoning-pro
-    whole_plan_verifier:
+    whole-plan-verifier:
       required_capabilities: [verification, reasoning]
       minimum_tier: 2
       default: reasoning-pro
@@ -48,11 +48,11 @@ model_policy:
       required_capabilities: [verification, reasoning]
       minimum_tier: 2
       default: reasoning-pro
-    documentation_writer:
+    documentation-writer:
       required_capabilities: [documentation]
       minimum_tier: 1
       default: documentation-standard
-    documentation_verifier:
+    documentation-verifier:
       required_capabilities: [documentation, verification]
       minimum_tier: 2
       default: doc-verification
