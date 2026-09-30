@@ -102,11 +102,15 @@ a later phase because an earlier agent's narrative sounds complete.
 4. **Audit the plan.** Unless `Skip plan audit` is `true`, persist
    `phase: plan-audit`, `status: running`, and `attempt: 1`; delegate exactly once
    to `Plan Auditor` with only the plan path from `run.yaml` and the run
-   directory. Validate its handoff
-   using `agent-handoff` and `plan-audit-format`, validate both Markdown context
-   files using `documentation-context-format`, validate the `plan-audit.yaml`
-   the auditor wrote in the run directory, record in run state the path of the
-   `requirements-inventory.yaml` the auditor wrote, then branch on its status:
+   directory. Validate its handoff using `agent-handoff` and
+   `plan-audit-format`, validate the `plan-audit.yaml` the auditor wrote in
+   the run directory, record in run state the path of the
+   `requirements-inventory.yaml` the auditor wrote. Then delegate one read-only
+   format check per documentation context file to a cheap subagent that applies
+   `documentation-context-format`, resolving each model per step 7 as the cheapest
+   portable ID satisfying a read-only capability, and accept only verified reports
+   per `agent-handoff`. On any failed check, persist `blocked` and stop. Then
+   branch on its status:
    `NEEDS_CLARIFICATION` reports the required questions to the user and stops as
    `blocked`; `BLOCKED` reports the findings and stops as `blocked`. When
    `Skip plan audit` is `true`, the orchestrator writes the `SKIPPED` record
@@ -114,27 +118,31 @@ a later phase because an earlier agent's narrative sounds complete.
    `documentation_context.status: UNAVAILABLE`, and proceeds to decomposition;
    later documentation assignments must then be built from verified
    implementation evidence rather than a plan brief.
-5. **Decompose and document the plan.** Persist `phase: decomposition`,
-   `status: running`.
+5. **Decompose the plan.** Persist `phase: decomposition`, `status: running`.
    Delegate exactly once to `Plan Decomposer` with only file paths - the plan
    from `run.yaml`, the persisted `plan-audit.yaml`, and - when the audit ran -
    `requirements-inventory.yaml`; when the audit was skipped, it derives the inventory
    itself. You pass the run's per-loop retry cap in that delegation; it owns the whole
    phase end to end. Accept only `PASS`. On return, validate using `chunk-index-format`:
-   every step file exists and follows `step-context-format`, every inventory
-   requirement is assigned to exactly one chunk, dependencies form an
-   acyclic graph, every behavioral unit keeps its primary-test step
-   immediately before its implementation step within its chunk, and
-   every chunk's `doc_status` is `completed`. On any failed check,
-   persist `blocked` and stop.
-6. **Select the next step.** Read `chunk-index.yaml` using `chunk-index-format`
-   and choose the first step in dependency order that is not `completed`. Do
-   not select a step whose dependencies are not `completed`. If all steps are
-   completed, continue to final verification. For a selected step, create or
-   load `steps/<step-id>-status.yaml` using `step-status-format` and preserve
-   its attempt count.
+   every step file path exists, each inventory requirement is assigned to
+   exactly one chunk, dependencies form an acyclic graph, and every behavioral
+   unit keeps its primary-test step immediately before its implementation
+   step within its chunk, and every chunk's `doc_status` is `completed`. Then
+   delegate one read-only format check per step file to a cheap subagent that
+   applies `step-context-format`; resolve each model per step 7 as the cheapest
+   portable ID satisfying a read-only capability, and accept only verified
+   reports per `agent-handoff`. On any failed check, persist `blocked` and stop.
+6. **Select the next step.** Load `chunk-index.yaml` using
+   `chunk-index-format` once when entering this phase; keep that copy in context
+   and reuse it for every later selection in a continuous session; reload only when resuming.
+   Choose the first step in dependency order that is not `completed`. Do
+   not select a step whose dependencies are not `completed`. If all steps
+   are completed, continue to final verification. For a selected step,
+   create or load `steps/<step-id>-status.yaml` using `step-status-format` and
+   preserve its attempt count.
 7. **Resolve the step assignment from the catalog.** Before each delegated
-   call: (1) load the effective catalog and policy from `.agent-work/<run-id>/`;
+   call: (1) use the catalog and policy loaded in step 2; do not re-read them
+   per delegation; on resume, confirm their fingerprints are unchanged before use.
    (2) evaluate role requirements (`required_capabilities`, `minimum_tier`) for
    the current delegation; (3) select a portable ID - the role's policy
    `default`, which a decomposer recommendation may replace only when it
@@ -186,9 +194,9 @@ a later phase because an earlier agent's narrative sounds complete.
    until final verification is `VERIFIED`.
 10. **Document source files.** When implementation is verified, build
     documentation assignments only for changed source files that require
-    maintainer-facing documentation, using
-    `documentation/source-documentation-context.md` from the plan audit as the
-    initial brief. Refine the assignment with the final implementation,
+    maintainer-facing documentation. Pass each writer the path of
+    `documentation/source-documentation-context.md` from the plan audit as
+    the initial brief; refine the assignment with the final
     changed files, and relevant step reports; the implementation evidence is
     authoritative if it differs from the plan brief. For independent
     assignments, delegate `Documentation Writer` instances in parallel only
@@ -205,8 +213,8 @@ a later phase because an earlier agent's narrative sounds complete.
     agent within the retry limit; `BLOCKED` stops. Do not request stylistic
     changes that are not material findings.
 12. **Create and verify user documentation.** Create the user-documentation
-    assignment from `documentation/user-documentation-context.md` referenced by
-    `plan-audit.yaml`, adding the final implementation context, changed files,
+    assignment, passing `documentation/user-documentation-context.md`
+    referenced by `plan-audit.yaml`, adding the final
     verified requirements, and repository-specific examples. Do not require the
     Documentation Writer to reread the complete plan when the Markdown brief and
     implementation context cover the assignment; the final implementation
