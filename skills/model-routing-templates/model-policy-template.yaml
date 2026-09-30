@@ -1,0 +1,64 @@
+# Model routing policy template for the implementation agent workflow.
+#
+# Placement: copy this file to `<repo>/.implementation-agent/model-policy.yaml` and
+# version-control it. Effective run copies live under `.agent-work/<run-id>/model-policy.yaml`;
+# the orchestrator freezes those copies at run start. The repository file is the source of truth;
+# the run copy is the authoritative runtime input for a single run.
+#
+# Role requirements: `required_capabilities` lists the normalized capability names every model
+# assigned to that role must carry, and `minimum_tier` is the lowest catalog tier an entry may use.
+# The per-role `default` portable ID is the primary candidate for that role; it must exist in the
+# catalog and satisfy the role's own `required_capabilities` and `minimum_tier`. A decomposer
+# recommendation may replace it only when it passes the same validation, as may a user override.
+# Fallback resolution: if resolving a role's `default` fails for configuration reasons, try the
+# policy `fallback` portable ID once; if that also lacks an active-host mapping, stop per the
+# model-routing-adapter failure order (do not silently substitute the parent model). Retry
+# semantics: with `preserve_assignment: true`, retries keep the original assignment by default;
+# `allow_escalation: false` blocks policy escalation unless a rule explicitly authorizes it.
+# Host-level `require_application`: when `true`, the run must block rather than continue if it
+# cannot demonstrate applied state for an assignment.
+
+model_policy:
+  roles:
+    plan-auditor:
+      required_capabilities: [reasoning, planning]
+      minimum_tier: 2
+      default: reasoning-pro
+    plan-decomposer:
+      required_capabilities: [planning, reasoning]
+      minimum_tier: 2
+      default: reasoning-pro
+    chunk-writer:
+      required_capabilities: [planning, reasoning]
+      minimum_tier: 2
+      default: reasoning-pro
+    chunk-verifier:
+      required_capabilities: [verification, reasoning]
+      minimum_tier: 2
+      default: reasoning-pro
+    whole-plan-verifier:
+      required_capabilities: [verification, reasoning]
+      minimum_tier: 2
+      default: reasoning-pro
+    implementer:
+      required_capabilities: [coding, testing]
+      minimum_tier: 1
+      default: coding-standard
+    verifier:
+      required_capabilities: [verification, reasoning]
+      minimum_tier: 2
+      default: reasoning-pro
+    documentation-writer:
+      required_capabilities: [documentation]
+      minimum_tier: 1
+      default: documentation-standard
+    documentation-verifier:
+      required_capabilities: [documentation, verification]
+      minimum_tier: 2
+      default: doc-verification
+  fallback: cheap-general
+  retry:
+    preserve_assignment: true
+    allow_escalation: false
+  host:
+    require_application: false
