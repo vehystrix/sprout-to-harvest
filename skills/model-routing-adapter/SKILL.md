@@ -26,9 +26,10 @@ probe and record a warning.
    delegation - record `self-reported` if that payload has no structured
    runtime-model field.
 2. **Probe P1 (if a `model` parameter exists).** Delegate a trivial
-   self-identification task to a candidate model: the cheapest catalog entry with
-   a mapping for the active host whose mapped value differs from the current
-   session default. The "current session default" is the model identifier
+   self-identification task to a candidate model: the cheapest catalog entry
+   with a mapping for the active host whose mapped value differs from the
+   current session default; ties on cost break by lowest tier, then by
+   catalog order. The "current session default" is the model identifier
    exposed in the host context when visible (for example, the Model line of the
    workstation/system block); if it is not visible, treat it as unknown so no
    candidate is excluded by that rule. The prompt must ask the subagent to state
@@ -127,6 +128,8 @@ Evidence levels follow `agent-handoff` and are constrained as follows:
   confirmation.
 - `self-reported`: the delegated agent reported the model it observed or was
   configured to use.
+- `tool-reported`: the delegation response payload reports a runtime model in a
+  structured field; it supports applied claims only up to `host-reported`.
 - `unknown`: no runtime model evidence was available.
 
 When no confirmation mechanism exists for the run, every assignment records at most

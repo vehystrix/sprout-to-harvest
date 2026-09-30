@@ -81,6 +81,9 @@ For each supported role, ask for required capabilities and an optional minimum t
 - `plan-decomposer`
 - `implementer`
 - `verifier`
+- `chunk-writer`
+- `chunk-verifier`
+- `whole-plan-verifier`
 - `documentation-writer`
 - `documentation-verifier`
 

@@ -17,8 +17,9 @@ requirement -> primary-test step -> implementation step -> changed files
 -> commit -> validation -> verification -> documentation
 ```
 
-Every requirement must be `SATISFIED`, `PARTIAL`, `NOT_SATISFIED`, or
-`BLOCKED`. Do not infer coverage from file names or test counts.
+Every requirement must be `SATISFIED`, `PARTIAL`, `NOT_SATISFIED`,
+`NOT_APPLICABLE`, or `BLOCKED`. Do not infer coverage from file names or test
+counts.
 Record the evidence and identify the next step for every non-success status.
 
 The final verifier uses this matrix as the basis for the completion decision.

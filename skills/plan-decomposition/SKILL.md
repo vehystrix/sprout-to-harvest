@@ -1,16 +1,16 @@
 ---
 name: plan-decomposition
-description: Only use when explicitly invoked
-# description: "Decompose implementation plans into independently implementable
-#   chunks with documented steps and delegated documentation loops."
+description: >-
+  Decompose implementation plans into independently implementable
+  chunks with documented steps and delegated documentation loops.
 user-invocable: true
-disable-model-invocation: false
-argument-hint: <plan-text-or-path>
+disable-model-invocation: true
+argument-hint: <plan-text-or-path> [<output-dir>]
 ---
 
 Use this skill to turn an approved implementation plan into a run of
 decomposed, chunk-level work items. The Plan Decomposer owns the whole
-documentation phase for one run: it consumes or derives the requirements
+decomposition phase for one run: it consumes or derives the requirements
 inventory, writes `chunk-index.yaml`, runs each chunk's Chunk Writer and
 Chunk Verifier loop, and delegates the Whole-Plan Verifier pass.
 
@@ -27,7 +27,8 @@ one entry per requirement with an `id`, a short `name`, and a verbatim plan
   every material requirement from the plan (explicit and implied), split
   cross-cutting ones into `<parent-id><suffix>` sub-requirements so each final ID
   fits one chunk, and write `<output-dir>/.work/requirements-inventory.yaml`
-  with `source: plan-decomposer`.
+  with `source: plan-decomposer`. In delegated mode a derived inventory goes
+  to `.agent-work/<run-id>/requirements-inventory.yaml` with the same source.
 
 Coverage is a real check, not an assertion. When you write the chunk index,
 verify that every inventory requirement appears in exactly one chunk's

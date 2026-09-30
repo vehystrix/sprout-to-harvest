@@ -9,9 +9,10 @@ disable-model-invocation: true
 ---
 # Atomic Step Commit
 
-The final report in this sequence must use `agent-handoff` and the persisted
-report must follow `final-report-format`. Include changed files, validation
-evidence, commit hash, repository state, blockers, and resume instructions.
+The final report in this sequence must use `agent-handoff`. Persist it as
+`reports/<phase>-<subject>-<attempt>.yaml` in the run directory per
+`agent-handoff`. Include changed files, validation evidence, commit hash,
+repository state, blockers, and resume instructions.
 
 The final sequence for file-modifying work is:
 
@@ -27,4 +28,4 @@ branch before returning.
 ## Related skills
 
 - `agent-handoff`
-- `final-report-format`
+- `step-status-format`

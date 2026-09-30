@@ -3,7 +3,7 @@ description: "Audits an implementation plan for contradictions, ambiguity,
   feasibility blockers, missing interfaces, dependencies, and missing
   acceptance criteria."
 name: "Plan Auditor"
-tools: [read, search]
+tools: [read, search, edit]
 user-invocable: false
 ---
 Review the supplied plan without changing repository files.

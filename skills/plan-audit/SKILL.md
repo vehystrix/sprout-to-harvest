@@ -6,9 +6,6 @@ disable-model-invocation: true
 ---
 # Plan Audit
 
-User mode: report conversationally; no `.agent-work` artifacts or `agent-handoff`
-reports. Delegated mode: persist per this skill and its format skills.
-
 Check each defect class in the plan, recording a finding for every hit:
 
 - Contradictions - statements that cannot all hold at once.
@@ -31,6 +28,3 @@ Return one result:
 - `PASS` when the plan is specific enough to decompose without inventing requirements.
   That does not mean feasible in the current repository: record repository-dependent
   risks under findings and validation gaps instead of guessing at feasibility.
-
-## Related skills
-- `plan-audit-format`

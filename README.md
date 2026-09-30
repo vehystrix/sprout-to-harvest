@@ -30,10 +30,11 @@ The workflow:
 
 - `agents/`: canonical custom agent definitions.
 - `skills/`: canonical reusable workflow skills, hidden from automatic model discovery.
-  Every SKILL.md sets `disable-model-invocation: true`, so hosts that honor the flag omit them
-  from the model's discovered-skill list; each loads only when an agent instruction
-  calls it by name and stays reachable through `skill://<name>`. All set
-  `user-invocable: false` except 7 user-facing entry points:
+  Every SKILL.md sets `disable-model-invocation`; all set `true` - hidden from
+  automatic model discovery - except `verification-before-completion`,
+  which sets `false` so a model may apply its guidance mid-task. Each loads when an agent
+  instruction calls it by name and stays reachable through `skill://<name>`.
+  All set `user-invocable: false` except 7 user-facing entry points:
   - `implementation-orchestrator`
   - `model-configuration`
   - `plan-audit`
@@ -76,7 +77,7 @@ Use the project-local form when the workflow should apply to one repository only
 pi install -l git:github.com/OWNER/implementation-agent-workflow
 ```
 
-The installed package contributes the workflow skills and exposes the eight role files as
+The installed package contributes the workflow skills and exposes the eleven role files as
 prompt resources. The role files are not copied into a second Pi-specific directory.
 Because the bundled skills set `disable-model-invocation`, hosts that honor the flag omit
 them from automatic model skill discovery; they load only when a role file or another
@@ -392,10 +393,11 @@ Whole-plan verifications total at most `L + 1`; only then does the decomposer re
 before moving on.
 
 You can also run this pipeline directly as a user: invoke
-[`plan-decomposition`](skills/plan-decomposition/SKILL.md) with the plan and an Output
-directory. It writes the deliverable `chunk-index.yaml`, step files, and derived
-`requirements-inventory.yaml` directly under that directory (no nested `steps/` subdirectory, no
-`<output-dir>/.work/`; re-invoking the same inputs resumes from verified chunks.
+[`plan-decomposition`](skills/plan-decomposition/SKILL.md) with the plan and an
+Output directory. It writes the deliverable `chunk-index.yaml`, step context
+and status files,
+derived `requirements-inventory.yaml` under `<output-dir>/.work/` (step files
+under `.work/steps/`); re-invoking the same inputs resumes from verified chunks.
 
 ### 5. Execute and verify each step
 

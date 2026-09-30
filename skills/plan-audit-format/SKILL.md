@@ -58,7 +58,14 @@ resume_from: null
 
 `details.status` must match the top-level `status`. Use `PASS` only when no
 clarification is required. Use `NEEDS_CLARIFICATION` only when
-`required_questions` is non-empty. Use `BLOCKED` for missing or unreadable inputs.
+`required_questions` is non-empty. Use `BLOCKED` for missing or unreadable
+inputs.
+
+The orchestrator is the sole writer of a `SKIPPED` record, created when plan
+auditing is skipped. It is a minimal `agent-handoff/v1` file with
+`details.status: SKIPPED`, empty `findings`, no
+`requirements_inventory_path`, and `documentation_context.status:
+UNAVAILABLE`.
 
 `documentation_context` is a pointer to the plan-level Markdown briefs for later
 documentation assignments. `status` is `PROVIDED` when both context files exist,

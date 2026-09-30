@@ -26,7 +26,9 @@ On interruption or blockage:
 
 A completed and verified step is never rerun automatically; resume a partially
 completed step from its checkpoint per `checkpoint-format`. Ordinary verification
-failures follow the finite retry policy of `model-routing-adapter`; escalate after it.
+failures follow the per-step retry cap recorded in `run.yaml` by
+`implementation-orchestrator`; at the cap, stop with `BLOCKED` (escalation is
+disabled by policy default).
 
 ## Related skills
 

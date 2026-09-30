@@ -29,6 +29,7 @@ skip_plan_audit: false
 phase: initialization
 status: pending
 attempt: 0
+final_verification_repairs: 0
 repository:
   branch: N/A
   last_commit: N/A
@@ -77,3 +78,8 @@ implementation work. Fingerprints are canonical SHA-256 values per
 `model-catalog-format`; they serve as resume, override-review, and audit evidence.
 Resumed runs reuse the copied run-level files when present and compare their
 fingerprints against the current repository configuration before continuing.
+On a fingerprint mismatch, persist `blocked` and request explicit user
+confirmation; on confirmation, recopy the effective configuration, re-run the
+capability probe per `model-routing-adapter`, record a warning, then continue.
+`final_verification_repairs` counts final-verification repair attempts
+consumed against `maximum_retries`.

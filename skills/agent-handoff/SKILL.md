@@ -67,15 +67,19 @@ Rules:
   verification matrices belong under `details`; they must not replace
   or redefine the top-level fields.
 - Every delegated role must include a required
-  `details.model_assignment` object when routing is active. The object
+  `details.model_assignment` object on every delegation, including runs where
+  routing is unavailable; there, record `applied: false`, `evidence: unknown`,
+  and a `warning` stating routing was unavailable. The object
   records the exact model used for that attempt, including fallback
   and application warnings. `model_assignment` is required even when
   the assignment is unresolved or blocked.
 - Allowed role outcomes are: plan auditor `PASS`,
   `NEEDS_CLARIFICATION`, or `BLOCKED`; decomposer `PASS` or `BLOCKED`;
-  implementer `PASS`, `RECOVERABLE`, or `BLOCKED`; chunk writer
-  `PASS`, `RECOVERABLE`, or `BLOCKED`; whole-plan and chunk verifier
-  `VERIFIED`, `INCOMPLETE`, or `BLOCKED`.
+  implementer `PASS`, `RECOVERABLE`, or `BLOCKED`; step verifier,
+  final verifier, and documentation verifier `VERIFIED`, `INCOMPLETE`,
+  or `BLOCKED`; chunk writer `PASS`, `RECOVERABLE`, or `BLOCKED`;
+  documentation writer `PASS`, `RECOVERABLE`, or `BLOCKED`; whole-plan
+  and chunk verifier `VERIFIED`, `INCOMPLETE`, or `BLOCKED`.
 - Every requirement and validation item needs evidence. A `VERIFIED`
   handoff must associate executable `PASS` validation evidence with
   every material requirement. Do not claim success from changed files
