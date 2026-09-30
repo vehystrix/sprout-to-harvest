@@ -1,15 +1,14 @@
 ---
 name: requirements-traceability
 description: Only use when explicitly invoked
-# description: "Use when planning, verifying, or documenting multi-step work where every plan requirement must be accounted for."
+# description: "Accounts for every plan requirement across multi-step work."
 user-invocable: false
 disable-model-invocation: true
 ---
 # Requirements Traceability
 
-Use `agent-handoff` for requirement and validation results exchanged between
-agents. Every result must identify the requirement, outcome, and concrete
-evidence; missing evidence is not coverage.
+Use `agent-handoff` for requirement and validation results exchanged between agents;
+every result names its requirement, outcome, and concrete evidence.
 
 Maintain a compact matrix linking:
 
@@ -18,8 +17,8 @@ requirement -> primary-test step -> implementation step -> changed files
 -> commit -> validation -> verification -> documentation
 ```
 
-Every requirement must be `satisfied`, `partially-satisfied`, `not-satisfied`, or
-`blocked`. Do not infer coverage from file names or test counts.
+Every requirement must be `SATISFIED`, `PARTIAL`, `NOT_SATISFIED`, or
+`BLOCKED`. Do not infer coverage from file names or test counts.
 Record the evidence and identify the next step for every non-success status.
 
 The final verifier uses this matrix as the basis for the completion decision.

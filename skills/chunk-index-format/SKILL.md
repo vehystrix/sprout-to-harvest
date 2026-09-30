@@ -73,32 +73,20 @@ chunks:
 ```
 
 The `chunks` list is the top level of the file; every run's decomposition state lives
-under it. Each step ID in the file is unique and appears exactly once. A chunk's `kind`
-is either `behavioral`, which carries exactly two steps - a `primary-test` step
-immediately before its dependent `implementation` step, with the implementation listing
-the test in `dependencies` - or `non-behavioral`, which carries exactly one step of type
-`non-behavioral`. File paths are relative to the run directory.
+under it. File paths are relative to the run directory.
 
 `requirements_assigned` carries requirement IDs only: no excerpts, interfaces, end-state
 descriptions, or exclusion lists. Each ID must resolve into the run's
-`requirements-inventory.yaml`, and each inventory requirement appears in exactly one
-chunk's list; that coverage check runs when the decomposer writes the index and again,
-independently, in the Whole-Plan Verifier pass.
+`requirements-inventory.yaml`.
 
-`doc_status` is a per-chunk value: `pending`, `running`, `verification-failed`, or
-`completed`. The Plan Decomposer initializes it to `pending` when it writes the index,
-persists `running` before each writer delegation, persists `verification-failed` after an
-`INCOMPLETE` verdict, and sets `completed` only after a `VERIFIED` verdict.
+`doc_status` is a per-chunk value: `pending`, `running`, `verification-failed`, or `completed`.
 
 `model_recommendations` is optional and records the decomposer's non-final guidance for all
-four roles - `chunk-writer`, `chunk-verifier`, `implementer`, `verifier`. Each role entry
+four roles - `chunk-writer`, `chunk-verifier`, `implementer`, `verifier`; each role entry
 carries `portable_id`, `rationale`, `required_capabilities`, and `complexity`, or an
-explicit `null` when no recommendation applies. `model_assignments` is required with one
-block per the four roles in the shape shown above: the Plan Decomposer persists the
-documentation-loop assignments (`chunk-writer`, `chunk-verifier`) when it delegates, and
-the orchestrator persists the implementation-loop ones during step selection. The
-whole-plan verifier's assignment is recorded only in that delegation's handoff details;
-it never appears in the index.
+explicit `null`. `model_assignments` is required with one block per the four roles in the
+shape shown above. The whole-plan verifier's assignment is recorded only in that delegation's
+handoff details; it never appears in the index.
 
 ## Validation
 
@@ -109,7 +97,3 @@ dependency edge, non-behavioral chunks with exactly one step. Validate that step
 unique file-wide, dependencies form an acyclic graph naming only existing steps, and
 every model block is complete for all four roles.
 
-The orchestrator runs this final structural validation on the finished index. The Step
-Decomposer checks the same invariants before it returns, and routes its own repairs
-first: a failed check is fixed by the decomposer re-delegating or rewriting, not
-escalated to the orchestrator as an infrastructure failure.

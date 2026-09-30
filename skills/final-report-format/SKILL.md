@@ -30,12 +30,10 @@ details:
     evidence: Working tree is clean except for ignored .agent-work/.
 ```
 
-`traceability` must connect every requirement to its step,
-implementation commit, validation evidence, and documentation result
-when applicable. `completed_steps` must name only steps with a verified
-handoff. `final_repository_check` must include an exact command and fresh
-result. The top-level `status` is `VERIFIED` only when all required
-verification and documentation checks are verified.
+`traceability` entries follow the chain defined by `requirements-traceability`.
+`completed_steps` must name only steps with a verified handoff. `final_repository_check`
+must include an exact command and fresh result. The top-level `status` is `VERIFIED`
+only when all required verification and documentation checks are verified.
 
 ## User-facing response
 
@@ -67,11 +65,10 @@ Resume:
 - <exact resume_from action, or "No further action required.">
 ```
 
-For `VERIFIED`, state that the required verification and documentation
-checks passed and include the final repository check. For `INCOMPLETE`
-or `BLOCKED`, put the status first, name the failed evidence or blocker,
-and provide the exact `resume_from` action. Do not claim completion when
-the persisted status is not `VERIFIED`; do not omit warnings or blockers.
+For `VERIFIED`, include the final repository check. For `INCOMPLETE` or `BLOCKED`, put
+the status first, name the failed evidence or blocker, and provide the exact
+`resume_from` action. Do not claim completion when the persisted status is not
+`VERIFIED`; do not omit warnings or blockers.
 The response must be derived from the persisted report rather than from
 an earlier agent narrative.
 

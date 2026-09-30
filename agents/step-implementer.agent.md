@@ -32,24 +32,19 @@ files outside the allowed scope, return `BLOCKED` before editing.
 - `step-context-format`, `step-status-format`, and `checkpoint-format`: use
   when reading or persisting the assigned context, status, or checkpoint.
 
-For a primary-test step, write only the planned failing tests, run them, and
-record the intended failure. For an implementation step, implement the
-smallest behavior that passes the primary tests; add supplementary tests only
-for discovered edge cases or regressions.
-
+For a primary-test step, follow `test-first-plan-steps`: write the planned
+failing tests and record the intended failure. For an implementation step,
+implement the smallest behavior that passes them.
 For a primary-test step, do not change production code and do not make the
 step appear green. For an implementation step, preserve the primary tests and
 do not weaken assertions to obtain a pass. If the required validation cannot
 run, record `NOT_RUN` with the concrete blocker; do not claim `PASS`.
 
-Preserve unrelated work and never reset the repository. If blocked by
-permissions, unavailable resources, cancellation, or connection loss, persist
-a recoverable status and report the blocker. Before returning from
-file-modifying work: run required validation, commit the completed step on the
-implementation branch, and report the commit hash. Use a temporary child
-branch if multiple commits are needed.
+Preserve unrelated work and never reset the repository; persist a
+recoverable status per `subagent-recovery` when blocked. Before returning
+from file-modifying work: run required validation, then commit per
+`atomic-step-commit`, reporting the commit hash.
 
-Return an `agent-handoff/v1` report with changed files, validation evidence,
-commit hash, status, blockers, and resume instructions. A primary-test step
-may use `PASS` with the intentional failing validation recorded; an
-interrupted step uses `RECOVERABLE`.
+Return an `agent-handoff/v1` report. A primary-test step may use `PASS` with
+the intentional failing validation recorded; an interrupted step uses
+`RECOVERABLE`.

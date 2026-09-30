@@ -1,7 +1,7 @@
 ---
 name: documentation-assignment-format
 description: Only use when explicitly invoked
-# description: "Defines the Markdown template and guidance for persisted documentation assignments."
+# description: "Defines the persisted documentation assignment template and guidance."
 user-invocable: false
 disable-model-invocation: true
 ---
@@ -26,14 +26,8 @@ model_assignments:
 ---
 ```
 
-The YAML frontmatter includes independent writer and
-verifier model assignments. The assignments are selected
-only after the implementation has been verified and the
-final documentation obligation is known; they are not
-chosen during the earlier planning stage. Model evidence
-belongs in the assignment metadata, not in the Markdown
-body, which remains dedicated to documentation scope and
-verified facts.
+The YAML frontmatter includes independent writer and verifier model
+assignments per the rules below.
 
 Validation rules:
 
@@ -66,14 +60,10 @@ configuration or prerequisite details when
 users need them.
 
 ## Plan Documentation Context
-Copy the relevant Markdown context from the
-path referenced by `plan-audit.yaml`, using
-`documentation-context-format`. Treat it as
-the plan-level documentation brief: use its
-audiences, topics, requirements, and risks to
-scope the assignment, then reconcile it with
-the verified implementation. Do not treat planned
-behavior as implemented behavior.
+Copy the relevant Markdown context from the path referenced by `plan-audit.yaml`, using
+`documentation-context-format`. Treat it as the plan-level documentation brief: use its
+audiences, topics, requirements, and risks to scope the assignment; reconcile against
+the verified implementation.
 
 ## Source and Context Paths
 List the implementation, Markdown
@@ -81,7 +71,7 @@ documentation context, plan requirements,
 interfaces, and prior reports that establish
 the facts. Explain what each path contributes.
 The assignment should provide enough context
-that the Documentation Agent does not need to
+that the Documentation Writer does not need to
 reread the complete plan.
 
 ## Acceptance Criteria
@@ -107,15 +97,5 @@ assignments as YAML or extensionless text.
 
 ## Validation
 
-Require YAML frontmatter with `kind`, `schema`,
-`run_id`, `assignment_id`, `assignment_type`, and
-the `model_assignments` block. The
-`model_assignments` block must include
-`writer` and `verifier`, each with a
-`portable_id` value. The body is reserved for
-the documentation brief and verified facts;
-model selection and evidence must live in the
-frontmatter metadata. The writer and verifier
-assignments are selected only after final
-implementation verification, and the assignment
-must record model evidence rather than prose claims.
+Require YAML frontmatter with `kind`, `schema`, `run_id`, `assignment_id`, `assignment_type`,
+and the complete `model_assignments` block; validate everything else per the rules above.

@@ -65,16 +65,13 @@ resume_from: null
 
 Allowed statuses are `pending`, `running`, `completed`,
 `verification-failed`, `interrupted`, `recoverable`, `blocked`,
-and `abandoned`. `completed` is legal only after a verifier returns
-`VERIFIED`; an implementer `PASS` is not sufficient.
+and `abandoned`. `completed` is legal only after a verifier returns `VERIFIED`;
+an agent's `PASS` does not complete a behavioral step.
 
-`model_assignment` is the resolved assignment for the current
-attempt. `attempt_history` is append-only and records every attempt
-in chronological order. A retry preserves the previous assignment
-unless the policy explicitly authorizes escalation. Each history
-entry records the attempt number, the prior assignment snapshot,
-the documented outcome, and any escalation metadata: `triggered`,
-`prior_model`, `new_model`, and `policy_rule`.
+`model_assignment` is the resolved assignment for the current attempt.
+`attempt_history` is append-only, in chronological order; each entry records
+the attempt number, the prior assignment snapshot, the documented outcome,
+and any escalation metadata: `triggered`, `prior_model`, `new_model`, and `policy_rule`.
 
 ## Rules
 

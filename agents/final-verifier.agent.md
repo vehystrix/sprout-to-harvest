@@ -33,16 +33,12 @@ important edge case, test coverage, commit traceability, and absence
 of accidental orchestration artifacts in commits. Return a
 requirement-to-step-to-commit-to-validation traceability matrix.
 
-Status is `VERIFIED` only when all material requirements pass with
-fresh executable evidence. Otherwise return `INCOMPLETE` or
-`BLOCKED` with concrete corrective actions.
+Return `VERIFIED` only when all material requirements pass with fresh
+executable evidence; otherwise return `INCOMPLETE` or `BLOCKED`.
 
-Return the matrix and conclusion in an `agent-handoff/v1` report,
-including repository state, validation evidence, blockers, and
-resume instructions.
+Return the matrix and conclusion in an `agent-handoff/v1` report per
+`final-report-format`.
 
-Use `INCOMPLETE` only when a specific affected step can be repaired
-within the configured retry limit. Use `BLOCKED` for missing reports,
-invalid traceability, incompatible interfaces, forbidden artifacts,
-repository-policy violations, or insufficient evidence that cannot
-be repaired by a bounded step retry.
+Use `INCOMPLETE` only when a specific affected step can be repaired within
+the configured retry limit; use `BLOCKED` for conditions a bounded step retry
+cannot repair, such as missing reports or incompatible interfaces.

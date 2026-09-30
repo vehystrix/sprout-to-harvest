@@ -102,9 +102,6 @@ a claim without such a trace is drift and fails validation.
 ## Validation
 
 Require the frontmatter fields (`kind`, `schema`, `run_id`, `step_id`,
-`chunk_id`, `type`) and every template heading, including `Contract`.
-Every `Requirements Covered` entry names only requirement IDs from its own
-Contract, and every contract-assigned requirement appears in at least one
-step of the chunk. Contract sections must be verbatim-identical across all
-steps sharing a `chunk_id`. A behavioral unit keeps its primary-test step
-immediately before its implementation step within the chunk.
+`chunk_id`, `type`) and every template heading, including `Contract`. Every
+`Requirements Covered` entry names only requirement IDs from its own Contract.
+Contract sections must be verbatim-identical across all steps sharing a `chunk_id`.

@@ -117,8 +117,7 @@ Record `details.model_assignment` for each delegation, keyed on the probed
   exists. A self-ID matching the requested model records `runtime_model` from
   self-report with `applied: false` - lower-confidence evidence, kept in the audit trail.
 
-Evidence levels in this no-adapters context are defined by
-`model-catalog-format` and constrained as follows:
+Evidence levels follow `agent-handoff` and are constrained as follows:
 
 - `adapter-confirmed`: the delegation response payload or a host API
   deterministically confirms the resolved model through a structured confirmation
@@ -163,26 +162,10 @@ can demonstrate `applied: true`.
 
 ## Routing-unavailable host behavior
 
-This path applies to any host where the capability probe finds no honored
-per-delegation selector, including Pi. Its delegation tool exposes no per-delegation `model`
-parameter, so its static check fails and such runs take this path automatically;
-it is an unapplied compatibility adapter and must never be presented as
-dynamically routed. Behavior: record a routing-unavailable warning for every
-assignment with `applied: false`, make no dynamic-selection claim,
-and let continuation be governed by `require_application`.
-
-## Validation checklist
-
-A valid run using this guide shows all of the following:
-
-- one probe result per run persisted in `run.yaml.model_routing.preflight` as a data
-  block (`status`, `mechanism`, `evidence_channel`) with cached-result reuse only
-  for an unchanged host, session, and configuration fingerprint;
-- every delegated role resolved through catalog lookup on the run copy of `model-catalog.yaml`;
-- `model` set on delegation calls only when probe status is passed;
-- evidence recorded per probed channel, with no dynamic-selection claim while
-  routing is unavailable;
-- the single policy-fallback retry and BLOCKED semantics above honored.
+This path applies to any host where the probe finds no honored per-delegation
+selector (for example Pi): record a routing-unavailable warning for every
+assignment with `applied: false`, make no dynamic-selection claim, never present
+it as dynamically routed, and let continuation be governed by `require_application`.
 
 ## Related skills
 

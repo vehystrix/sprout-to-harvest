@@ -36,7 +36,5 @@ matching commit or an explicit `N/A` Git explanation. Use `INCOMPLETE` for
 repairable missing work and `BLOCKED` for environmental, context, or handoff
 defects.
 
-Return an `agent-handoff/v1` report following `agent-handoff`. Put
-verifier-specific findings such as `missing_work` under `details`. Use
-`VERIFIED` only when executable evidence supports every material
-requirement.
+Return an `agent-handoff/v1` report with verifier-specific findings such as
+`missing_work` under `details`.

@@ -486,13 +486,13 @@ returns `VERIFIED`, `INCOMPLETE`, or `BLOCKED`.
 If final verification fails, the orchestrator starts `Step Implementer` with the final report
 and affected step contexts, then reruns `Final Verifier` within the retry limit.
 
-### 7. Document affected source files: `Documentation Agent` (Subagent F)
+### 7. Document affected source files: `Documentation Writer` (Subagent F)
 
 Once the implementation is verified, the orchestrator builds a documentation assignment for
 each affected source file that needs maintainer-facing documentation. Independent assignments
 may run in parallel when they do not share ownership or create conflicting edits.
 
-For each assignment, `Documentation Agent` reads the relevant Markdown documentation context,
+For each assignment, `Documentation Writer` reads the relevant Markdown documentation context,
 implementation context, and interfaces. It uses `source-documentation`,
 `documentation-verification`, `requirements-traceability`, `git-isolated-implementation`,
 `persistent-workflow-state`, and `atomic-step-commit`. The assignment should contain the
@@ -516,11 +516,11 @@ The verifier checks only material issues:
 - Missing important interfaces, prerequisites, or limitations.
 
 It does not request stylistic rewrites. Failed documentation verification returns to
-`Documentation Agent` with the report and repeats within the retry limit.
+`Documentation Writer` with the report and repeats within the retry limit.
 
 ### 9. Create and verify user documentation
 
-After source documentation is stable, the orchestrator starts `Documentation Agent` for the
+After source documentation is stable, the orchestrator starts `Documentation Writer` for the
 user-facing documentation set using `documentation/user-documentation-context.md` plus verified
 implementation evidence. The agent uses `user-documentation`, `documentation-verification`, and
 `requirements-traceability` to document supported workflows, prerequisites, configuration,
@@ -529,7 +529,7 @@ complete plan.
 
 The orchestrator then starts `Documentation Verifier` with the plan, implementation reports,
 public interfaces, and user documentation. It checks correctness and material completeness, not
-wording preferences. Failed verification returns to `Documentation Agent` and repeats within
+wording preferences. Failed verification returns to `Documentation Writer` and repeats within
 the retry limit.
 
 ### 10. Finish and report

@@ -13,11 +13,8 @@ Input is the fixed delegation template plus file paths: the plan, the run's
 `requirements-inventory.yaml`, and `chunk-index.yaml` (chunk list,
 `requirements_assigned` IDs, and model assignments).
 
-- **Unassigned content**: every inventory requirement (and cross-cutting
-  sub-requirement) is owned by exactly one chunk; nothing in the plan is left
-  without an owner.
-- **Duplicate ownership**: no requirement ID (or `<parent-id><suffix>`
-  sub-requirement) is assigned to more than one chunk.
+- **Ownership**: every inventory requirement (and cross-cutting sub-requirement)
+  is owned by exactly one chunk with no duplicates.
 - **Boundary consistency**: read each step file's `Contract` block per
   `step-context-format`; for every interface named in one chunk's contract
   interfaces-in, the producing chunk's contract names it with a matching
@@ -34,11 +31,11 @@ inventory; do not sample.
 - `agent-handoff`: use for the required final report shape; outcomes are
   `VERIFIED`, `INCOMPLETE`, or `BLOCKED`.
 
-Return an `agent-handoff/v1` report following `agent-handoff` with
-`details.findings` entries shaped `{id, requirement ref, one-line description}`,
-each classified as `decomposition-gap` (the decomposer must
-adjust chunking; name the affected chunk IDs) or `boundary-mismatch` (an
-affected writer pair must fix its chunks; name both chunk IDs). Use `VERIFIED`
-only when total coverage holds, ownership is unique, and all boundaries
-match; use `INCOMPLETE` for any finding of either class; use `BLOCKED` for an
-unreadable plan or a corrupted inventory.
+Return an `agent-handoff/v1` report with `details.findings` entries shaped
+`{id, requirement ref, one-line description}`, each classified as
+`decomposition-gap` when it requires changing a chunk's `requirements_assigned`
+list or a chunk boundary, and a `boundary-mismatch` for any other finding; name the affected
+chunk ID(s). Use `VERIFIED` only when total coverage holds, ownership is unique,
+and all boundaries match; use `INCOMPLETE`
+for any finding of either class; use `BLOCKED` for an unreadable plan or a
+corrupted inventory.

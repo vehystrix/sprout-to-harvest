@@ -63,15 +63,9 @@ clarification is required. Use `NEEDS_CLARIFICATION` only when
 `documentation_context` is a pointer to the plan-level Markdown briefs for later
 documentation assignments. `status` is `PROVIDED` when both context files exist,
 `EMPTY` when the audit found no documentation obligation, and `UNAVAILABLE` when the
-audit was skipped. The referenced files contain the flexible documentation guidance;
-the implementation remains authoritative.
-`requirements_inventory_path` points to the run's `requirements-inventory.yaml`,
-which the auditor itself persists on a `PASS` audit: the complete list of
-requirements extracted from the plan, including implied-only requirements with no
-dedicated section, each carrying `id`, a one-line `name`, and the verbatim plan
-`excerpt`. Cross-cutting requirements are split into `<parent-id><suffix>`
-sub-requirements at extraction time. A non-PASS audit records no path; when the
-audit is absent or skipped, the decomposer derives and writes the file instead.
+audit was skipped.
+`requirements_inventory_path` points to the run's `requirements-inventory.yaml`.
+It is present on a `PASS` audit and absent otherwise; a non-PASS audit records no path.
 
 ## Validation
 

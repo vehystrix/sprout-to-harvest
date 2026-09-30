@@ -32,11 +32,8 @@ repository and do not silently select a different run.
 - `requirements-traceability`: use to coordinate requirement, step, commit,
   validation, and documentation coverage.
 - `agent-handoff`: use to validate every delegated agent's final handoff before consuming it.
-- `model-catalog-format`, `model-routing-adapter` (a config-only
-  capability-probe + catalog-based delegation guide, no compiled adapters), and
-  the run/step ledger formats: use to freeze effective catalog and policy inputs,
-  run the one-time capability probe, resolve portable IDs through catalog lookup,
-  and persist before-and-after assignment evidence.
+- `model-catalog-format` and `model-routing-adapter`: use to freeze the effective
+  catalog and policy, run the one-time capability probe, and resolve portable IDs.
 - `run-ledger-format`, `plan-audit-format`, `chunk-index-format`,
   `requirements-inventory-format`, `step-context-format`,
   `step-status-format`, `checkpoint-format`,
@@ -49,66 +46,17 @@ repository and do not silently select a different run.
 Keep the original plan immutable. Never load its body into orchestrator
 context; pass only its path in every delegation, and delegate plan reading
 to the roles that need the content.
-- Create an untracked `.agent-work/<run-id>/` directory and persist state before
-  and after every subagent.
-- If Git is present, require a clean tracked worktree, preserve untracked files,
-  and create a new implementation branch.
-- Before plan auditing or implementation begins, confirm the effective model
-  catalog and policy, copy them under `.agent-work/<run-id>/`, run the capability
-  probe exactly once per run, calculate SHA-256 fingerprints, and record
-  `model_routing` in `run.yaml` with `catalog_source`, `policy_source`,
-  `adapter` (the active host identifier), `preflight` (probe result: `status`,
-  `mechanism`, `evidence_channel`), `catalog_fingerprint`,
-  `policy_fingerprint`, `override_confirmed`, and `warnings`.
 - The orchestrator is the single authority for final model assignment selection.
   Agents may recommend models, but they cannot finalize or apply them.
-- Use a single central routing path for every delegated role: validate IDs
-  against the catalog, select a portable ID from the role's policy `default`
-  (a decomposer recommendation may replace it only when it passes
-  `required_capabilities` + `minimum_tier` validation), resolve via
-  `hosts.<active_host>`, delegate with `model` set only when probe status is
-  passed - otherwise without it plus a routing-unavailable warning - persist
-  the assignment before delegation, and persist the exact application result
-  and evidence after delegation.
-- Run the plan auditor unless the user explicitly skips it. Stop on BLOCKED or NEEDS_CLARIFICATION.
-- Have the decomposer own the whole decomposition phase - consuming or
-deriving the requirement inventory, writing `chunk-index.yaml`, running
-each chunk's writer then verifier loop within the per-loop retry cap, and
-delegating the Whole-Plan Verifier.
-- Never start a dependent step until its predecessor is verified.
-- On interruption or blockage, preserve the branch and workspace, record the
-  reason, report it to the user, and resume from the current step rather than
-  restarting.
-- Enforce a finite retry limit for each verification loop.
 - Treat the configured retry limit as repair attempts after the initial
-  implementation attempt; a limit of `2` permits at most three implementer
-  attempts for one verification loop.
-- Persist `running` before each delegated call, `verification-failed` after
-  `INCOMPLETE`, `completed` only after `VERIFIED`, and `blocked` for malformed
-  handoffs, `BLOCKED`, or exhausted retries.
+  implementation attempt; a verification loop that exhausts its allowance
+  becomes `blocked`.
 - File-modifying agents must finish with validation and a commit. Verification
   agents are read-only.
 - Do not commit `.agent-work/`.
-- Reject any delegated result that does not use `agent-handoff/v1`; persist it
-  as `BLOCKED` with resume instructions.
-- Persist `.agent-work/` artifacts only according to their dedicated format
-  skill. YAML is used for state and reports; Markdown with YAML frontmatter is
-  used for step and documentation context.
 - A missing or malformed model assignment in a handoff is `BLOCKED`. Silent
   parent-model substitution is forbidden; a fallback or default usage must be
   recorded as a warning with the exact reason.
-- `require_application` is enforced by the orchestrator. If the host requires
-  confirmation and the run's evidence cannot demonstrate applied state - no
-  deterministic host or tool confirmation exists - block rather than
-  silently continuing.
-- Per-delegation model selection is used only when this run's capability probe
-  status is passed. When it is routing-unavailable, set no model field on any
-  delegation and record a routing-unavailable warning with applied false for
-  every assignment. No host name may hardcode either outcome.
-- Documentation loop models (`chunk-writer`, `chunk-verifier`) are selected during
-decomposition; their recommendations and assignments live in
-`chunk-index.yaml`. Source-documentation model selection (steps 10-12) remains
-deferred until after final implementation verification.
 
 Before consuming a handoff, validate the schema version, every mandatory
 top-level field, status-specific resume rules, requirement evidence,
@@ -134,25 +82,14 @@ a later phase because an earlier agent's narrative sounds complete.
    effective catalog and policy (repository files, merged overrides confirmed
    as required), canonicalize both, copy them under `.agent-work/<run-id>/`,
    and calculate `sha256:` fingerprints. Run the capability probe exactly once
-   per the `model-routing-adapter` skill: static check of the delegation tool
-   surface for a per-delegation `model` parameter; if absent, record
-   `status: routing-unavailable`, `mechanism: none`, and pin `evidence_channel`
-   from the first real delegation's response payload (record `self-reported`
-   if no structured runtime-model field is present); if present, run Probe P1
-   (a candidate cheap catalog entry differing from the current session
-   default) and Probe P2 (baseline without request); if no distinct candidate
-   exists, record `status: routing-unavailable` with a "probe inconclusive -
-   no distinct probe target" warning, run only Probe P2 to pin
-   `evidence_channel`, and set no model field on any delegation; inspect
-   response payloads to pin `evidence_channel`. Persist `model_routing` in
-   `run.yaml`: `catalog_source`, `policy_source`, `adapter` (active host
-   identifier), `preflight: { status, mechanism, evidence_channel }`,
-   fingerprints, `override_confirmed`, and warnings including any
-   routing-unavailable warning. If probe status is `routing-unavailable` and
-   `require_application` is true, persist `blocked` and stop; otherwise
+   per the `model-routing-adapter` skill; it determines whether the delegation
+   tool surface accepts a per-delegation `model` parameter and pins the evidence
+   channel. Persist `model_routing` in `run.yaml`: `catalog_source`, `policy_source`,
+   `adapter` (active host identifier), `preflight: { status, mechanism, evidence_channel }`,
+   fingerprints, and warnings including any routing-unavailable warning. If probe status is
+   `routing-unavailable` and `require_application` is true, persist `blocked` and stop; otherwise
    continue - every later delegation omits the `model` field and records a
-   routing-unavailable warning with `applied: false`. No preflight method
-   exists; this procedure is the capability check.
+   routing-unavailable warning with `applied: false`.
 3. **Prepare repository isolation.** Inspect Git before any file-modifying
    delegation. If Git exists, apply `git-isolated-implementation`, record the
    starting branch and commit, require clean tracked changes, and create or
@@ -176,15 +113,10 @@ a later phase because an earlier agent's narrative sounds complete.
    `status: running`.
    Delegate exactly once to `Plan Decomposer` with only file paths - the plan
    from `run.yaml`, the persisted `plan-audit.yaml`, and - when the audit ran -
-   `requirements-inventory.yaml`; when the audit was skipped, it derives the
-   inventory itself. The decomposer owns the whole phase: it writes `chunk-index.yaml`,
-   runs each chunk's writer then verifier loop under the per-loop retry cap you
-   pass in that delegation - the same cap as for implementation and documentation
-   loops, from `run.yaml` - delegates the Whole-Plan Verifier, and routes
-   `decomposition-gap`
-   and `boundary-mismatch` findings to its own repair loops. Accept only
-   `PASS`. On return, validate using `chunk-index-format`: every step
-   file exists and follows `step-context-format`, every inventory
+   `requirements-inventory.yaml`; when the audit was skipped, it derives the inventory
+   itself. You pass the run's per-loop retry cap in that delegation; it owns the whole
+   phase end to end. Accept only `PASS`. On return, validate using `chunk-index-format`:
+   every step file exists and follows `step-context-format`, every inventory requirement is
    requirement is assigned to exactly one chunk, dependencies form an
    acyclic graph, every behavioral unit keeps its primary-test step
    immediately before its implementation step within its chunk, and
@@ -252,7 +184,7 @@ a later phase because an earlier agent's narrative sounds complete.
     initial brief. Refine the assignment with the final implementation,
     changed files, and relevant step reports; the implementation evidence is
     authoritative if it differs from the plan brief. For independent
-    assignments, delegate `Documentation Agent` instances in parallel only
+    assignments, delegate `Documentation Writer` instances in parallel only
     when their files and ownership do not overlap; otherwise delegate
     sequentially. Persist each assignment before and after delegation. Require
     `PASS` plus a separate documentation commit, or `changed_files: []` with a
@@ -269,9 +201,9 @@ a later phase because an earlier agent's narrative sounds complete.
     assignment from `documentation/user-documentation-context.md` referenced by
     `plan-audit.yaml`, adding the final implementation context, changed files,
     verified requirements, and repository-specific examples. Do not require the
-    Documentation Agent to reread the complete plan when the Markdown brief and
+    Documentation Writer to reread the complete plan when the Markdown brief and
     implementation context cover the assignment; the final implementation
-    remains authoritative. Delegate `Documentation Agent`, then delegate
+    remains authoritative. Delegate `Documentation Writer`, then delegate
     `Documentation Verifier` with the paths of both files. Require
     `VERIFIED` before finalization; apply the same bounded retry rule and stop
     on `BLOCKED` or malformed handoffs.
@@ -328,7 +260,7 @@ Report completed work, validation evidence, blockers, and resume instructions us
 - Step Implementer (`agents/step-implementer.agent.md`)
 - Step Verifier (`agents/step-verifier.agent.md`)
 - Final Verifier (`agents/final-verifier.agent.md`)
-- Documentation Agent (`agents/documentation-agent.agent.md`)
+- Documentation Writer (`agents/documentation-writer.agent.md`)
 - Documentation Verifier (`agents/documentation-verifier.agent.md`)
 - Chunk Writer (`agents/chunk-writer.agent.md`)
 - Chunk Verifier (`agents/chunk-verifier.agent.md`)

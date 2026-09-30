@@ -1,7 +1,7 @@
 ---
 name: model-catalog-format
 description: Only use when explicitly invoked
-# description: "Defines the repository model catalog and routing policy schema for model selection."
+# description: "Defines the repository model catalog and routing policy schema."
 user-invocable: false
 disable-model-invocation: true
 ---
@@ -168,13 +168,8 @@ of replacing unrelated sections. The merge behavior is:
 2. Lists retain their semantic order when they are significant (for
    example, capability order or fallback order).
 3. Scalar types are normalized before hashing or validation.
-4. The merged result is serialized and hashed using a canonicalized SHA-256 representation.
-
-The canonical representation is deterministic: equivalent YAML is
-normalized to a stable byte sequence before hashing. The workflow
-calculates a normalized fingerprint in the form `sha256:<hex>` for both
-catalog and policy. The exact hash is not user-facing behavior; it is
-evidence for resume and auditability.
+4. The merged result is serialized to a deterministic byte sequence and hashed as a
+   `sha256:<hex>` fingerprint - evidence for resume and auditability, not user-facing behavior.
 
 Invalid overrides include:
 
@@ -195,18 +190,9 @@ routing contract or produces a non-portable assignment.
 
 ## Validation checklist
 
-A valid model catalog and policy must contain all of the following terms
-in a structured way:
-
-- `models:` and `model_policy:` at the top level.
-- `required_capabilities` for each role definition.
-- `context_window` on each catalog entry.
-- `reasoning_effort`, when present on a catalog entry, is a non-empty string
-  or integer (no fixed vocabulary).
-- `require_application` under the host policy.
-- `preserve_assignment` and `allow_escalation` under retry rules.
-- a deterministic `SHA-256` fingerprint calculation and canonicalized output.
-- explicit `legacy mode` handling when compatibility behavior is used.
+Validate each section above: every role definition carries `required_capabilities`,
+every catalog entry is complete and well-formed, retry and host policy fields are
+present, and the fingerprint calculation is deterministic.
 
 `model_policy` is the authoritative policy contract. The catalog and
 policy schema remain stable across hosts; each host's entry in `hosts`

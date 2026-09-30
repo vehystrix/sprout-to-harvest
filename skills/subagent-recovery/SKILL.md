@@ -24,10 +24,9 @@ On interruption or blockage:
 4. Report the blocker and required user action.
 5. Resume the same step from its checkpoint after the issue is resolved.
 
-A completed and verified step is never rerun automatically. A partially
-completed step is resumed using its context file and latest report. Use a
-finite retry limit for ordinary verification failures; escalate after the
-limit.
+A completed and verified step is never rerun automatically; resume a partially
+completed step from its checkpoint per `checkpoint-format`. Ordinary verification
+failures follow the finite retry policy of `model-routing-adapter`; escalate after it.
 
 ## Related skills
 

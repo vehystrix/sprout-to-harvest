@@ -48,31 +48,16 @@ requirements:
   from, or taken from when the plan lists it explicitly. It must support the requirement
   on its own.
 
-## Placement and authorship
-
-- Delegated mode: `.agent-work/<run-id>/requirements-inventory.yaml`, written by
-  the Plan Auditor itself on a `PASS` audit; its handoff records the path as
-  `details.requirements_inventory_path`.
-- User mode, or any run where auditing is absent or skipped:
-  `<output-dir>/.work/requirements-inventory.yaml`, derived and written by the
-  Plan Decomposer itself.
-
 ## Cross-cutting requirements
 
 A requirement that spans more than one chunk is split at inventory creation into
 sub-requirements, each with its own ID of the form `<parent-id><suffix>` (for example
-`REQ-001a`) and its own excerpt. Every final ID in the file must be owned by exactly one
-chunk; the coverage check that enforces this runs when the decomposer writes the chunk
-index and again, independently, in the Whole-Plan Verifier pass.
+`REQ-001a`) and its own excerpt.
 
 ## Validation
 
 Every consumer that resolves `requirements_assigned` values validates:
 
 - IDs are unique across the file;
-- every entry's `id`, `name`, and `excerpt` fields are non-empty;
-- each `excerpt` is verbatim plan text.
+- every entry's `id`, `name`, and `excerpt` fields are non-empty.
 
-The Whole-Plan Verifier cross-checks inventory excerpts against the full plan text. A
-requirement whose excerpt no passage in the plan supports is drift, not a format problem:
-it is reported as an `INCOMPLETE` finding with the unsupported ID named.

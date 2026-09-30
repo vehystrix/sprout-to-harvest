@@ -1,7 +1,7 @@
 ---
 name: agent-handoff
 description: Only use when explicitly invoked
-# description: "Defines the YAML schema for every inter-agent handoff and persisted handoff report."
+# description: "Defines the YAML schema for every inter-agent handoff and its report."
 user-invocable: false
 disable-model-invocation: true
 ---
@@ -33,7 +33,7 @@ inputs:
 details: {}
 requirements:
   - id: <requirement id or N/A>
-    result: SATISFIED | PARTIAL | NOT_SATISFIED | NOT_APPLICABLE
+    result: SATISFIED | PARTIAL | NOT_SATISFIED | NOT_APPLICABLE | BLOCKED
     evidence: <specific file, test, command, or reason>
 validation:
   - command: <exact command or N/A>
@@ -57,10 +57,9 @@ Rules:
   `details`, `requirements`, `validation`, `artifacts`,
   `repository`, `blockers`, and `resume_from` are mandatory, even when
   their values are empty or `N/A`.
-- `PASS` means the assigned work completed without a verification
-  claim; `VERIFIED` is reserved for a verifier with executable
-  evidence. `INCOMPLETE`, `BLOCKED`, and `RECOVERABLE` must explain
-  the next action in `resume_from`.
+- `PASS` means the assigned work completed without a verification claim;
+  `VERIFIED` is reserved for a verifier. `INCOMPLETE`, `BLOCKED`, and
+  `RECOVERABLE` must explain the next action in `resume_from`.
 - `NEEDS_CLARIFICATION` is reserved for plan audit findings that
   require a user decision before decomposition; it must include the
   questions in `details` and a null `resume_from`.
@@ -81,10 +80,8 @@ Rules:
   handoff must associate executable `PASS` validation evidence with
   every material requirement. Do not claim success from changed files
   or an agent's narrative alone.
-- Contradictory or missing model evidence must be treated as
-  `BLOCKED`. Lower-confidence self-reporting is preserved for
-  auditability but cannot override an explicit adapter or host
-  contradiction.
+- Contradictory or missing model evidence must be treated as `BLOCKED`; lower-confidence
+  self-reporting is preserved for auditability but never overrides adapter or host evidence.
 - File-modifying agents list every changed file and commit hash.
   Read-only agents use empty `commits` and `changed_files`.
 - When Git is unavailable, use `N/A` for `branch`, `last_commit`, and
@@ -93,13 +90,7 @@ Rules:
 - The caller must validate the schema and required fields before
   consuming the handoff. An invalid or missing handoff is `BLOCKED`
   and must be persisted as such.
-- A handoff with `status: VERIFIED` must contain at least one `PASS`
-  validation item with executable evidence for every material
-  requirement. A handoff with `status: PASS` is not a verification
-  result.
-- The handoff does not replace durable run status; the orchestrator
-  copies its status, evidence, artifacts, blockers, and resume point
-  into the run ledger.
+- The handoff does not replace durable run status.
 
 ## Required delegated model assignment block
 
@@ -136,8 +127,4 @@ The assignment block records the exact routing state for the current attempt. Th
 - `rationale`: concise selection explanation.
 - `warning`: required when the actual result differs from the requested assignment.
 
-The model assignment is attached to the delegation input and copied
-into the resulting handoff. A self-reported runtime model may remain
-in the record, but it is lower confidence than adapter-confirmed or
-host-reported evidence and may not override contradictory host or
-adapter evidence.
+The model assignment is attached to the delegation input and copied into the resulting handoff.

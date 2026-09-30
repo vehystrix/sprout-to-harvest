@@ -63,44 +63,17 @@ Allowed `status` values are `pending`, `running`, `completed`,
 `maximum_retries` is a non-negative integer. `skip_plan_audit` is a boolean.
 `resume_from` is either an exact next action string or `null`.
 
-The `model_routing` block is required whenever dynamic routing is enabled. It
-records the effective catalog and policy source files, the active host identifier,
-and the one-time capability probe result. `catalog_source` and `policy_source` identify
-the YAML configuration files used for this run; `adapter` is the active host
-identifier - the value appearing under `hosts.*` in the catalog - not a compiled
-module; and the `preflight` block records the capability probe result: whether a
-per-delegation selector was confirmed (`status`), which mechanism exposes it
-(`mechanism`), and which evidence channel applies (`evidence_channel`). It also holds
-the canonicalized fingerprints of the confirmed configuration, whether an invocation
-override was explicitly confirmed, and any persisted warning values. Resumed runs must
-reuse the copied run-level files when they exist and compare them against the current
-repository configuration before continuing.
+The `model_routing` block is required whenever dynamic routing is enabled. It records
+the effective catalog and policy source files, the active host identifier, and the
+one-time capability probe result: `catalog_source` and `policy_source` identify the YAML
+configuration files used for this run; `adapter` is the active host identifier - the value
+appearing under `hosts.*` in the catalog - not a compiled module; and the `preflight`
+block records the capability probe result (`status`, `mechanism`, `evidence_channel`). It also
+holds the canonicalized fingerprints of the confirmed configuration, whether an invocation
+override was explicitly confirmed, and any persisted warning values.
 
-## Write and read rules
-
-- Create the file before the first delegation.
-- Update it before and after every delegation.
-- Write through a temporary YAML file followed by rename.
-- Never overwrite a completed result with a new attempt.
-- Preserve blockers and resume instructions when the run is recoverable or blocked.
-- Validate the stored invocation fields against the current invocation before resuming.
-- Before any delegated work begins, copy the effective model catalog and policy under
-`.agent-work/<run-id>/` and persist the corresponding `model_routing` block. The run copies are
-the authoritative runtime inputs for that attempt; resumed runs reuse those copied files
-and compare their fingerprints to the current repository values before delegation.
-- Run the capability probe exactly once per run using the model-routing-adapter procedure and
-persist its result in `model_routing.preflight` along with the active host identifier, the
-confirmed fingerprints, and any warnings. Reusing a cached probe result is valid only while
-the same host, session, and effective configuration fingerprint are still in use; otherwise
-record a warning.
-- `catalog_fingerprint` and `policy_fingerprint` must come from the canonical SHA-256
-representation of the effective files after merge and validation. The fingerprint is evidence
-for resume, override review, and auditability. `override_confirmed` records whether an
-explicit override value was accepted for the current run; when false, the override still may be
-visible in the stored policy decision but must not masquerade as a silent policy change.
-- Persist warnings in `model_routing.warnings` whenever the run chooses a fallback, receives
-a host-reported runtime mismatch, or otherwise proceeds in a legacy-compatible mode. Legacy
-mode must remain visible in the run ledger so downstream agents can distinguish compatibility
-behavior from a normal dynamic assignment.
-- A missing or malformed `model_routing` block is `BLOCKED` before the orchestrator delegates
-implementation work.
+A missing or malformed `model_routing` block is `BLOCKED` before delegated
+implementation work. Fingerprints are canonical SHA-256 values per
+`model-catalog-format`; they serve as resume, override-review, and audit evidence.
+Resumed runs reuse the copied run-level files when present and compare their
+fingerprints against the current repository configuration before continuing.
