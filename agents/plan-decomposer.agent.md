@@ -15,10 +15,10 @@ orchestrator at step selection.
 
 ## Phase steps
 
-Execute per `plan-decomposition`, which owns the full phase contract - chunking
+Execute per `s2h-plan-decomposition`, which owns the full phase contract - chunking
 rules, loop mechanics, retry caps, finding routing, and blocked conditions:
 
-1. Inventory - consume `.agent-work/<run-id>/requirements-inventory.yaml` when the
+1. Inventory - consume `.agent-work/<run-id>/requirements.yaml` when the
    audit wrote one; derive and write it yourself when auditing is absent or skipped.
 2. Chunk index - write `chunk-index.yaml`; verify coverage on write before any loop starts.
 3. Per-chunk loops - drive each chunk's writer and verifier loop to completion under
@@ -30,9 +30,9 @@ rules, loop mechanics, retry caps, finding routing, and blocked conditions:
    pass cap.
 
 ## Related skills
-- `plan-decomposition`: use for the phase contract, chunking rules, per-loop retry caps,
+- `s2h-plan-decomposition`: use for the phase contract, chunking rules, per-loop retry caps,
   and blocked conditions you enforce.
-- `requirements-inventory-format`, `chunk-index-format`, `step-context-format`:
+- `s2h-requirements-format`, `s2h-chunk-index-format`, `s2h-step-context-format`:
   use for the file schemas you author or validate.
-- `agent-handoff`: use for delegation templates and the required final report;
+- `s2h-handoff`: use for delegation templates and the required final report;
   outcomes are `PASS` (phase complete, every chunk `completed`) or `BLOCKED`.

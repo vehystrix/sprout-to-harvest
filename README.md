@@ -1,4 +1,6 @@
-# Implementation Agent Workflow
+# Sprout To Harvest
+
+**sprout-to-harvest**: plant a design specification, grow it through small independently verified steps, and harvest the finished, verified result.
 
 A resumable, test-driven workflow for implementing a design specification or implementation
 plan with isolated subagents.
@@ -24,26 +26,26 @@ The workflow:
   described in `chunk-index.yaml`.
 - **Step**: one executable step inside a chunk; test-first steps come before their
   implementation steps. Each is written as `steps/<step-id>.md` per
-  [`step-context-format`](skills/step-context-format/SKILL.md).
+  [`s2h-step-context-format`](skills/s2h-step-context-format/SKILL.md).
 
 ## Layout
 
 - `agents/`: canonical custom agent definitions.
 - `skills/`: canonical reusable workflow skills, hidden from automatic model discovery.
   Every SKILL.md sets `disable-model-invocation`; all set `true` - hidden from
-  automatic model discovery - except `verification-before-completion`,
+  automatic model discovery - except `s2h-verification-before-completion`,
   which sets `false` so a model may apply its guidance mid-task. Each loads when an agent
   instruction calls it by name and stays reachable through `skill://<name>`.
   All set `user-invocable: false` except 7 user-facing entry points:
-  - `implementation-orchestrator`
-  - `model-configuration`
-  - `plan-audit`
-  - `plan-decomposition`
-  - `systematic-debugging`
-  - `test-driven-development`
-  - `verification-before-completion`
+  - `s2h-orchestrator`
+  - `s2h-model-config`
+  - `s2h-plan-audit`
+  - `s2h-plan-decomposition`
+  - `s2h-systematic-debugging`
+  - `s2h-tdd`
+  - `s2h-verification-before-completion`
    The other six gate their workflow-specific outputs so a direct invocation produces no
-   persisted artifacts; `plan-decomposition` is the exception - a direct invocation writes
+   persisted artifacts; `s2h-plan-decomposition` is the exception - a direct invocation writes
    the deliverable implementation step files and a deletable `.work/` communication directory
    at the user-specified location, with no workflow state. Delegated role agents persist their
    outputs as before.
@@ -62,19 +64,19 @@ to the same `agents/` and `skills/` directories.
 Install the repository directly as a Pi package; the package manifest handles discovery:
 
 ```bash
-pi install git:github.com/OWNER/implementation-agent-workflow
+pi install git:github.com/OWNER/sprout-to-harvest
 ```
 
 For oh-my-pi, use its package installer with the same repository source:
 
 ```bash
-omp install git:github.com/OWNER/implementation-agent-workflow
+omp install git:github.com/OWNER/sprout-to-harvest
 ```
 
 Use the project-local form when the workflow should apply to one repository only:
 
 ```bash
-pi install -l git:github.com/OWNER/implementation-agent-workflow
+pi install -l git:github.com/OWNER/sprout-to-harvest
 ```
 
 The installed package contributes the workflow skills and exposes the eleven role files as
@@ -92,7 +94,7 @@ directories, so no project files need to be copied or linked.
 From a GitHub repository:
 
 ```bash
-copilot plugin install OWNER/implementation-agent-workflow
+copilot plugin install OWNER/sprout-to-harvest
 ```
 
 From a local checkout while developing:
@@ -105,14 +107,14 @@ Verify and manage the installation:
 
 ```bash
 copilot plugin list
-copilot plugin update implementation-agent-workflow
-copilot plugin uninstall implementation-agent-workflow
+copilot plugin update sprout-to-harvest
+copilot plugin uninstall sprout-to-harvest
 ```
 
 For a marketplace installation:
 
 ```bash
-copilot plugin install implementation-agent-workflow@MARKETPLACE-NAME
+copilot plugin install sprout-to-harvest@MARKETPLACE-NAME
 ```
 
 After changing a local plugin, reinstall it because Copilot CLI caches installed plugin
@@ -122,12 +124,12 @@ components. Use `/agent` and `/skills list` inside a Copilot session to verify d
 
 Start the workflow with the plan path and optional audit/retry settings. The canonical
 orchestrator instructions live in
-[`skills/implementation-orchestrator`](skills/implementation-orchestrator/SKILL.md).
+[`skills/s2h-orchestrator`](skills/s2h-orchestrator/SKILL.md).
 In VS Code or Copilot CLI, select `Implementation Orchestrator`; its agent file is a
 thin wrapper that explicitly invokes that skill. In Pi/oh-my-pi, invoke the installed
-prompt corresponding to `implementation-orchestrator.agent.md`.
+prompt corresponding to `s2h-orchestrator.agent.md`.
 
-Or invoke the user-invocable `implementation-orchestrator` skill directly.
+Or invoke the user-invocable `s2h-orchestrator` skill directly.
 The invocation input should contain:
 
 ```text
@@ -146,23 +148,23 @@ Portable model selection is configured separately from workflow roles. The repos
 catalog and policy normally live at:
 
 ```text
-.implementation-agent/model-catalog.yaml
-.implementation-agent/model-policy.yaml
+.sprout-to-harvest/model-catalog.yaml
+.sprout-to-harvest/model-policy.yaml
 ```
 
-Use the separately invocable [`model-configuration`](skills/model-configuration/SKILL.md)
+Use the separately invocable [`s2h-model-config`](skills/s2h-model-config/SKILL.md)
 skill to create or edit them. It asks for structured capabilities, tier, cost, optional
 `reasoning_effort` settings, `context_window`, tools, host mappings, role requirements,
 fallback chains, retry behavior, and `require_application`. It validates the complete YAML
 result, preserves unrelated fields during field-level merges, and requires confirmation
 before writing.
 Model IDs and host mappings are data, never executable commands. The catalog and policy
-schemas are defined by [`model-catalog-format`](skills/model-catalog-format/SKILL.md).
+schemas are defined by [`s2h-model-catalog-format`](skills/s2h-model-catalog-format/SKILL.md).
 
 A minimal catalog entry and role policy look like this:
 
 ```yaml
-# .implementation-agent/model-catalog.yaml
+# .sprout-to-harvest/model-catalog.yaml
 models:
   - id: coding-standard
     capabilities: [coding, testing]
@@ -176,7 +178,7 @@ models:
 ```
 
 ```yaml
-# .implementation-agent/model-policy.yaml
+# .sprout-to-harvest/model-policy.yaml
 model_policy:
   roles:
     implementer:
@@ -204,7 +206,7 @@ leaves the repository files unchanged.
 The portable `requested` ID, adapter `resolved` model, `fallback`, `applied` result,
 `runtime_model`, `warning`, and `evidence` are separate facts in the run records. A
 resolved model is not necessarily an applied model. The delegation guide in
-[`model-routing-adapter`](skills/model-routing-adapter/SKILL.md) defines these evidence
+[`s2h-model-routing-adapter`](skills/s2h-model-routing-adapter/SKILL.md) defines these evidence
 levels:
 
 - `adapter-confirmed`: deterministic host or tool confirmation of the resolved model;
@@ -253,8 +255,8 @@ by a one-time capability probe.
 
 ## Inter-agent communication
 
-Every delegated agent returns exactly one `agent-handoff/v1` report, as defined by the
-[`agent-handoff`](skills/agent-handoff/SKILL.md) format skill. The report is the sole
+Every delegated agent returns exactly one `s2h-handoff/v1` report, as defined by the
+[`s2h-handoff`](skills/s2h-handoff/SKILL.md) format skill. The report is the sole
 communication contract between agents; role-specific results are carried in its requirement,
 validation, artifact, and blocker fields.
 
@@ -288,18 +290,18 @@ rather than loading the entire plan into its own context.
 The orchestrator receives the plan path, run directory, retry limit, and optional
 `Skip plan audit` setting. It creates an untracked run directory such as `.agent-work/run-001/`
 and writes the initial `run.yaml` using
-[`run-ledger-format`](skills/run-ledger-format/SKILL.md) before starting another agent.
+[`s2h-run-ledger-format`](skills/s2h-run-ledger-format/SKILL.md) before starting another agent.
 
 The run directory contains the durable coordination state:
 
 ```text
 .agent-work/run-001/
 	run.yaml
-	plan-audit.yaml
+	s2h-plan-audit.yaml
 	documentation/
-		source-documentation-context.md
-		user-documentation-context.md
-	requirements-inventory.yaml
+		source-doc-context.md
+		user-doc-context.md
+	requirements.yaml
 	chunk-index.yaml
 	steps/
 		<step-id>.md
@@ -323,7 +325,7 @@ The run directory is never committed.
 ### 2. Prepare Git isolation
 
 When the target workspace is a Git repository, `Implementation Orchestrator` uses
-`git-isolated-implementation` before any file-modifying subagent starts:
+`s2h-git-isolation` before any file-modifying subagent starts:
 
 1. Require no tracked staged or unstaged changes.
 2. Preserve all existing untracked files.
@@ -338,7 +340,7 @@ or discards unrelated work.
 ### 3. Audit the plan: `Plan Auditor` (Subagent A)
 
 Unless the user explicitly skips the audit, the orchestrator starts `Plan Auditor` with the
-plan. The agent uses `plan-audit` and `requirements-traceability` to check:
+plan. The agent uses `s2h-plan-audit` and `s2h-requirements-traceability` to check:
 
 - Contradictions and missing requirements.
 - Blocking ambiguity and undefined external interfaces.
@@ -346,20 +348,20 @@ plan. The agent uses `plan-audit` and `requirements-traceability` to check:
 - Hidden dependencies and unnecessary complexity.
 - Missing acceptance criteria or validation commands.
 
-The auditor writes `plan-audit.yaml` using
-[`plan-audit-format`](skills/plan-audit-format/SKILL.md), with `PASS`, `NEEDS_CLARIFICATION`,
+The auditor writes `s2h-plan-audit.yaml` using
+[`s2h-plan-audit-format`](skills/s2h-plan-audit-format/SKILL.md), with `PASS`, `NEEDS_CLARIFICATION`,
 or `BLOCKED`, plus findings, required questions, external interfaces, and validation gaps.
 
-It also extracts the complete requirement inventory, including implied-only
-requirements; on a PASS it writes `requirements-inventory.yaml` and records
+It also extracts the complete requirements list, including implied-only
+requirements; on a PASS it writes `requirements.yaml` and records
 the path in its handoff. The orchestrator records that path for decomposition.
 If the result is `NEEDS_CLARIFICATION` or `BLOCKED`, the orchestrator reports the findings to
 the user and stops. No implementation work begins. A `PASS` permits decomposition.
 
 The audit also creates separate Markdown briefs for source and user documentation under
 `documentation/`, using
-[`documentation-context-format`](skills/documentation-context-format/SKILL.md).
-`plan-audit.yaml` records their paths and status. The orchestrator carries the relevant brief
+[`s2h-doc-context-format`](skills/s2h-doc-context-format/SKILL.md).
+`s2h-plan-audit.yaml` records their paths and status. The orchestrator carries the relevant brief
 into later documentation assignments, where it is reconciled with the verified implementation
 and changed files. This prevents documentation agents from rereading the complete plan while
 keeping the implementation authoritative.
@@ -368,15 +370,15 @@ keeping the implementation authoritative.
 `Whole-Plan Verifier`
 
 The orchestrator delegates decomposition exactly once to `Plan Decomposer`. The decomposer owns
-the whole phase, using [`plan-decomposition`](skills/plan-decomposition/SKILL.md) and the plan's
-requirement inventory: it chunks the plan by behavioral units - each chunk owns a contract of
+the whole phase, using [`s2h-plan-decomposition`](skills/s2h-plan-decomposition/SKILL.md) and the plan's
+requirements list: it chunks the plan by behavioral units - each chunk owns a contract of
 assigned requirement IDs with verbatim plan excerpts, interfaces in/out, an end-state, and
 exclusions, and every inventory requirement is owned by exactly one chunk - writes
-`chunk-index.yaml` using [`chunk-index-format`](skills/chunk-index-format/SKILL.md) with the
+`chunk-index.yaml` using [`s2h-chunk-index-format`](skills/s2h-chunk-index-format/SKILL.md) with the
 dependency order and model recommendations, then runs each chunk's writer and verifier loop.
 
 For each chunk, `Chunk Writer` creates that chunk's `steps/<step-id>.md` files per
-[`step-context-format`](skills/step-context-format/SKILL.md), embedding the contract verbatim in
+[`s2h-step-context-format`](skills/s2h-step-context-format/SKILL.md), embedding the contract verbatim in
 every file; `Chunk Verifier` is read-only and confirms documentary traceability for every
 requirement the chunk owns. Each writer and verifier loop gets its own repair cap -
 the same `L` passed to implementation and documentation loops; counters are fresh
@@ -393,10 +395,10 @@ Whole-plan verifications total at most `L + 1`; only then does the decomposer re
 before moving on.
 
 You can also run this pipeline directly as a user: invoke
-[`plan-decomposition`](skills/plan-decomposition/SKILL.md) with the plan and an
+[`s2h-plan-decomposition`](skills/s2h-plan-decomposition/SKILL.md) with the plan and an
 Output directory. It writes the deliverable `chunk-index.yaml`, step context
 and status files,
-derived `requirements-inventory.yaml` under `<output-dir>/.work/` (step files
+derived `requirements.yaml` under `<output-dir>/.work/` (step files
 under `.work/steps/`); re-invoking the same inputs resumes from verified chunks.
 
 ### 5. Execute and verify each step
@@ -407,20 +409,20 @@ not start until its predecessor is verified.
 #### 5a. Implement the step: `Step Implementer` (Subagent C)
 
 Before launching the agent, the orchestrator persists the step as `running` using
-[`step-status-format`](skills/step-status-format/SKILL.md). `Step Implementer` reads the step
+[`s2h-step-status-format`](skills/s2h-step-status-format/SKILL.md). `Step Implementer` reads the step
 context, its checkpoint, and any prior verifier report using
-[`step-context-format`](skills/step-context-format/SKILL.md) and
-[`checkpoint-format`](skills/checkpoint-format/SKILL.md). It uses:
+[`s2h-step-context-format`](skills/s2h-step-context-format/SKILL.md) and
+[`s2h-checkpoint-format`](skills/s2h-checkpoint-format/SKILL.md). It uses:
 
-- `implementation-execution` for bounded repository changes.
-- `test-driven-development` for behavioral work.
-- `test-first-plan-steps` to preserve the primary-test/implementation boundary.
-- `git-isolated-implementation` for branch and commit rules.
-- `persistent-workflow-state` and `subagent-recovery` for checkpoints and interruption
+- `s2h-implementation` for bounded repository changes.
+- `s2h-tdd` for behavioral work.
+- `s2h-test-first-plan-steps` to preserve the primary-test/implementation boundary.
+- `s2h-git-isolation` for branch and commit rules.
+- `s2h-persistent-state` and `s2h-subagent-recovery` for checkpoints and interruption
 handling.
-- `requirements-traceability` for requirement and validation reporting.
-- `atomic-step-commit` for the final validate/commit/status sequence.
-- `systematic-debugging` when a focused check fails unexpectedly.
+- `s2h-requirements-traceability` for requirement and validation reporting.
+- `s2h-atomic-step-commit` for the final validate/commit/status sequence.
+- `s2h-systematic-debugging` when a focused check fails unexpectedly.
 
 For a primary-test step, the agent writes only the planned tests, runs them, and records the
 intentional failure. For an implementation step, it makes the smallest production change that
@@ -440,7 +442,7 @@ or permissions, it persists a recoverable status and leaves the workspace intact
 
 After the implementation agent returns, the orchestrator starts `Step Verifier` with the step
 context, implementation report, and repository state. The verifier is read-only and uses
-`verification-before-completion`, `requirements-traceability`, and `test-first-plan-steps`.
+`s2h-verification-before-completion`, `s2h-requirements-traceability`, and `s2h-test-first-plan-steps`.
 
 For a primary-test step, it confirms that the tests express the required behavior and fail for
 the intended reason. For an implementation step, it confirms that:
@@ -468,8 +470,8 @@ instructions. Completed and verified steps are not restarted.
 
 After every step is verified, the orchestrator starts `Final Verifier` with the plan, step
 index, all reports, commit history, and repository state. It uses
-`verification-before-completion`, `requirements-traceability`, `git-isolated-implementation`,
-and `persistent-workflow-state`.
+`s2h-verification-before-completion`, `s2h-requirements-traceability`, `s2h-git-isolation`,
+and `s2h-persistent-state`.
 
 The final verifier checks:
 
@@ -495,9 +497,9 @@ each affected source file that needs maintainer-facing documentation. Independen
 may run in parallel when they do not share ownership or create conflicting edits.
 
 For each assignment, `Documentation Writer` reads the relevant Markdown documentation context,
-implementation context, and interfaces. It uses `source-documentation`,
-`documentation-verification`, `requirements-traceability`, `git-isolated-implementation`,
-`persistent-workflow-state`, and `atomic-step-commit`. The assignment should contain the
+implementation context, and interfaces. It uses `s2h-source-doc`,
+`s2h-doc-verification`, `s2h-requirements-traceability`, `s2h-git-isolation`,
+`s2h-persistent-state`, and `s2h-atomic-step-commit`. The assignment should contain the
 relevant requirements and context; the verified implementation is authoritative.
 
 It documents public interfaces, invariants, side effects, error contracts, lifecycle
@@ -506,9 +508,9 @@ implementation behavior. Documentation changes are validated and committed separ
 
 ### 8. Verify source documentation: `Documentation Verifier` (Subagent G)
 
-The orchestrator starts `Documentation Verifier` for each source-documentation assignment. It
-uses `documentation-verification`, `source-documentation`, `requirements-traceability`, and
-`verification-before-completion`.
+The orchestrator starts `Documentation Verifier` for each s2h-source-doc assignment. It
+uses `s2h-doc-verification`, `s2h-source-doc`, `s2h-requirements-traceability`, and
+`s2h-verification-before-completion`.
 
 The verifier checks only material issues:
 
@@ -523,9 +525,9 @@ It does not request stylistic rewrites. Failed documentation verification return
 ### 9. Create and verify user documentation
 
 After source documentation is stable, the orchestrator starts `Documentation Writer` for the
-user-facing documentation set using `documentation/user-documentation-context.md` plus verified
-implementation evidence. The agent uses `user-documentation`, `documentation-verification`, and
-`requirements-traceability` to document supported workflows, prerequisites, configuration,
+user-facing documentation set using `documentation/user-doc-context.md` plus verified
+implementation evidence. The agent uses `s2h-user-doc`, `s2h-doc-verification`, and
+`s2h-requirements-traceability` to document supported workflows, prerequisites, configuration,
 commands, expected results, examples, limitations, and recovery guidance without rereading the
 complete plan.
 
@@ -537,7 +539,7 @@ the retry limit.
 ### 10. Finish and report
 
 The orchestrator performs a final repository check and writes `final-report.yaml` using
-[`final-report-format`](skills/final-report-format/SKILL.md). It records:
+[`s2h-final-report-format`](skills/s2h-final-report-format/SKILL.md). It records:
 
 - Plan audit result.
 - Completed and verified steps.

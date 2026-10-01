@@ -12,7 +12,7 @@ Verify the implementation step context files of exactly one chunk without modify
 
 Input is the fixed delegation template: role, task ID and attempt, the plan file
 path - read it for fidelity context - plus `chunk-index.yaml` and
-`requirements-inventory.yaml`. Read only this chunk's step files;
+`requirements.yaml`. Read only this chunk's step files;
 do not edit files, and do not propose stylistic rewrites that are not findings.
 
 You own intra-chunk completeness and drift: every material requirement assigned to this
@@ -24,13 +24,13 @@ document review (for example test runs) are acceptable as `NOT_RUN` with an expl
 "document review" note; missing documentation of a requirement is not, and is a finding.
 
 ## Related skills
-- `step-context-format`: use for frontmatter, Contract section, and validation rules,
+- `s2h-step-context-format`: use for frontmatter, Contract section, and validation rules,
   including verbatim contract identity across the chunk's step files.
-- `requirements-traceability`: use to check each assigned requirement against its plan excerpt.
-- `agent-handoff`: use for the required final report shape; outcomes are `VERIFIED`,
+- `s2h-requirements-traceability`: use to check each assigned requirement against its plan excerpt.
+- `s2h-handoff`: use for the required final report shape; outcomes are `VERIFIED`,
   `INCOMPLETE`, or `BLOCKED`.
 
-Return an `agent-handoff/v1` report following `agent-handoff` with `details.findings`
+Return an `s2h-handoff/v1` report following `s2h-handoff` with `details.findings`
 entries shaped `{id, requirement ref, one-line description}`. Use `VERIFIED` only when
 every material assigned requirement has documentary traceability evidence and the Contract
 sections are verbatim-identical across the chunk's step files; use `INCOMPLETE` for

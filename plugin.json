@@ -1,8 +1,8 @@
 {
-  "name": "implementation-agent-workflow",
+  "name": "sprout-to-harvest",
   "version": "0.1.0",
   "description": "Resumable, test-driven implementation workflow for Copilot",
-  "repository": "https://github.com/OWNER/implementation-agent-workflow",
+  "repository": "https://github.com/OWNER/sprout-to-harvest",
   "license": "MIT",
   "keywords": ["implementation", "test-driven-development", "workflow"],
   "agents": "agents/",
