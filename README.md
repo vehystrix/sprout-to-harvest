@@ -26,8 +26,7 @@ The workflow:
 - **Chunk**: one behavioral or non-behavioral unit of work owned by exactly one writer,
   described in `chunk-index.yaml`.
 - **Step**: one executable step inside a chunk; test-first steps come before their
-  implementation steps. Each is written as `steps/<step-id>.md` per
-  [`s2h-step-context-format`](skills/s2h-step-context-format/SKILL.md).
+  implementation steps. Each is written as `steps/<step-id>.md` per `s2h-step-context-format`.
 
 ## Layout
 
@@ -46,8 +45,9 @@ The workflow:
   - `s2h-systematic-debugging`
   - `s2h-tdd`
   - `s2h-verification-before-completion`
+
    The others gate their workflow-specific outputs so a direct invocation produces no
-   persisted artifacts; two deliverable writers are exceptions - `s2h-design` writes only
+   persisted artifacts; two deliverable writers are exceptions: `s2h-design` writes only
    the design document(s), and `s2h-plan-decomposition` writes the implementation step files
    plus a deletable `.work/` communication directory at the user-specified location, both with
    no workflow state. Delegated role agents persist their outputs as before.
@@ -66,19 +66,19 @@ to the same `agents/` and `skills/` directories.
 Install the repository directly as a Pi package; the package manifest handles discovery:
 
 ```bash
-pi install git:github.com/OWNER/sprout-to-harvest
+pi install git:github.com/vehystrix/sprout-to-harvest
 ```
 
 For oh-my-pi, use its package installer with the same repository source:
 
 ```bash
-omp install git:github.com/OWNER/sprout-to-harvest
+omp install git:github.com/vehystrix/sprout-to-harvest
 ```
 
 Use the project-local form when the workflow should apply to one repository only:
 
 ```bash
-pi install -l git:github.com/OWNER/sprout-to-harvest
+pi install -l git:github.com/vehystrix/sprout-to-harvest
 ```
 
 The installed package contributes the workflow skills and exposes the eleven role files as
@@ -96,7 +96,7 @@ directories, so no project files need to be copied or linked.
 From a GitHub repository:
 
 ```bash
-copilot plugin install OWNER/sprout-to-harvest
+copilot plugin install vehystrix/sprout-to-harvest
 ```
 
 From a local checkout while developing:
@@ -111,12 +111,6 @@ Verify and manage the installation:
 copilot plugin list
 copilot plugin update sprout-to-harvest
 copilot plugin uninstall sprout-to-harvest
-```
-
-For a marketplace installation:
-
-```bash
-copilot plugin install sprout-to-harvest@MARKETPLACE-NAME
 ```
 
 After changing a local plugin, reinstall it because Copilot CLI caches installed plugin
@@ -147,7 +141,7 @@ Skip plan audit: false
 ```
 
 The orchestrator writes all handoff files, reports, and checkpoints under `.agent-work/`. It
-never commits those files. Add `.agent-work/` to `.git/info/exclude` if desired.
+never commits those files. Add `.agent-work/` to `.gitignore` if desired.
 
 ## Model configuration and routing
 
@@ -166,7 +160,7 @@ fallback chains, retry behavior, and `require_application`. It validates the com
 result, preserves unrelated fields during field-level merges, and requires confirmation
 before writing.
 Model IDs and host mappings are data, never executable commands. The catalog and policy
-schemas are defined by [`s2h-model-catalog-format`](skills/s2h-model-catalog-format/SKILL.md).
+schemas are defined by `s2h-model-catalog-format`.
 
 A minimal catalog entry and role policy look like this:
 
@@ -213,8 +207,7 @@ leaves the repository files unchanged.
 The portable `requested` ID, adapter `resolved` model, `fallback`, `applied` result,
 `runtime_model`, `warning`, and `evidence` are separate facts in the run records. A
 resolved model is not necessarily an applied model. The delegation guide in
-[`s2h-model-routing-adapter`](skills/s2h-model-routing-adapter/SKILL.md) defines these evidence
-levels:
+`s2h-model-routing-adapter` defines these evidence levels:
 
 - `adapter-confirmed`: deterministic host or tool confirmation of the resolved model;
 - `host-reported`: the host exposed a runtime model without confirming the override;
@@ -238,9 +231,8 @@ or subagent self-report). Runs without a confirmed mechanism delegate without a 
 field and record routing-unavailable warnings; on Pi the static check finds no exposed
 per-delegation `model` parameter, so such runs take the routing-unavailable path.
 
-The simplified approach uses zero compiled adapters. Model resolution happens entirely
-through YAML catalog lookup, a one-time capability probe, and per-delegation `model`
-field delegation:
+Model resolution happens entirely through YAML catalog lookup, a one-time capability probe,
+and per-delegation `model` field delegation:
 
 1. The orchestrator reads the effective run copy `.agent-work/<run-id>/`
 `model-catalog.yaml` to map the selected portable ID to a host-specific
@@ -251,21 +243,11 @@ the evidence channel for the run.
 3. When confirmed, the `model` field is set on each delegation; otherwise
 no model field is set and warnings are recorded.
 
-No TypeScript, no host bridges, no package extensions. The catalog and policy are pure
-YAML configuration files that can be edited independently of the workflow code.
-
-**Migration from compiled adapters:** If you previously read the OMP adapter plan or
-Copilot adapter plan, those approaches are replaced. The portable ID vocabulary,
-evidence levels, and assignment field contracts remain unchanged - only the mechanism
-changed from TypeScript bridges to catalog YAML lookup + `model` field delegation gated
-by a one-time capability probe.
-
 ## Inter-agent communication
 
 Every delegated agent returns exactly one `s2h-handoff/v1` report, as defined by the
-[`s2h-handoff`](skills/s2h-handoff/SKILL.md) format skill. The report is the sole
-communication contract between agents; role-specific results are carried in its requirement,
-validation, artifact, and blocker fields.
+`s2h-handoff` format skill. The report is the sole communication contract between agents;
+role-specific results are carried in its requirement, validation, artifact, and blocker fields.
 
 Required top-level fields are `schema`, `agent`, `task`, `status`, `summary`, `inputs`,
 `details`, `requirements`, `validation`, `artifacts`, `repository`, `blockers`, and
@@ -296,8 +278,7 @@ rather than loading the entire plan into its own context.
 
 The orchestrator receives the plan path, run directory, retry limit, and optional
 `Skip plan audit` setting. It creates an untracked run directory such as `.agent-work/run-001/`
-and writes the initial `run.yaml` using
-[`s2h-run-ledger-format`](skills/s2h-run-ledger-format/SKILL.md) before starting another agent.
+and writes the initial `run.yaml` using `s2h-run-ledger-format` before starting another agent.
 
 The run directory contains the durable coordination state:
 
@@ -344,7 +325,7 @@ If a subagent needs multiple experimental commits, it creates a temporary child 
 merges the verified result back into the implementation branch. The orchestrator never resets
 or discards unrelated work.
 
-### 3. Audit the plan: `Plan Auditor` (Subagent A)
+### 3. Audit the plan: `Plan Auditor`
 
 Unless the user explicitly skips the audit, the orchestrator starts `Plan Auditor` with the
 plan. The agent uses `s2h-plan-audit` and `s2h-requirements-traceability` to check:
@@ -355,9 +336,9 @@ plan. The agent uses `s2h-plan-audit` and `s2h-requirements-traceability` to che
 - Hidden dependencies and unnecessary complexity.
 - Missing acceptance criteria or validation commands.
 
-The auditor writes `s2h-plan-audit.yaml` using
-[`s2h-plan-audit-format`](skills/s2h-plan-audit-format/SKILL.md), with `PASS`, `NEEDS_CLARIFICATION`,
-or `BLOCKED`, plus findings, required questions, external interfaces, and validation gaps.
+The auditor writes `s2h-plan-audit.yaml` using `s2h-plan-audit-format`, with `PASS`,
+`NEEDS_CLARIFICATION`, or `BLOCKED`, plus findings, required questions, external interfaces,
+and validation gaps.
 
 It also extracts the complete requirements list, including implied-only
 requirements; on a PASS it writes `requirements.yaml` and records
@@ -366,31 +347,26 @@ If the result is `NEEDS_CLARIFICATION` or `BLOCKED`, the orchestrator reports th
 the user and stops. No implementation work begins. A `PASS` permits decomposition.
 
 The audit also creates separate Markdown briefs for source and user documentation under
-`documentation/`, using
-[`s2h-doc-context-format`](skills/s2h-doc-context-format/SKILL.md).
-`s2h-plan-audit.yaml` records their paths and status. The orchestrator carries the relevant brief
-into later documentation assignments, where it is reconciled with the verified implementation
-and changed files. This prevents documentation agents from rereading the complete plan while
-keeping the implementation authoritative.
+`documentation/`, using `s2h-doc-context-format`. `s2h-plan-audit.yaml` records their paths and
+status. The orchestrator carries the relevant brief into later documentation assignments, where
+it is reconciled with the verified implementation and changed files. This prevents documentation
+agents from rereading the complete plan while keeping the implementation authoritative.
 
-### 4. Decompose and document the plan: `Plan Decomposer`, `Chunk Writer`, `Chunk Verifier`,
-`Whole-Plan Verifier`
+### 4. Decompose the plan: `Plan Decomposer`, `Chunk Writer`, `Chunk Verifier`, `Whole-Plan Verifier`
 
 The orchestrator delegates decomposition exactly once to `Plan Decomposer`. The decomposer owns
-the whole phase, using [`s2h-plan-decomposition`](skills/s2h-plan-decomposition/SKILL.md) and the plan's
-requirements list: it chunks the plan by behavioral units - each chunk owns a contract of
-assigned requirement IDs with verbatim plan excerpts, interfaces in/out, an end-state, and
+the whole phase, using [`s2h-plan-decomposition`](skills/s2h-plan-decomposition/SKILL.md) and
+the plan's requirements list: it chunks the plan by behavioral units - each chunk owns a contract
+of assigned requirement IDs with verbatim plan excerpts, interfaces in/out, an end-state, and
 exclusions, and every inventory requirement is owned by exactly one chunk - writes
-`chunk-index.yaml` using [`s2h-chunk-index-format`](skills/s2h-chunk-index-format/SKILL.md) with the
-dependency order and model recommendations, then runs each chunk's writer and verifier loop.
+`chunk-index.yaml` using `s2h-chunk-index-format` with the dependency order and model
+recommendations, then runs each chunk's writer and verifier loop.
 
 For each chunk, `Chunk Writer` creates that chunk's `steps/<step-id>.md` files per
-[`s2h-step-context-format`](skills/s2h-step-context-format/SKILL.md), embedding the contract verbatim in
-every file; `Chunk Verifier` is read-only and confirms documentary traceability for every
-requirement the chunk owns. Each writer and verifier loop gets its own repair cap -
-the same `L` passed to implementation and documentation loops; counters are fresh
-per loop instance, so no chunk starves another of repairs. An exhausted allowance
-blocks the run with that chunk's evidence.
+`s2h-step-context-format`, embedding the contract verbatim in every file; `Chunk Verifier`
+is read-only and confirms traceability for every requirement the chunk owns. Each writer and
+verifier loop gets its own repair cap: the same `L` passed to implementation and documentation
+loops. An exhausted allowance blocks the run with that chunk's evidence.
 
 After all chunks verify, `Whole-Plan Verifier` performs only global checks no single
 chunk can see - unassigned content, duplicate ownership, and boundary consistency
@@ -398,8 +374,7 @@ against the full plan. A `decomposition-gap` finding - one requiring a change to
 chunk assignments or boundaries - is repaired by the decomposer itself, which reruns
 the affected writer and verifier loops; a `boundary-mismatch` reruns the affected
 writer loops only. Each repair runs as a fresh loop instance under the same cap.
-Whole-plan verifications total at most `L + 1`; only then does the decomposer return
-before moving on.
+Whole-plan verifications total at most `L + 1`.
 
 You can also run this pipeline directly as a user: invoke
 [`s2h-plan-decomposition`](skills/s2h-plan-decomposition/SKILL.md) with the plan and an
@@ -413,13 +388,11 @@ under `.work/steps/`); re-invoking the same inputs resumes from verified chunks.
 The orchestrator processes the dependency-ordered steps one at a time. A dependent step does
 not start until its predecessor is verified.
 
-#### 5a. Implement the step: `Step Implementer` (Subagent C)
+#### 5a. Implement the step: `Step Implementer`
 
 Before launching the agent, the orchestrator persists the step as `running` using
-[`s2h-step-status-format`](skills/s2h-step-status-format/SKILL.md). `Step Implementer` reads the step
-context, its checkpoint, and any prior verifier report using
-[`s2h-step-context-format`](skills/s2h-step-context-format/SKILL.md) and
-[`s2h-checkpoint-format`](skills/s2h-checkpoint-format/SKILL.md). It uses:
+`s2h-step-status-format`. `Step Implementer` reads the step context, its checkpoint, and
+any prior verifier report using `s2h-step-context-format` and `s2h-checkpoint-format`. It uses:
 
 - `s2h-implementation` for bounded repository changes.
 - `s2h-tdd` for behavioral work.
@@ -445,7 +418,7 @@ run focused validation -> create step commit -> persist commit hash -> report
 If the agent is interrupted or blocked by connection loss, cancellation, unavailable resources,
 or permissions, it persists a recoverable status and leaves the workspace intact.
 
-#### 5b. Verify the step: `Step Verifier` (Subagent D)
+#### 5b. Verify the step: `Step Verifier`
 
 After the implementation agent returns, the orchestrator starts `Step Verifier` with the step
 context, implementation report, and repository state. The verifier is read-only and uses
@@ -473,7 +446,7 @@ This loop continues only up to the configured retry limit. A `BLOCKED` result or
 retry limit is reported to the user with the current branch, commit, changed files, and resume
 instructions. Completed and verified steps are not restarted.
 
-### 6. Verify the complete implementation: `Final Verifier` (Subagent E)
+### 6. Verify the complete implementation: `Final Verifier`
 
 After every step is verified, the orchestrator starts `Final Verifier` with the plan, step
 index, all reports, commit history, and repository state. It uses
@@ -497,7 +470,7 @@ returns `VERIFIED`, `INCOMPLETE`, or `BLOCKED`.
 If final verification fails, the orchestrator starts `Step Implementer` with the final report
 and affected step contexts, then reruns `Final Verifier` within the retry limit.
 
-### 7. Document affected source files: `Documentation Writer` (Subagent F)
+### 7. Document affected source files: `Documentation Writer`
 
 Once the implementation is verified, the orchestrator builds a documentation assignment for
 each affected source file that needs maintainer-facing documentation. Independent assignments
@@ -515,7 +488,7 @@ implementation behavior. Documentation changes are validated and committed separ
 
 ### 8. Verify source documentation: `Documentation Verifier` (Subagent G)
 
-The orchestrator starts `Documentation Verifier` for each s2h-source-doc assignment. It
+The orchestrator starts `Documentation Verifier` for each `s2h-source-doc` assignment. It
 uses `s2h-doc-verification`, `s2h-source-doc`, `s2h-requirements-traceability`, and
 `s2h-verification-before-completion`.
 
@@ -546,7 +519,7 @@ the retry limit.
 ### 10. Finish and report
 
 The orchestrator performs a final repository check and writes `final-report.yaml` using
-[`s2h-final-report-format`](skills/s2h-final-report-format/SKILL.md). It records:
+`s2h-final-report-format`. It records:
 
 - Plan audit result.
 - Completed and verified steps.
@@ -558,7 +531,7 @@ The orchestrator performs a final repository check and writes `final-report.yaml
 - Blockers, warnings, or intentionally skipped work.
 - Resume instructions if the run did not complete.
 
-Only after this final status is persisted may the orchestrator report the workflow as complete.
+Only after this final status is persisted will the orchestrator report the workflow as complete.
 
 ## Recovery and Git rules
 
@@ -570,11 +543,3 @@ used when multiple commits are needed.
 
 This bundle is a workflow template, not a replacement for repository-specific tests,
 permissions, or host documentation.
-
-## Host capability note
-
-The shared files describe the roles and procedures. Copilot CLI loads them through
-`plugin.json`; Pi/oh-my-pi loads them through `package.json`. Both manifests point to the same
-`agents/` and `skills/` directories. Full automatic step orchestration in Pi/oh-my-pi would
-require a TypeScript extension, which is intentionally not duplicated into this content-only
-bundle yet.
