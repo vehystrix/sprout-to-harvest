@@ -1,6 +1,7 @@
 # Sprout To Harvest
 
-**sprout-to-harvest**: plant a design specification, grow it through small independently verified steps, and harvest the finished, verified result.
+**sprout-to-harvest**: plant a design specification, grow it through small independently verified
+steps, and harvest the finished, verified result.
 
 A resumable, test-driven workflow for implementing a design specification or implementation
 plan with isolated subagents.
@@ -36,7 +37,8 @@ The workflow:
   automatic model discovery - except `s2h-verification-before-completion`,
   which sets `false` so a model may apply its guidance mid-task. Each loads when an agent
   instruction calls it by name and stays reachable through `skill://<name>`.
-  All set `user-invocable: false` except 7 user-facing entry points:
+  All set `user-invocable: false` except 8 user-facing entry points:
+  - `s2h-design`
   - `s2h-orchestrator`
   - `s2h-model-config`
   - `s2h-plan-audit`
@@ -44,11 +46,11 @@ The workflow:
   - `s2h-systematic-debugging`
   - `s2h-tdd`
   - `s2h-verification-before-completion`
-   The other six gate their workflow-specific outputs so a direct invocation produces no
-   persisted artifacts; `s2h-plan-decomposition` is the exception - a direct invocation writes
-   the deliverable implementation step files and a deletable `.work/` communication directory
-   at the user-specified location, with no workflow state. Delegated role agents persist their
-   outputs as before.
+   The others gate their workflow-specific outputs so a direct invocation produces no
+   persisted artifacts; two deliverable writers are exceptions - `s2h-design` writes only
+   the design document(s), and `s2h-plan-decomposition` writes the implementation step files
+   plus a deletable `.work/` communication directory at the user-specified location, both with
+   no workflow state. Delegated role agents persist their outputs as before.
 - `package.json`: Pi/oh-my-pi package manifest. It exposes the same agent Markdown as prompt
 resources and the same skills as Agent Skills.
 - `plugin.json`: Copilot plugin manifest. It exposes the same `agents/` and `skills/`
@@ -121,6 +123,11 @@ After changing a local plugin, reinstall it because Copilot CLI caches installed
 components. Use `/agent` and `/skills list` inside a Copilot session to verify discovery.
 
 ## Running the workflow
+
+If you do not yet have an approved plan, build it interactively with the
+user-invocable [`s2h-design`](skills/s2h-design/SKILL.md) skill; for small scopes its
+single document is the immutable `Plan:` input for the orchestrator invocation below.
+For large systems it produces a tiered tree of documents whose leaves serve that role.
 
 Start the workflow with the plan path and optional audit/retry settings. The canonical
 orchestrator instructions live in
