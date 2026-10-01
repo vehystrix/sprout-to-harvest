@@ -51,6 +51,9 @@ The workflow:
    the design document(s), and `s2h-plan-decomposition` writes the implementation step files
    plus a deletable `.work/` communication directory at the user-specified location, both with
    no workflow state. Delegated role agents persist their outputs as before.
+- `templates/`: model catalog and policy YAML templates; target repositories
+  copy them to `.sprout-to-harvest/model-catalog.yaml` and
+  `.sprout-to-harvest/model-policy.yaml`.
 - `package.json`: Pi/oh-my-pi package manifest. It exposes the same agent Markdown as prompt
 resources and the same skills as Agent Skills.
 - `plugin.json`: Copilot plugin manifest. It exposes the same `agents/` and `skills/`
