@@ -66,7 +66,6 @@ For each new or changed model, ask for:
   reasoning-effort control - effort level names such as `low`, `high`, and
   numeric budgets vary by model; this value is not pinned to one vocabulary;
 - positive `context_window` in tokens;
-- supported or required `tools`;
 - data-only host mappings for `copilot` and/or `omp`.
 
 The host mapping is a selector string or `null`; it is never an executable command.
@@ -108,11 +107,6 @@ models:
     # optional field; omit it for models with no host-side reasoning-effort control
     # reasoning_effort: low
     context_window: 128000
-    tools:
-      - read
-      - search
-      - edit
-      - execute
     hosts:
       copilot: Code Model (copilot)
       omp: anthropic/claude-sonnet-4-5

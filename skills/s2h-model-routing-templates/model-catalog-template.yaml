@@ -8,8 +8,8 @@
 # Required fields per entry: `id` (unique portable model identifier), `capabilities`
 # (normalized names from the capability vocabulary in s2h-model-catalog-format), `tier`
 # (integer; larger indicates stronger default suitability), `cost` (`low`, `medium`, or
-# `high`), `context_window` (maximum supported token window), `tools` (supported host tools),
-# and `hosts` (optional mapping of active host identifiers to host-specific selector strings).
+# `high`), `context_window` (maximum supported token window), and `hosts` (optional mapping of
+# active host identifiers to host-specific selector strings).
 # Optional per entry: `reasoning_effort` records the effort level or budget requested
 # for models with a host-side control; any non-empty string or integer that model's
 # mechanism supports is valid - settings vary by model (`minimal`, `low`, `high`, numeric
@@ -30,11 +30,6 @@ models:
     cost: high
     reasoning_effort: high
     context_window: 200000
-    tools:
-      - read
-      - search
-      - edit
-      - execute
     hosts:
       copilot: Claude Opus 4.8 (copilot)
 
@@ -46,11 +41,6 @@ models:
     tier: 1
     cost: medium
     context_window: 128000
-    tools:
-      - read
-      - search
-      - edit
-      - execute
     hosts:
       copilot: Code Model (copilot)
 
@@ -63,10 +53,6 @@ models:
     tier: 2
     cost: medium
     context_window: 128000
-    tools:
-      - read
-      - search
-      - edit
     hosts:
       copilot: Claude Sonnet 4.5 (copilot)
 
@@ -77,10 +63,6 @@ models:
     tier: 1
     cost: low
     context_window: 64000
-    tools:
-      - read
-      - search
-      - edit
     hosts:
       copilot: Code Model (copilot)
 
@@ -91,8 +73,5 @@ models:
     tier: 0
     cost: low
     context_window: 64000
-    tools:
-      - read
-      - search
     hosts:
       copilot: Haiku (copilot)

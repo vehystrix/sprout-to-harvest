@@ -47,10 +47,6 @@ models:
     cost: high
     reasoning_effort: high
     context_window: 200000
-    tools:
-      - read
-      - search
-      - execute
     hosts:
       copilot: Claude Opus 4.8 (copilot)
       omp: anthropic/claude-opus-4-8
@@ -63,7 +59,6 @@ Each catalog entry must satisfy these requirements:
 - `tier` is a positive integer; larger values indicate stronger default suitability.
 - `cost` is a policy-comparable classification such as `low`, `medium`, or `high`.
 - `context_window` is the maximum supported token window.
-- `tools` preserves the required or supported host tools for this model.
 - `hosts` is optional and maps supported hosts to host-specific selector strings.
 - `reasoning_effort` is optional and deliberately not pinned to a fixed
   vocabulary. When present, it must be a non-empty string or integer - an

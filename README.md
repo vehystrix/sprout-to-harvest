@@ -155,7 +155,7 @@ catalog and policy normally live at:
 
 Use the separately invocable [`s2h-model-config`](skills/s2h-model-config/SKILL.md)
 skill to create or edit them. It asks for structured capabilities, tier, cost, optional
-`reasoning_effort` settings, `context_window`, tools, host mappings, role requirements,
+`reasoning_effort` settings, `context_window`, host mappings, role requirements,
 fallback chains, retry behavior, and `require_application`. It validates the complete YAML
 result, preserves unrelated fields during field-level merges, and requires confirmation
 before writing.
@@ -172,7 +172,6 @@ models:
     tier: 1
     cost: medium
     context_window: 128000
-    tools: [read, search, edit, execute]
     hosts:
       copilot: Code Model (copilot)
       omp: anthropic/claude-sonnet-4-5
