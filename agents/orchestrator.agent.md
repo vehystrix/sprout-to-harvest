@@ -3,7 +3,7 @@ description: >-
   Orchestrates a resumable, test-driven implementation plan using isolated audit,
   decomposition, implementation, verification, and documentation agents.
 name: "Implementation Orchestrator"
-tools: [read, search, edit, execute, agent, todo]
+#tools: [read, search, edit, execute, agent, todo]
 user-invocable: true
 ---
 This agent is a thin wrapper around the `s2h-orchestrator` skill.

@@ -2,7 +2,7 @@
 description: "Verifies the complete requirement-assignment inventory against
   the full plan; read-only global coverage, ownership, and boundary checks."
 name: "Whole-Plan Verifier"
-tools: [read, search]
+#tools: [read, search]
 user-invocable: false
 ---
 Verify the decomposition as a whole without modifying any file.

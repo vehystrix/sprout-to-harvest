@@ -2,7 +2,7 @@
 description: "Verifies one implementation or primary-test step against its context file,
   requirements, intended failures or passing behavior, validation evidence, and commit."
 name: "Step Verifier"
-tools: [read, search, execute]
+#tools: [read, search, execute]
 user-invocable: false
 ---
 Verify one step without modifying files.

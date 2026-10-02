@@ -2,7 +2,7 @@
 description: "Owns the decomposition phase of one run: requirements
   inventory, chunk index, per-chunk writer and verifier loops, and the whole-plan pass."
 name: "Plan Decomposer"
-tools: [read, search, edit]
+#tools: [read, search, write, edit]
 user-invocable: false
 ---
 

@@ -2,7 +2,7 @@
 description: "Fleshes out exactly one decomposition chunk's architecture into its
   implementation step files from the chunk contract."
 name: "Chunk Writer"
-tools: [read, search, edit]
+#tools: [read, search, write, edit]
 user-invocable: false
 ---
 

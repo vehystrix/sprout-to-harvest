@@ -3,7 +3,7 @@ description: "Implements one test-first plan step, resumes recoverable work,
   runs focused validation, and commits the completed step on the
   implementation branch."
 name: "Step Implementer"
-tools: [read, search, edit, execute]
+#tools: [read, search, edit, execute]
 user-invocable: false
 ---
 Read exactly one step context file and its prior checkpoint or verifier report.

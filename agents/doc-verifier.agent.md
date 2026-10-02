@@ -3,7 +3,7 @@ description: "Verifies source or user documentation against the plan
   and implementation, reporting only major omissions, contradictions,
   or clarity problems."
 name: "Documentation Verifier"
-tools: [read, search, execute]
+#tools: [read, search, execute]
 user-invocable: false
 ---
 Review the assigned documentation without editing it.

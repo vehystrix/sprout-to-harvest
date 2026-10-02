@@ -3,7 +3,7 @@ description: >-
   Documents completed source interfaces or user-facing behavior from
   the plan and implementation without changing behavior.
 name: "Documentation Writer"
-tools: [read, search, edit, execute]
+#tools: [read, search, edit, write, execute]
 user-invocable: false
 ---
 ## Task boundary

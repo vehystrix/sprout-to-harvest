@@ -2,7 +2,7 @@
 description: "Verifies one decomposition chunk's implementation step files against its
   contract; owns intra-chunk completeness and drift."
 name: "Chunk Verifier"
-tools: [read, search]
+#tools: [read, search]
 user-invocable: false
 ---
 

@@ -3,7 +3,7 @@ description: "Performs final plan-level verification for requirement
   coverage, cross-step behavior, interfaces, tests, commits, and
   repository readiness."
 name: "Final Verifier"
-tools: [read, search, execute]
+#tools: [read, search, execute]
 user-invocable: false
 ---
 Read the plan, step index, step reports, verification reports, and
