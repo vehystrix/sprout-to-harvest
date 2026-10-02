@@ -109,8 +109,8 @@ a later phase because an earlier agent's narrative sounds complete.
    format check per documentation context file to a cheap subagent that applies
    `s2h-doc-context-format`, resolving each model per step 7 as the cheapest
    portable ID satisfying a read-only capability, and accept only verified reports
-   per `s2h-handoff`. On any failed check, persist `blocked` and stop. Then
-   branch on its status:
+   per `s2h-handoff`. Explicitly tell it to use both skills. On any failed check,
+   persist `blocked` and stop. Then branch on its status:
    `NEEDS_CLARIFICATION` reports the required questions to the user and stops as
    `blocked`; `BLOCKED` reports the findings and stops as `blocked`. When
    `Skip plan audit` is `true`, the orchestrator writes the `SKIPPED` record
