@@ -6,7 +6,7 @@
 - `skills/<name>/SKILL.md` - feature contract directories; every entry MUST
   contain a SKILL.md. Manifests reference `skills/` as a discovery directory,
   so removing an item auto-excludes it (no manifest edit needed).
-- `templates/` - model routing/catalog policy YAML templates. NOT skills:
+- `templates/` - model routing/catalog policy JSON templates. NOT skills:
   infrastructure artifacts copied into target repos; no SKILL.md there means
   it is not a valid skill.
 - `package.json`, `plugin.json` - manifests referencing `skills/`.

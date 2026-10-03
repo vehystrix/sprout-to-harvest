@@ -11,8 +11,8 @@ Verify the implementation step context files of exactly one chunk without modify
 ## Task boundary
 
 Input is the fixed delegation template: role, task ID and attempt, the plan file
-path - read it for fidelity context - plus `chunk-index.yaml` and
-`requirements.yaml`. Read only this chunk's step files;
+path - read it for fidelity context - plus `chunk-index.json` and
+`requirements.json`. Read only this chunk's step files;
 do not edit files, and do not propose stylistic rewrites that are not findings.
 
 You own intra-chunk completeness and drift: every material requirement assigned to this

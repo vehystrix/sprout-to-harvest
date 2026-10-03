@@ -11,7 +11,7 @@ argument-hint: <plan-text-or-path> [<output-dir>]
 Use this skill to turn an approved implementation plan into a run of
 decomposed, chunk-level work items. The `s2h-PlanDecomposer` owns the whole
 decomposition phase for one run: it consumes or derives the requirements
-inventory, writes `chunk-index.yaml`, runs each chunk's `s2h-ChunkWriter` and
+inventory, writes `chunk-index.json`, runs each chunk's `s2h-ChunkWriter` and
 `s2h-ChunkVerifier` loop, and delegates the `s2h-WholePlanVerifier` pass.
 
 ## Requirements inventory
@@ -21,14 +21,14 @@ one entry per requirement with an `id`, a short `name`, and a verbatim plan
 `excerpt`. The `s2h-PlanDecomposer` consumes it or derives it:
 
 - Delegated mode - consume: the `s2h-PlanAuditor` has already written
-  `.agent-work/<run-id>/requirements.yaml` itself on a `PASS` audit,
+  `.agent-work/<run-id>/requirements.json` itself on a `PASS` audit,
   recorded in its handoff as `details.requirements_path`. Read it; never re-derive.
 - User mode, or any run where auditing is absent or skipped - derive: extract
   every material requirement from the plan (explicit and implied), split
   cross-cutting ones into `<parent-id><suffix>` sub-requirements so each final ID
-  fits one chunk, and write `<output-dir>/.work/requirements.yaml`
+  fits one chunk, and write `<output-dir>/.work/requirements.json`
   with `source: plan-decomposer`. In delegated mode a derived inventory goes
-  to `.agent-work/<run-id>/requirements.yaml` with the same source.
+  to `.agent-work/<run-id>/requirements.json` with the same source.
 
 Coverage is a real check, not an assertion. When you write the chunk index,
 verify that every inventory requirement appears in exactly one chunk's
@@ -52,7 +52,7 @@ Chunk the plan into independently implementable units of work:
   a Chunk Writer receives its contract directly and a verifier can check it line
   by line against the plan text.
 
-`chunk-index.yaml`, shaped by `s2h-chunk-index-format`, is the machine state: one
+`chunk-index.json`, shaped by `s2h-chunk-index-format`, is the machine state: one
 entry per chunk with its `requirements_assigned` IDs, `doc_status`, step list,
 and model blocks for all four roles. The `s2h-PlanDecomposer` initializes every
 `doc_status` to `pending` when it writes the index and persists status changes
@@ -63,8 +63,8 @@ as the loops run.
 For each chunk in dependency order:
 
 1. Persist `doc_status: running`.
-2. Delegate to a Chunk Writer with only file paths - the plan, `chunk-index.yaml`,
-   and `requirements.yaml`, from which the chunk's contract resolves; on
+2. Delegate to a Chunk Writer with only file paths - the plan, `chunk-index.json`,
+   and `requirements.json`, from which the chunk's contract resolves; on
    repair rounds include the prior findings - using the persisted
    documentation-loop model assignments. The writer is this chunk's architect: it
    derives implementation detail into the step files, so missing detail is its
@@ -94,8 +94,8 @@ details, never in the index.
 ## Whole-plan pass
 
 When every chunk has `doc_status: completed`, delegate to a `s2h-WholePlanVerifier`
-with only file paths - the plan, `requirements.yaml`, and
-`chunk-index.yaml`. It re-checks coverage against the full plan text and
+with only file paths - the plan, `requirements.json`, and
+`chunk-index.json`. It re-checks coverage against the full plan text and
 boundary fidelity across chunks, reading each chunk's Contracts from its step files.
 Route each finding to the actor that owns the artifact the defect lives in: a
 finding that requires changing `requirements_assigned` or chunk boundaries is a
@@ -118,7 +118,7 @@ decomposition-gap; any other finding is a boundary-mismatch.
 ## User-mode run directory
 
 In user mode the `s2h-PlanDecomposer` writes directly into `<output-dir>/.work/`:
-`requirements.yaml` when it derived one, `chunk-index.yaml`, and one
+`requirements.json` when it derived one, `chunk-index.json`, and one
 context file plus status file per step under `.work/steps/`. Delegation roles in
 user mode are limited to `chunk-writer`, `chunk-verifier`, `whole-plan-verifier`,
 and `plan-decomposer`.

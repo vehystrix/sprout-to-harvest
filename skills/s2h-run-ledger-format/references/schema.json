@@ -1,0 +1,137 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "s2h-workflow-run/v1",
+  "title": "Durable workflow run ledger (run.json)",
+  "description": "Top level of .agent-work/<run-id>/run.json; the durable run-level state.",
+  "type": "object",
+  "required": [
+    "schema",
+    "run_id",
+    "plan",
+    "run_directory",
+    "maximum_retries",
+    "skip_plan_audit",
+    "phase",
+    "status",
+    "attempt",
+    "final_verification_repairs",
+    "repository",
+    "timestamps",
+    "validation",
+    "blockers",
+    "resume_from"
+  ],
+  "properties": {
+    "schema": {"const": "s2h-workflow-run/v1"},
+    "run_id": {"type": "string"},
+    "plan": {"type": "string"},
+    "run_directory": {"type": "string"},
+    "maximum_retries": {"type": "integer", "minimum": 0},
+    "skip_plan_audit": {"type": "boolean"},
+    "phase": {
+      "enum": [
+        "initialization",
+        "s2h-plan-audit",
+        "decomposition",
+        "step-execution",
+        "final-verification",
+        "documentation",
+        "finalization"
+      ]
+    },
+    "status": {
+      "enum": [
+        "pending",
+        "running",
+        "completed",
+        "verification-failed",
+        "interrupted",
+        "recoverable",
+        "blocked",
+        "abandoned"
+      ]
+    },
+    "attempt": {"type": "integer", "minimum": 0},
+    "final_verification_repairs": {"type": "integer", "minimum": 0},
+    "repository": {
+      "type": "object",
+      "required": ["branch", "last_commit", "worktree", "tracked_changes"],
+      "properties": {
+        "branch": {"type": "string"},
+        "last_commit": {"type": "string"},
+        "worktree": {"enum": ["CLEAN", "CHANGED", "UNKNOWN", "N/A"]},
+        "tracked_changes": {"type": "array", "items": {"type": "string"}}
+      },
+      "additionalProperties": false
+    },
+    "timestamps": {
+      "type": "object",
+      "required": ["created", "updated"],
+      "properties": {
+        "created": {"type": "string"},
+        "updated": {"type": "string"}
+      },
+      "additionalProperties": false
+    },
+    "validation": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "required": ["command", "result", "evidence"],
+        "properties": {
+          "command": {"type": "string"},
+          "result": {"enum": ["PASS", "FAIL", "NOT_RUN"]},
+          "evidence": {"type": "string"}
+        },
+        "additionalProperties": false
+      }
+    },
+    "blockers": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "required": ["reason"],
+        "properties": {
+          "id": {"type": "string"},
+          "reason": {"type": "string"}
+        },
+        "additionalProperties": false
+      }
+    },
+    "resume_from": {"type": ["string", "null"]},
+    "model_routing": {
+      "type": "object",
+      "required": [
+        "catalog_source",
+        "policy_source",
+        "adapter",
+        "preflight",
+        "catalog_fingerprint",
+        "policy_fingerprint",
+        "override_confirmed",
+        "warnings"
+      ],
+      "properties": {
+        "catalog_source": {"type": "string"},
+        "policy_source": {"type": "string"},
+        "adapter": {"type": "string"},
+        "preflight": {
+          "type": "object",
+          "required": ["status", "mechanism", "evidence_channel"],
+          "properties": {
+            "status": {"enum": ["passed", "routing-unavailable"]},
+            "mechanism": {"enum": ["model-parameter", "none"]},
+            "evidence_channel": {"enum": ["tool-reported", "self-reported"]}
+          },
+          "additionalProperties": false
+        },
+        "catalog_fingerprint": {"type": "string"},
+        "policy_fingerprint": {"type": "string"},
+        "override_confirmed": {"type": "boolean"},
+        "warnings": {"type": "array", "items": {"type": "string"}}
+      },
+      "additionalProperties": false
+    }
+  },
+  "additionalProperties": false
+}

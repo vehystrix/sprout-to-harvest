@@ -60,7 +60,7 @@ configuration or prerequisite details when
 users need them.
 
 ## Plan Documentation Context
-Copy the relevant Markdown context from the path referenced by `s2h-plan-audit.yaml`, using
+Copy the relevant Markdown context from the path referenced by `s2h-plan-audit.json`, using
 `s2h-doc-context-format`. Treat it as the plan-level documentation brief: use its
 audiences, topics, requirements, and risks to scope the assignment; reconcile against
 the verified implementation.
@@ -93,7 +93,7 @@ user assignments explain workflows and
 expected outcomes. Include a small command
 or usage example when prose alone could leave
 invocation details ambiguous. Do not persist
-assignments as YAML or extensionless text.
+assignments as YAML, JSON, or extensionless text.
 
 ## Validation
 

@@ -18,15 +18,15 @@ effective run versions.
 The repository normally stores the canonical files under:
 
 ```text
-.sprout-to-harvest/model-catalog.yaml
-.sprout-to-harvest/model-policy.yaml
+.sprout-to-harvest/model-catalog.json
+.sprout-to-harvest/model-policy.json
 ```
 
 The effective run copies live under:
 
 ```text
-.agent-work/<run-id>/model-catalog.yaml
-.agent-work/<run-id>/model-policy.yaml
+.agent-work/<run-id>/model-catalog.json
+.agent-work/<run-id>/model-policy.json
 ```
 
 The effective copies are the authoritative runtime inputs. Repository
@@ -36,21 +36,28 @@ run.
 
 ## Catalog entry schema
 
-```yaml
-models:
-  - id: reasoning-pro
-    capabilities:
-      - reasoning
-      - planning
-      - verification
-    tier: 3
-    cost: high
-    reasoning_effort: high
-    context_window: 200000
-    hosts:
-      copilot: Claude Opus 4.8 (copilot)
-      omp: anthropic/claude-opus-4-8
+```json
+{
+  "models": [
+    {
+      "id": "reasoning-pro",
+      "capabilities": ["reasoning", "planning", "verification"],
+      "tier": 3,
+      "cost": "high",
+      "reasoning_effort": "high",
+      "context_window": 200000,
+      "hosts": {
+        "copilot": "Claude Opus 4.8 (copilot)",
+        "omp": "anthropic/claude-opus-4-8"
+      }
+    }
+  ]
+}
 ```
+
+This skill ships two schemas, `references/schema-catalog.json` and
+`references/schema-policy.json`. Validate a catalog with `scripts/validate.py catalog <file>`
+and a policy with `scripts/validate.py policy <file>`.
 
 Each catalog entry must satisfy these requirements:
 
@@ -76,17 +83,18 @@ invalid numeric values, unsupported host mapping values, and empty
 
 The initial portable capability vocabulary is:
 
-```yaml
-capabilities:
-  - general
-  - orchestration
-  - reasoning
-  - planning
-  - coding
-  - testing
-  - verification
-  - documentation
-  - large-context
+```json
+[
+  "general",
+  "orchestration",
+  "reasoning",
+  "planning",
+  "coding",
+  "testing",
+  "verification",
+  "documentation",
+  "large-context"
+]
 ```
 
 The vocabulary is the contract used by policy matching and validation.
@@ -96,34 +104,46 @@ an explicit namespace policy; otherwise the value is invalid.
 
 ## Policy schema
 
-```yaml
-model_policy:
-  roles:
-    plan-auditor:
-      required_capabilities: [reasoning, planning]
-      minimum_tier: 2
-      default: reasoning-pro
-    plan-decomposer:
-      required_capabilities: [planning, reasoning]
-      minimum_tier: 2
-    implementer:
-      required_capabilities: [coding, testing]
-      minimum_tier: 1
-    verifier:
-      required_capabilities: [verification, reasoning]
-      minimum_tier: 2
-    doc-writer:
-      required_capabilities: [documentation]
-      minimum_tier: 1
-    doc-verifier:
-      required_capabilities: [documentation, verification]
-      minimum_tier: 2
-  fallback: cheap-general
-  retry:
-    preserve_assignment: true
-    allow_escalation: false
-  host:
-    require_application: false
+```json
+{
+  "model_policy": {
+    "roles": {
+      "plan-auditor": {
+        "required_capabilities": ["reasoning", "planning"],
+        "minimum_tier": 2,
+        "default": "reasoning-pro"
+      },
+      "plan-decomposer": {
+        "required_capabilities": ["planning", "reasoning"],
+        "minimum_tier": 2
+      },
+      "implementer": {
+        "required_capabilities": ["coding", "testing"],
+        "minimum_tier": 1
+      },
+      "verifier": {
+        "required_capabilities": ["verification", "reasoning"],
+        "minimum_tier": 2
+      },
+      "doc-writer": {
+        "required_capabilities": ["documentation"],
+        "minimum_tier": 1
+      },
+      "doc-verifier": {
+        "required_capabilities": ["documentation", "verification"],
+        "minimum_tier": 2
+      }
+    },
+    "fallback": "cheap-general",
+    "retry": {
+      "preserve_assignment": true,
+      "allow_escalation": false
+    },
+    "host": {
+      "require_application": false
+    }
+  }
+}
 ```
 
 The policy defines the role defaults, suitability requirements, fallback

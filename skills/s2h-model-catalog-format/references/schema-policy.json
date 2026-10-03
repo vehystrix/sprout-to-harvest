@@ -1,0 +1,53 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://sprout-to-harvest.dev/schemas/model-policy-v1.json",
+  "title": "s2h model policy file",
+  "description": "Routing policy: roles, fallback, retry, and host.",
+  "type": "object",
+  "required": ["model_policy"],
+  "additionalProperties": false,
+  "properties": {
+    "model_policy": {
+      "type": "object",
+      "required": ["roles", "fallback", "retry", "host"],
+      "additionalProperties": false,
+      "properties": {
+        "roles": {
+          "type": "object",
+          "additionalProperties": {
+            "type": "object",
+            "required": ["required_capabilities"],
+            "additionalProperties": false,
+            "properties": {
+              "required_capabilities": {
+                "type": "array",
+                "minItems": 1,
+                "items": { "type": "string" }
+              },
+              "minimum_tier": { "type": ["integer", "null"], "minimum": 1 },
+              "default": { "type": "string" }
+            }
+          }
+        },
+        "fallback": { "type": "string", "minLength": 1 },
+        "retry": {
+          "type": "object",
+          "required": ["preserve_assignment", "allow_escalation"],
+          "additionalProperties": false,
+          "properties": {
+            "preserve_assignment": { "type": "boolean" },
+            "allow_escalation": { "type": "boolean" }
+          }
+        },
+        "host": {
+          "type": "object",
+          "required": ["require_application"],
+          "additionalProperties": false,
+          "properties": {
+            "require_application": { "type": "boolean" }
+          }
+        }
+      }
+    }
+  }
+}

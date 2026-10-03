@@ -19,9 +19,9 @@ orchestrator at step selection.
 Execute per `s2h-plan-decomposition`, which owns the full phase contract - chunking
 rules, loop mechanics, retry caps, finding routing, and blocked conditions:
 
-1. Inventory - consume `.agent-work/<run-id>/requirements.yaml` when the
+1. Inventory - consume `.agent-work/<run-id>/requirements.json` when the
    audit wrote one; derive and write it yourself when auditing is absent or skipped.
-2. Chunk index - write `chunk-index.yaml`; verify coverage on write before any loop starts.
+2. Chunk index - write `chunk-index.json`; verify coverage on write before any loop starts.
 3. Per-chunk loops - drive each chunk's writer and verifier loop to completion under
    the run's per-loop retry cap.
 4. Model assignments - persist documentation-loop assignments into the index per the

@@ -11,8 +11,8 @@ Write or update the implementation step context files for exactly one decomposit
 ## Task boundary
 
 Input is the fixed delegation template: role, task ID and attempt, the plan
-file path - read it for fidelity context - plus `chunk-index.yaml` and
-`requirements.yaml`, from which your chunk's contract resolves, and
+file path - read it for fidelity context - plus `chunk-index.json` and
+`requirements.json`, from which your chunk's contract resolves, and
 - on repair rounds only - the prior verifier findings. You are this chunk's architect:
 detail - interfaces, file boundaries, acceptance criteria, edge-case handling - from
 the contract and the overall plan design, and record those decisions concretely in the
@@ -30,7 +30,7 @@ rounds, fix only the named findings and do not restructure unaffected steps.
 Do not self-check completeness or drift - same-context re-deriving cannot see
 missing requirements; the `s2h-ChunkVerifier` owns both. Do validate mechanically before
 returning `PASS`: each step file parses per `s2h-step-context-format`, each of your chunk's
-`requirements_assigned` IDs resolves into `requirements.yaml`, and every
+`requirements_assigned` IDs resolve into `requirements.json`, and every
 Contract block is present in its files; fix anything you find in place.
 
 ## Related skills

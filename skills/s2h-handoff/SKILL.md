@@ -1,55 +1,68 @@
 ---
 name: s2h-handoff
 description: Only use when explicitly invoked
-# description: "Defines the YAML schema for every inter-agent handoff and its report."
+# description: "Defines the JSON schema for every inter-agent handoff and its report."
 user-invocable: false
 disable-model-invocation: true
 ---
 # Agent Handoff
 
-Every delegated agent must end with one handoff using this exact YAML
+Every delegated agent must end with one handoff using this exact JSON
 shape. The handoff may be saved in the run directory and summarized to
 the caller, but the field names and meanings are stable across agents.
 
 Use this skill whenever a delegated agent creates, validates, or reads
-a handoff. The handoff is YAML and is the sole communication contract
+a handoff. The handoff is JSON and is the sole communication contract
 between agents.
 
-When persisted, save the complete handoff as YAML under
-`reports/<phase>-<subject>-<attempt>.yaml`; `s2h-plan-audit.yaml` is the
-named exception for the s2h-plan-audit handoff and `final-report.yaml`
+When persisted, save the complete handoff as JSON under
+`reports/<phase>-<subject>-<attempt>.json`; `s2h-plan-audit.json` is the
+named exception for the s2h-plan-audit handoff and `final-report.json`
 is the named exception for the final handoff. Do not persist handoffs
 as Markdown or extensionless files.
 
-```yaml
-schema: s2h-handoff/v1
-agent: <role name>
-task: <run id, phase, step or assignment>
-status: PASS | VERIFIED | INCOMPLETE | NEEDS_CLARIFICATION | BLOCKED | RECOVERABLE
-summary: <one concise sentence>
-inputs:
-  context_files: []
-  prior_reports: []
-details: {}
-requirements:
-  - id: <requirement id or N/A>
-    result: SATISFIED | PARTIAL | NOT_SATISFIED | NOT_APPLICABLE | BLOCKED
-    evidence: <specific file, test, command, or reason>
-validation:
-  - command: <exact command or N/A>
-    result: PASS | FAIL | NOT_RUN
-    evidence: <relevant output or reason>
-artifacts:
-  changed_files: []
-  created_reports: []
-  commits: []
-repository:
-  branch: <branch or N/A>
-  last_commit: <hash or N/A>
-  worktree: CLEAN | CHANGED | UNKNOWN | N/A
-blockers: []
-resume_from: <exact next action, or null>
+```json
+{
+  "schema": "s2h-handoff/v1",
+  "agent": "<role name>",
+  "task": "<run id, phase, step or assignment>",
+  "status": "<PASS | VERIFIED | INCOMPLETE | NEEDS_CLARIFICATION | BLOCKED | RECOVERABLE>",
+  "summary": "<one concise sentence>",
+  "inputs": {
+    "context_files": [],
+    "prior_reports": []
+  },
+  "details": {},
+  "requirements": [
+    {
+      "id": "<requirement id or N/A>",
+      "result": "<SATISFIED | PARTIAL | NOT_SATISFIED | NOT_APPLICABLE | BLOCKED>",
+      "evidence": "<specific file, test, command, or reason>"
+    }
+  ],
+  "validation": [
+    {
+      "command": "<exact command or N/A>",
+      "result": "<PASS | FAIL | NOT_RUN>",
+      "evidence": "<relevant output or reason>"
+    }
+  ],
+  "artifacts": {
+    "changed_files": [],
+    "created_reports": [],
+    "commits": []
+  },
+  "repository": {
+    "branch": "<branch or N/A>",
+    "last_commit": "<hash or N/A>",
+    "worktree": "<CLEAN | CHANGED | UNKNOWN | N/A>"
+  },
+  "blockers": [],
+  "resume_from": "<exact next action, or null>"
+}
 ```
+The machine-readable form is defined by `references/schema.json`; validate a file with
+`scripts/validate.py <file>`.
 
 Rules:
 
@@ -119,21 +132,25 @@ Rules:
 
 ## Required delegated model assignment block
 
-```yaml
-details:
-  model_assignment:
-    requested: reasoning-pro
-    resolved: Claude Opus 4.8 (copilot)
-    portable_id: reasoning-pro
-    role: step-verifier
-    source: policy
-    fallback: null
-    applied: true
-    adapter: copilot
-    evidence: adapter-confirmed
-    runtime_model: Claude Opus 4.8 (copilot)
-    rationale: "Independent verification of parser behavior."
-    warning: null
+```json
+{
+  "details": {
+    "model_assignment": {
+      "requested": "reasoning-pro",
+      "resolved": "Claude Opus 4.8 (copilot)",
+      "portable_id": "reasoning-pro",
+      "role": "step-verifier",
+      "source": "policy",
+      "fallback": null,
+      "applied": true,
+      "adapter": "copilot",
+      "evidence": "adapter-confirmed",
+      "runtime_model": "Claude Opus 4.8 (copilot)",
+      "rationale": "Independent verification of parser behavior.",
+      "warning": null
+    }
+  }
+}
 ```
 
 The assignment block records the exact routing state for the current attempt. The fields mean:

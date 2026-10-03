@@ -1,0 +1,86 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "s2h-chunk-index/v1",
+  "title": "Chunk decomposition index (chunk-index.json)",
+  "description": "Top level of .agent-work/<run-id>/chunk-index.json.",
+  "type": "object",
+  "required": ["schema", "run_id", "chunks"],
+  "properties": {
+    "schema": {"const": "s2h-chunk-index/v1"},
+    "run_id": {"type": "string"},
+    "chunks": {
+      "type": "array",
+      "minItems": 1,
+      "items": {
+        "type": "object",
+        "required": [
+          "id",
+          "kind",
+          "requirements_assigned",
+          "doc_status",
+          "steps",
+          "model_assignments"
+        ],
+        "properties": {
+          "id": {"type": "string", "minLength": 1},
+          "kind": {"type": "string"},
+          "requirements_assigned": {"type": "array", "items": {"type": "string"}},
+          "doc_status": {"enum": ["pending", "running", "verification-failed", "completed"]},
+          "steps": {
+            "type": "array",
+            "minItems": 1,
+            "items": {
+              "type": "object",
+              "required": [
+                "id",
+                "type",
+                "context_file",
+                "status_file",
+                "dependencies",
+                "status"
+              ],
+              "properties": {
+                "id": {"type": "string", "minLength": 1},
+                "type": {"type": "string"},
+                "context_file": {"type": "string"},
+                "status_file": {"type": "string"},
+                "dependencies": {"type": "array", "items": {"type": "string"}},
+                "status": {"type": "string"}
+              },
+              "additionalProperties": false
+            }
+          },
+          "model_recommendations": {
+            "type": "object",
+            "additionalProperties": {
+              "type": "object",
+              "required": ["portable_id", "rationale", "required_capabilities", "complexity"],
+              "properties": {
+                "portable_id": {"type": ["string", "null"]},
+                "rationale": {"type": "string"},
+                "required_capabilities": {"type": "array", "items": {"type": "string"}},
+                "complexity": {"type": "string"}
+              },
+              "additionalProperties": false
+            }
+          },
+          "model_assignments": {
+            "type": "object",
+            "additionalProperties": {
+              "type": "object",
+              "required": ["portable_id", "assigned_at", "source"],
+              "properties": {
+                "portable_id": {"type": "string"},
+                "assigned_at": {"type": "string"},
+                "source": {"type": "string"}
+              },
+              "additionalProperties": false
+            }
+          }
+        },
+        "additionalProperties": false
+      }
+    }
+  },
+  "additionalProperties": false
+}

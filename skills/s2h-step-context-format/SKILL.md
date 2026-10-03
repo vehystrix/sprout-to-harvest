@@ -11,7 +11,7 @@ disable-model-invocation: true
 Use this skill when the decomposer defines a chunk contract, and when
 chunk writers create or verifiers validate `steps/<step-id>.md`. The
 `Contract` section's requirement excerpts come verbatim from the run's
-`requirements.yaml`.
+`requirements.json`.
 
 ## Frontmatter
 

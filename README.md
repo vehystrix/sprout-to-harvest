@@ -24,7 +24,7 @@ The workflow:
 ## Terms
 
 - **Chunk**: one behavioral or non-behavioral unit of work owned by exactly one writer,
-  described in `chunk-index.yaml`.
+  described in `chunk-index.json`.
 - **Step**: one executable step inside a chunk; test-first steps come before their
   implementation steps. Each is written as `steps/<step-id>.md` per `s2h-step-context-format`.
 
@@ -51,9 +51,9 @@ The workflow:
    the design document(s), and `s2h-plan-decomposition` writes the implementation step files
    plus a deletable `.work/` communication directory at the user-specified location, both with
    no workflow state. Delegated role agents persist their outputs as before.
-- `templates/`: model catalog and policy YAML templates; target repositories
-  copy them to `.sprout-to-harvest/model-catalog.yaml` and
-  `.sprout-to-harvest/model-policy.yaml`.
+- `templates/`: model catalog and policy JSON templates; target repositories
+  copy them to `.sprout-to-harvest/model-catalog.json` and
+  `.sprout-to-harvest/model-policy.json`.
 - `package.json`: Pi/oh-my-pi package manifest. It exposes the same agent Markdown as prompt
 resources and the same skills as Agent Skills.
 - `plugin.json`: Copilot plugin manifest. It exposes the same `agents/` and `skills/`
@@ -152,14 +152,14 @@ Portable model selection is configured separately from workflow roles. The repos
 catalog and policy normally live at:
 
 ```text
-.sprout-to-harvest/model-catalog.yaml
-.sprout-to-harvest/model-policy.yaml
+.sprout-to-harvest/model-catalog.json
+.sprout-to-harvest/model-policy.json
 ```
 
 Use the separately invocable [`s2h-model-config`](skills/s2h-model-config/SKILL.md)
 skill to create or edit them. It asks for structured capabilities, tier, cost, optional
 `reasoning_effort` settings, `context_window`, host mappings, role requirements,
-fallback chains, retry behavior, and `require_application`. It validates the complete YAML
+fallback chains, retry behavior, and `require_application`. It validates the complete JSON
 result, preserves unrelated fields during field-level merges, and requires confirmation
 before writing.
 Model IDs and host mappings are data, never executable commands. The catalog and policy
@@ -167,39 +167,50 @@ schemas are defined by `s2h-model-catalog-format`.
 
 A minimal catalog entry and role policy look like this:
 
-```yaml
-# .sprout-to-harvest/model-catalog.yaml
-models:
-  - id: coding-standard
-    capabilities: [coding, testing]
-    tier: 1
-    cost: medium
-    context_window: 128000
-    hosts:
-      copilot: Code Model (copilot)
-      omp: anthropic/claude-sonnet-4-5
+```json
+{
+  "models": [
+    {
+      "id": "coding-standard",
+      "capabilities": ["coding", "testing"],
+      "tier": 1,
+      "cost": "medium",
+      "context_window": 128000,
+      "hosts": {
+        "copilot": "Code Model (copilot)",
+        "omp": "anthropic/claude-sonnet-4-5"
+      }
+    }
+  ]
+}
 ```
 
-```yaml
-# .sprout-to-harvest/model-policy.yaml
-model_policy:
-  roles:
-    implementer:
-      required_capabilities: [coding, testing]
-      minimum_tier: 1
-      default: coding-standard
-  fallback: cheap-general
-  retry:
-    preserve_assignment: true
-    allow_escalation: false
-  host:
-    require_application: false
+```json
+{
+  "model_policy": {
+    "roles": {
+      "implementer": {
+        "required_capabilities": ["coding", "testing"],
+        "minimum_tier": 1,
+        "default": "coding-standard"
+      }
+    },
+    "fallback": "cheap-general",
+    "retry": {
+      "preserve_assignment": true,
+      "allow_escalation": false
+    },
+    "host": {
+      "require_application": false
+    }
+  }
+}
 ```
 
 These repository files are configuration inputs, not run state. After confirmed
 invocation overrides are merged and validated, the orchestrator freezes effective copies
-under `.agent-work/<run-id>/model-catalog.yaml` and
-`.agent-work/<run-id>/model-policy.yaml`. Resumed runs use those copies rather than
+under `.agent-work/<run-id>/model-catalog.json` and
+`.agent-work/<run-id>/model-policy.json`. Resumed runs use those copies rather than
 silently rereading changed repository files. An invocation override requires a complete
 effective-configuration display and explicit confirmation; declining it cancels the write and
 leaves the repository files unchanged.
@@ -233,11 +244,11 @@ or subagent self-report). Runs without a confirmed mechanism delegate without a 
 field and record routing-unavailable warnings; on Pi the static check finds no exposed
 per-delegation `model` parameter, so such runs take the routing-unavailable path.
 
-Model resolution happens entirely through YAML catalog lookup, a one-time capability probe,
+Model resolution happens entirely through JSON catalog lookup, a one-time capability probe,
 and per-delegation `model` field delegation:
 
 1. The orchestrator reads the effective run copy `.agent-work/<run-id>/`
-`model-catalog.yaml` to map the selected portable ID to a host-specific
+`model-catalog.json` to map the selected portable ID to a host-specific
 model name via `hosts.<host>`.
 2. A one-time capability probe (a cheap self-identification delegation)
 confirms whether the active host honors per-delegation model selection and pins
@@ -280,36 +291,36 @@ rather than loading the entire plan into its own context.
 
 The orchestrator receives the plan path, run directory, retry limit, and optional
 `Skip plan audit` setting. It creates an untracked run directory such as `.agent-work/run-001/`
-and writes the initial `run.yaml` using `s2h-run-ledger-format` before starting another agent.
+and writes the initial `run.json` using `s2h-run-ledger-format` before starting another agent.
 
 The run directory contains the durable coordination state:
 
 ```text
 .agent-work/run-001/
-	run.yaml
-	s2h-plan-audit.yaml
+	run.json
+	s2h-plan-audit.json
 	documentation/
 		source-doc-context.md
 		user-doc-context.md
-	requirements.yaml
-	chunk-index.yaml
+	requirements.json
+	chunk-index.json
 	steps/
 		<step-id>.md
-		<step-id>-status.yaml
+		<step-id>-status.json
 	reports/
-		<phase>-<subject>-<attempt>.yaml
+		<phase>-<subject>-<attempt>.json
 	checkpoints/
-		<step-id>.yaml
+		<step-id>.json
 	documentation/
 		<assignment-id>.md
-	final-report.yaml
+	final-report.json
 ```
 
 Every status update records the phase, step, attempt, assigned agent, status, branch, last
 known commit, changed files, validation evidence, timestamps, blockers, and resume
-instructions. YAML is used for machine-validated state and reports. Step and documentation
+instructions. JSON is used for machine-validated state and reports. Step and documentation
 context use Markdown with required YAML frontmatter and stable headings. No extensionless,
-JSON, or ad hoc text artifacts are permitted. YAML state and reports are written atomically.
+YAML, or ad hoc text artifacts are permitted. JSON state and reports are written atomically.
 The run directory is never committed.
 
 ### 2. Prepare Git isolation
@@ -338,18 +349,18 @@ plan. The agent uses `s2h-plan-audit` and `s2h-requirements-traceability` to che
 - Hidden dependencies and unnecessary complexity.
 - Missing acceptance criteria or validation commands.
 
-The auditor writes `s2h-plan-audit.yaml` using `s2h-plan-audit-format`, with `PASS`,
+The auditor writes `s2h-plan-audit.json` using `s2h-plan-audit-format`, with `PASS`,
 `NEEDS_CLARIFICATION`, or `BLOCKED`, plus findings, required questions, external interfaces,
 and validation gaps.
 
 It also extracts the complete requirements list, including implied-only
-requirements; on a PASS it writes `requirements.yaml` and records
+requirements; on a PASS it writes `requirements.json` and records
 the path in its handoff. The orchestrator records that path for decomposition.
 If the result is `NEEDS_CLARIFICATION` or `BLOCKED`, the orchestrator reports the findings to
 the user and stops. No implementation work begins. A `PASS` permits decomposition.
 
 The audit also creates separate Markdown briefs for source and user documentation under
-`documentation/`, using `s2h-doc-context-format`. `s2h-plan-audit.yaml` records their paths and
+`documentation/`, using `s2h-doc-context-format`. `s2h-plan-audit.json` records their paths and
 status. The orchestrator carries the relevant brief into later documentation assignments, where
 it is reconciled with the verified implementation and changed files. This prevents documentation
 agents from rereading the complete plan while keeping the implementation authoritative.
@@ -362,7 +373,7 @@ the whole phase, using [`s2h-plan-decomposition`](skills/s2h-plan-decomposition/
 the plan's requirements list: it chunks the plan by behavioral units - each chunk owns a contract
 of assigned requirement IDs with verbatim plan excerpts, interfaces in/out, an end-state, and
 exclusions, and every inventory requirement is owned by exactly one chunk - writes
-`chunk-index.yaml` using `s2h-chunk-index-format` with the dependency order and model
+`chunk-index.json` using `s2h-chunk-index-format` with the dependency order and model
 recommendations, then runs each chunk's writer and verifier loop.
 
 For each chunk, `s2h-ChunkWriter` creates that chunk's `steps/<step-id>.md` files per
@@ -381,9 +392,9 @@ Whole-plan verifications total at most `L + 1`.
 
 You can also run this pipeline directly as a user: invoke
 [`s2h-plan-decomposition`](skills/s2h-plan-decomposition/SKILL.md) with the plan and an
-Output directory. It writes the deliverable `chunk-index.yaml`, step context
+Output directory. It writes the deliverable `chunk-index.json`, step context
 and status files,
-derived `requirements.yaml` under `<output-dir>/.work/` (step files
+derived `requirements.json` under `<output-dir>/.work/` (step files
 under `.work/steps/`); re-invoking the same inputs resumes from verified chunks.
 
 ### 5. Execute and verify each step
@@ -521,7 +532,7 @@ the retry limit.
 
 ### 10. Finish and report
 
-The orchestrator performs a final repository check and writes `final-report.yaml` using
+The orchestrator performs a final repository check and writes `final-report.json` using
 `s2h-final-report-format`. It records:
 
 - Plan audit result.

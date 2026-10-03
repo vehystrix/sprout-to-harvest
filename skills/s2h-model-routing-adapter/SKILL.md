@@ -13,7 +13,7 @@ disable-model-invocation: true
 
 The orchestrator runs this probe exactly once per run, before plan auditing
 begins, after the effective catalog and policy have been copied under
-`.agent-work/<run-id>/`. Its result is cached in `run.yaml.model_routing.preflight`
+`.agent-work/<run-id>/`. Its result is cached in `run.json.model_routing.preflight`
 and reused for every later delegation of that run. Reusing a cached probe
 result is valid only while the same host, session, and effective configuration
 fingerprint are still in use; if any of those change on resume, re-run the
@@ -58,22 +58,26 @@ Result values are exactly:
 - `mechanism`: `model-parameter | none`
 - `evidence_channel`: `tool-reported | self-reported`
 
-Persist the result under `run.yaml.model_routing.preflight` as a data block,
+Persist the result under `run.json.model_routing.preflight` as a data block,
 alongside `catalog_source`, `policy_source`, `adapter` (the active host
 identifier), fingerprints, and warnings:
 
-```yaml
-model_routing:
-  preflight:
-    status: passed               # or routing-unavailable when no honored selector exists
-    mechanism: model-parameter   # or none
-    evidence_channel: tool-reported  # or self-reported
+```json
+{
+  "model_routing": {
+    "preflight": {
+      "status": "passed",
+      "mechanism": "model-parameter",
+      "evidence_channel": "tool-reported"
+    }
+  }
+}
 ```
 
 ## Catalog lookup procedure
 
 To resolve a selected portable ID for delegation, read the run copy of
-`.agent-work/<run-id>/model-catalog.yaml`, find the entry where
+`.agent-work/<run-id>/model-catalog.json`, find the entry where
 `models[].id == selected_portable_id`, and extract its `hosts.<active_host>` value
 as the resolved model name. Host names appear only as data values in catalog keys
 and in the `adapter:` field, which means "active host identifier." The extracted
@@ -81,16 +85,20 @@ value is a selector string, not an executable command.
 
 Example lookup:
 
-```yaml
-# run copy: .agent-work/<run-id>/model-catalog.yaml (excerpt)
-models:
-  - id: reasoning-pro
-    hosts:
-      copilot: Claude Opus 4.8 (copilot)
-
-selected_portable_id: reasoning-pro
-active_host:          copilot                    # the value of model_routing.adapter
-resolved model name:  Claude Opus 4.8 (copilot)
+```json
+{
+  "models": [
+    {
+      "id": "reasoning-pro",
+      "hosts": {
+        "copilot": "Claude Opus 4.8 (copilot)"
+      }
+    }
+  ],
+  "selected_portable_id": "reasoning-pro",
+  "active_host": "copilot",
+  "resolved_model_name": "Claude Opus 4.8 (copilot)"
+}
 ```
 
 ## Delegation
@@ -100,10 +108,12 @@ role alias for it) as the `model` field on the delegation call. When the probe
 status is `routing-unavailable`, set no `model` field at all - omit the field
 entirely:
 
-```yaml
-agent: s2h-StepImplementer
-task: implement step-002
-model: "<resolved model name>"   # present only when probe status is passed
+```json
+{
+  "agent": "s2h-StepImplementer",
+  "task": "implement step-002",
+  "model": "<resolved model name>"
+}
 ```
 
 ## Evidence recording after delegation

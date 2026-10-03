@@ -1,0 +1,59 @@
+{
+  "model_policy": {
+    "roles": {
+      "plan-auditor": {
+        "required_capabilities": ["reasoning", "planning"],
+        "minimum_tier": 2,
+        "default": "reasoning-pro"
+      },
+      "plan-decomposer": {
+        "required_capabilities": ["planning", "reasoning"],
+        "minimum_tier": 2,
+        "default": "reasoning-pro"
+      },
+      "chunk-writer": {
+        "required_capabilities": ["planning", "reasoning"],
+        "minimum_tier": 2,
+        "default": "reasoning-pro"
+      },
+      "chunk-verifier": {
+        "required_capabilities": ["verification", "reasoning"],
+        "minimum_tier": 2,
+        "default": "reasoning-pro"
+      },
+      "whole-plan-verifier": {
+        "required_capabilities": ["verification", "reasoning"],
+        "minimum_tier": 2,
+        "default": "reasoning-pro"
+      },
+      "implementer": {
+        "required_capabilities": ["coding", "testing"],
+        "minimum_tier": 1,
+        "default": "coding-standard"
+      },
+      "verifier": {
+        "required_capabilities": ["verification", "reasoning"],
+        "minimum_tier": 2,
+        "default": "reasoning-pro"
+      },
+      "doc-writer": {
+        "required_capabilities": ["documentation"],
+        "minimum_tier": 1,
+        "default": "documentation-standard"
+      },
+      "doc-verifier": {
+        "required_capabilities": ["documentation", "verification"],
+        "minimum_tier": 2,
+        "default": "doc-verification"
+      }
+    },
+    "fallback": "cheap-general",
+    "retry": {
+      "preserve_assignment": true,
+      "allow_escalation": false
+    },
+    "host": {
+      "require_application": false
+    }
+  }
+}

@@ -18,7 +18,7 @@ files. If the assignment or source interface is unavailable, return
 Document only behavior that consumers rely on: public interfaces,
 configuration, error contracts, workflows, prerequisites, and limitations.
 
-Handoff results remain YAML `s2h-handoff/v1` reports.
+Handoff results remain JSON `s2h-handoff/v1` reports.
 
 ## Related skills
 - `s2h-requirements-traceability`: use to connect documented interfaces

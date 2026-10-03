@@ -32,22 +32,22 @@ these explicit formats and filename patterns:
 
 | Artifact | Filename pattern | Format skill |
 | --- | --- | --- |
-| Run ledger | `run.yaml` | `s2h-run-ledger-format` |
-| Plan audit | `s2h-plan-audit.yaml` | `s2h-plan-audit-format` |
+| Run ledger | `run.json` | `s2h-run-ledger-format` |
+| Plan audit | `s2h-plan-audit.json` | `s2h-plan-audit-format` |
 | Documentation context | `documentation/source-doc-context.md` and `documentation/user-doc-context.md` | `s2h-doc-context-format` |
-| Chunk index | `chunk-index.yaml` | `s2h-chunk-index-format` |
-| Requirement inventory | `requirements.yaml` | `s2h-requirements-format` |
+| Chunk index | `chunk-index.json` | `s2h-chunk-index-format` |
+| Requirement inventory | `requirements.json` | `s2h-requirements-format` |
 | Step context | `steps/<step-id>.md` | `s2h-step-context-format` |
-| Step status | `steps/<step-id>-status.yaml` | `s2h-step-status-format` |
-| Checkpoint | `checkpoints/<step-id>.yaml` | `s2h-checkpoint-format` |
-| Handoff report | `reports/<phase>-<subject>-<attempt>.yaml` | `s2h-handoff` |
+| Step status | `steps/<step-id>-status.json` | `s2h-step-status-format` |
+| Checkpoint | `checkpoints/<step-id>.json` | `s2h-checkpoint-format` |
+| Handoff report | `reports/<phase>-<subject>-<attempt>.json` | `s2h-handoff` |
 | Documentation assignment | `documentation/<assignment-id>.md` | `s2h-doc-assignment-format` |
-| Final report | `final-report.yaml` | `s2h-final-report-format` |
+| Final report | `final-report.json` | `s2h-final-report-format` |
 
-Do not create extensionless, JSON, or ad hoc text artifacts in the
-run directory. Markdown frontmatter must identify the artifact kind,
+No extensionless, YAML, or ad hoc text artifacts are permitted.
+Markdown frontmatter must identify the artifact kind,
 schema version, ID, and run ID; the body headings must match the
-required content for that artifact. YAML state and reports must be
+required content for that artifact. JSON state and reports must be
 written atomically through a temporary file followed by rename.
 Temporary files are implementation details and must not be reported
 as artifacts.
@@ -71,7 +71,7 @@ and `abandoned`. `completed` is legal only after a verifier returns
 `abandoned` marks a user-directed termination set only by the orchestrator;
 resuming an `abandoned` run requires an explicit user instruction.
 The step-status file is the authoritative record of step progress:
-`chunk-index.yaml` step statuses and the ledger mirror it at transitions, and
+`chunk-index.json` step statuses and the ledger mirror it at transitions, and
 on divergence the step-status file wins with a recorded warning.
 
 Write status atomically through a temporary file followed by rename.
