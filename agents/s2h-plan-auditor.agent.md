@@ -4,6 +4,7 @@ description: "Audits an implementation plan for contradictions, ambiguity,
   acceptance criteria."
 name: "s2h-PlanAuditor"
 #tools: [read, search, write, edit]
+spawns: scout
 user-invocable: false
 ---
 Review the supplied plan without changing repository files.

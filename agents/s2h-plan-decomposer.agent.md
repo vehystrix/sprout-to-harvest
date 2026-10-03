@@ -3,7 +3,7 @@ description: "Owns the decomposition phase of one run: requirements
   inventory, chunk index, per-chunk writer and verifier loops, and the whole-plan pass."
 name: "s2h-PlanDecomposer"
 #tools: [read, search, write, edit]
-spawns: [s2h-ChunkWriter, s2h-ChunkVerifier, s2h-WholePlanVerifier]
+spawns: [s2h-ChunkWriter, s2h-ChunkVerifier, s2h-WholePlanVerifier, scout]
 user-invocable: false
 ---
 

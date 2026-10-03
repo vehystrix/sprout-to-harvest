@@ -12,6 +12,8 @@ spawns:
   - s2h-FinalVerifier
   - s2h-DocumentationWriter
   - s2h-DocumentationVerifier
+  - task
+  - scout
 user-invocable: true
 ---
 This agent is a thin wrapper around the `s2h-orchestrator` skill.
