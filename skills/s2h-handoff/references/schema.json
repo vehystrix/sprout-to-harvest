@@ -1,0 +1,199 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "s2h-handoff/v1",
+  "title": "s2h handoff base contract",
+  "description": "Base schema for every inter-agent s2h handoff and its report.",
+  "type": "object",
+  "required": [
+    "schema",
+    "agent",
+    "task",
+    "summary",
+    "status",
+    "inputs",
+    "details",
+    "requirements",
+    "validation",
+    "artifacts",
+    "repository",
+    "blockers",
+    "resume_from"
+  ],
+  "additionalProperties": false,
+  "properties": {
+    "schema": {
+      "const": "s2h-handoff/v1"
+    },
+    "agent": {
+      "type": "string",
+      "minLength": 1
+    },
+    "task": {
+      "type": "string",
+      "minLength": 1
+    },
+    "summary": {
+      "type": "string",
+      "minLength": 1
+    },
+    "status": {
+      "enum": [
+        "PASS",
+        "VERIFIED",
+        "INCOMPLETE",
+        "NEEDS_CLARIFICATION",
+        "BLOCKED",
+        "RECOVERABLE"
+      ]
+    },
+    "inputs": {
+      "type": "object",
+      "required": ["context_files", "prior_reports"],
+      "additionalProperties": false,
+      "properties": {
+        "context_files": {
+          "type": "array",
+          "items": {"type": "string"}
+        },
+        "prior_reports": {
+          "type": "array",
+          "items": {"type": "string"}
+        }
+      }
+    },
+    "details": {
+      "type": "object",
+      "required": ["model_assignment"],
+      "additionalProperties": false,
+      "properties": {
+        "model_assignment": {
+          "type": "object",
+          "required": [
+            "requested",
+            "resolved",
+            "portable_id",
+            "role",
+            "source",
+            "fallback",
+            "applied",
+            "adapter",
+            "evidence",
+            "runtime_model",
+            "rationale",
+            "warning"
+          ],
+          "additionalProperties": false,
+          "properties": {
+            "requested": {"type": "string"},
+            "resolved": {"type": "string"},
+            "portable_id": {"type": "string"},
+            "role": {"type": "string"},
+            "source": {
+              "enum": [
+                "user",
+                "policy",
+                "decomposer",
+                "orchestrator",
+                "fallback"
+              ]
+            },
+            "fallback": {"type": ["string", "null"]},
+            "applied": {"type": "boolean"},
+            "adapter": {"type": "string"},
+            "evidence": {
+              "enum": [
+                "adapter-confirmed",
+                "host-reported",
+                "self-reported",
+                "tool-reported",
+                "unknown"
+              ]
+            },
+            "runtime_model": {"type": ["string", "null"]},
+            "rationale": {"type": "string"},
+            "warning": {"type": ["string", "null"]}
+          }
+        }
+      }
+    },
+    "requirements": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "required": ["id", "result", "evidence"],
+        "additionalProperties": false,
+        "properties": {
+          "id": {"type": "string", "minLength": 1},
+          "result": {
+            "enum": [
+              "SATISFIED",
+              "PARTIAL",
+              "NOT_SATISFIED",
+              "NOT_APPLICABLE",
+              "BLOCKED"
+            ]
+          },
+          "evidence": {"type": "string"}
+        }
+      }
+    },
+    "validation": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "required": ["command", "result", "evidence"],
+        "additionalProperties": false,
+        "properties": {
+          "command": {"type": "string"},
+          "result": {"enum": ["PASS", "FAIL", "NOT_RUN"]},
+          "evidence": {"type": "string"}
+        }
+      }
+    },
+    "artifacts": {
+      "type": "object",
+      "required": ["changed_files", "created_reports", "commits"],
+      "additionalProperties": false,
+      "properties": {
+        "changed_files": {
+          "type": "array",
+          "items": {"type": "string"}
+        },
+        "created_reports": {
+          "type": "array",
+          "items": {"type": "string"}
+        },
+        "commits": {
+          "type": "array",
+          "items": {"type": "string"}
+        }
+      }
+    },
+    "repository": {
+      "type": "object",
+      "required": ["branch", "last_commit", "worktree"],
+      "additionalProperties": false,
+      "properties": {
+        "branch": {"type": "string"},
+        "last_commit": {"type": "string"},
+        "worktree": {
+          "enum": ["CLEAN", "CHANGED", "UNKNOWN", "N/A"]
+        }
+      }
+    },
+    "blockers": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "required": ["reason"],
+        "properties": {
+          "reason": {"type": "string"},
+          "id": {"type": "string"}
+        }
+      }
+    },
+    "resume_from": {
+      "type": ["string", "null"]
+    }
+  }
+}

@@ -24,16 +24,16 @@ return `BLOCKED` with the exact path or ambiguity and stop.
   and validation gaps that must be tracked.
 - `s2h-plan-audit`: use for the feasibility, ambiguity, interface, and scope review.
 - `s2h-handoff`: use for the required final report shape.
-- `s2h-plan-audit-format`: use for the persisted `s2h-plan-audit.yaml` structure.
+- `s2h-plan-audit-format`: use for the persisted `s2h-plan-audit.json` structure.
 - `s2h-doc-context-format`: use for the source and user documentation context Markdown files.
-- `s2h-requirements-format`: use for the persisted `requirements.yaml` structure.
+- `s2h-requirements-format`: use for the persisted `requirements.json` structure.
 
 Create `documentation/source-doc-context.md` and
 `documentation/user-doc-context.md` under the run directory per
 `s2h-doc-context-format`. If no obligation exists, create valid
 context files stating that explicitly.
 On a `PASS` audit, write the complete requirements list to
-`requirements.yaml` in the run directory per
+`requirements.json` in the run directory per
 `s2h-requirements-format` with `source: plan-auditor`, and record that
 path under `details.requirements_path`. A non-PASS audit writes no
 file; it records no path.

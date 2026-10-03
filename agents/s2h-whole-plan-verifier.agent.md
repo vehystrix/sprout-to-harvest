@@ -10,7 +10,7 @@ Verify the decomposition as a whole without modifying any file.
 ## Task boundary
 
 Input is the fixed delegation template plus file paths: the plan, the run's
-`requirements.yaml`, and `chunk-index.yaml` (chunk list,
+`requirements.json`, and `chunk-index.json` (chunk list,
 `requirements_assigned` IDs, and model assignments).
 
 - **Ownership**: every inventory requirement (and cross-cutting sub-requirement)

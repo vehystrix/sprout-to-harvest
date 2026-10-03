@@ -73,11 +73,11 @@ Follow this procedure in order. Do not skip a phase, reorder steps, or launch
 a later phase because an earlier agent's narrative sounds complete.
 
 1. **Load or initialize the run.** If the run directory does not exist, create
-   it and atomically write `run.yaml` using `s2h-run-ledger-format` with the inputs,
+   it and atomically write `run.json` using `s2h-run-ledger-format` with the inputs,
    `phase: initialization`, `status: pending`, `attempt: 0`, and the current
-   timestamp before delegating. If it exists, read `run.yaml` using
-   `s2h-run-ledger-format`, `chunk-index.yaml` using `s2h-chunk-index-format`, and the
-   latest `reports/*.yaml` using `s2h-handoff`; validate that the stored plan
+   timestamp before delegating. If it exists, read `run.json` using
+   `s2h-run-ledger-format`, `chunk-index.json` using `s2h-chunk-index-format`, and the
+   latest `reports/*.json` using `s2h-handoff`; validate that the stored plan
    path, run directory, retry limit, and audit setting match the invocation.
    Resume the first non-completed phase or step selected by the
    persistent-state rules. Never overwrite a completed result.
@@ -87,7 +87,7 @@ a later phase because an earlier agent's narrative sounds complete.
    and calculate `sha256:` fingerprints. Run the capability probe exactly once
    per the `s2h-model-routing-adapter` skill; it determines whether the delegation
    tool surface accepts a per-delegation `model` parameter and pins the evidence
-   channel. Persist `model_routing` in `run.yaml`: `catalog_source`, `policy_source`,
+   channel. Persist `model_routing` in `run.json`: `catalog_source`, `policy_source`,
    `adapter` (active host identifier), `preflight: { status, mechanism, evidence_channel }`,
    fingerprints, and warnings including any routing-unavailable warning. If probe status is
    `routing-unavailable` and `require_application` is true, persist `blocked` and stop; otherwise
@@ -101,11 +101,11 @@ a later phase because an earlier agent's narrative sounds complete.
    fails, persist `blocked` and stop.
 4. **Audit the plan.** Unless `Skip plan audit` is `true`, persist
    `phase: s2h-plan-audit`, `status: running`, and `attempt: 1`; delegate exactly once
-   to `s2h-PlanAuditor` with only the plan path from `run.yaml` and the run
+   to `s2h-PlanAuditor` with only the plan path from `run.json` and the run
    directory. Validate its handoff using `s2h-handoff` and
-   `s2h-plan-audit-format`, validate the `s2h-plan-audit.yaml` the auditor wrote in
+   `s2h-plan-audit-format`, validate the `s2h-plan-audit.json` the auditor wrote in
    the run directory, record in run state the path of the
-   `requirements.yaml` the auditor wrote. Then delegate one read-only
+   `requirements.json` the auditor wrote. Then delegate one read-only
    format check per documentation context file to a cheap subagent that applies
    `s2h-doc-context-format`, resolving each model per step 7 as the cheapest
    portable ID satisfying a read-only capability, and accept only verified reports
@@ -120,8 +120,8 @@ a later phase because an earlier agent's narrative sounds complete.
    implementation evidence rather than a plan brief.
 5. **Decompose the plan.** Persist `phase: decomposition`, `status: running`.
    Delegate exactly once to `s2h-PlanDecomposer` with only file paths - the plan
-   from `run.yaml`, the persisted `s2h-plan-audit.yaml`, and - when the audit ran -
-   `requirements.yaml`; when the audit was skipped, it derives the inventory
+   from `run.json`, the persisted `s2h-plan-audit.json`, and - when the audit ran -
+   `requirements.json`; when the audit was skipped, it derives the inventory
    itself. You pass the run's per-loop retry cap in that delegation; it owns the whole
    phase end to end. Accept only `PASS`. On return, validate using `s2h-chunk-index-format`:
    every step file path exists, each inventory requirement is assigned to
@@ -133,13 +133,13 @@ a later phase because an earlier agent's narrative sounds complete.
    portable ID satisfying a read-only capability, and accept only verified
    reports per `s2h-handoff`. Explicitly tell it to use both skills.
    On any failed check, persist `blocked` and stop.
-6. **Select the next step.** Load `chunk-index.yaml` using
+6. **Select the next step.** Load `chunk-index.json` using
    `s2h-chunk-index-format` once when entering this phase; keep that copy in context
    and reuse it for every later selection in a continuous session; reload only when resuming.
    Choose the first step in dependency order that is not `completed`. Do
    not select a step whose dependencies are not `completed`. If all steps
    are completed, continue to final verification. For a selected step,
-   create or load `steps/<step-id>-status.yaml` using `s2h-step-status-format` and
+   create or load `steps/<step-id>-status.json` using `s2h-step-status-format` and
    preserve its attempt count.
 7. **Resolve the step assignment from the catalog.** Before each delegated
    call: (1) use the catalog and policy loaded in step 2; do not re-read them
@@ -162,7 +162,7 @@ a later phase because an earlier agent's narrative sounds complete.
    probed evidence channel - runtime model (tool-reported payload first,
    self-ID otherwise), `evidence`, and any warnings. Never claim dynamic
    selection when status is routing-unavailable. There is no preflight step and
-   no method-based resolve or apply lifecycle; the orchestrator reads YAML
+   no method-based resolve or apply lifecycle; the orchestrator reads JSON
    directly, probes once, and delegates with a `model` field only when
    confirmed.
 8. **Implement and verify the selected step.** For each implementation cycle:
@@ -186,11 +186,11 @@ a later phase because an earlier agent's narrative sounds complete.
 	  ledger before making the next delegation.
 9. **Verify the complete implementation.** After every step is `completed`,
    persist `phase: final-verification`, `status: running`; delegate exactly
-   once to `s2h-FinalVerifier` with only file paths - the plan from `run.yaml`,
-   `chunk-index.yaml`, every persisted handoff report, and the ledger's commit
+   once to `s2h-FinalVerifier` with only file paths - the plan from `run.json`,
+   `chunk-index.json`, every persisted handoff report, and the ledger's commit
    and repository state. `VERIFIED` continues; `INCOMPLETE` identifies the
    affected steps, consumes one final-verification repair attempt recorded as
-   `final_verification_repairs` in `run.yaml`, and returns to step 8 within
+   `final_verification_repairs` in `run.json`, and returns to step 8 within
    the retry limit; `BLOCKED` stops. Do not begin documentation
    until final verification is `VERIFIED`.
 10. **Document source files.** When implementation is verified, build
@@ -215,7 +215,7 @@ a later phase because an earlier agent's narrative sounds complete.
     changes that are not material findings.
 12. **Create and verify user documentation.** Create the s2h-user-doc
     assignment, passing `documentation/user-doc-context.md`
-    referenced by `s2h-plan-audit.yaml`, adding the final
+    referenced by `s2h-plan-audit.json`, adding the final
     verified requirements, and repository-specific examples. Do not require the
     Documentation Writer to reread the complete plan when the Markdown brief and
     implementation context cover the assignment; the final implementation
@@ -224,7 +224,7 @@ a later phase because an earlier agent's narrative sounds complete.
     `VERIFIED` before finalization; apply the same bounded retry rule and stop
     on `BLOCKED` or malformed handoffs.
 13. **Finalize.** Run the final repository and validation checks. Build
-    `final-report.yaml` using `s2h-final-report-format` from the ledger and all
+    `final-report.json` using `s2h-final-report-format` from the ledger and all
     verified handoffs, including audit status, completed steps, commands and
     results, commits, traceability, branch/worktree state, documentation,
     warnings, and resume instructions. Atomically persist the final report
@@ -232,7 +232,7 @@ a later phase because an earlier agent's narrative sounds complete.
     verification and all required documentation verification are `VERIFIED`
     and the final repository check passes.
 14. **Report directly to the user.** After persisting and validating
-    `final-report.yaml`, report it using the user-facing response structure and
+    `final-report.json`, report it using the user-facing response structure and
     status rules in `s2h-final-report-format`. The response must agree with the
     persisted report.
 
@@ -261,10 +261,10 @@ as `INCOMPLETE`, retry it automatically, or continue to another phase.
 `INCOMPLETE` consumes one repair attempt; `BLOCKED` never consumes a repair attempt.
 
 ## Outputs
-Maintain `run.yaml`, `s2h-plan-audit.yaml`, `requirements.yaml`,
-`chunk-index.yaml`, `steps/<step-id>.md`,
-`steps/<step-id>-status.yaml`, `checkpoints/<step-id>.yaml`, `reports/*.yaml`,
-documentation assignment Markdown files, commit hashes, and `final-report.yaml`.
+Maintain `run.json`, `s2h-plan-audit.json`, `requirements.json`,
+`chunk-index.json`, `steps/<step-id>.md`,
+`steps/<step-id>-status.json`, `checkpoints/<step-id>.json`, `reports/*.json`,
+documentation assignment Markdown files, commit hashes, and `final-report.json`.
 Report completed work, validation evidence, blockers, and resume instructions using
 `s2h-handoff/v1`.
 

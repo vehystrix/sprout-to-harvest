@@ -1,0 +1,221 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "s2h-step-status/v1",
+  "title": "Step status document (s2h-step-status/v1)",
+  "description": "Per-step durable execution status, written to steps/<step-id>-status.json.",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "schema",
+    "run_id",
+    "step_id",
+    "phase",
+    "status",
+    "attempt",
+    "assigned_agent",
+    "repository",
+    "changed_files",
+    "validation",
+    "model_assignment",
+    "attempt_history",
+    "timestamps",
+    "blockers",
+    "resume_from"
+  ],
+  "properties": {
+    "schema": {
+      "const": "s2h-step-status/v1"
+    },
+    "run_id": {
+      "type": "string"
+    },
+    "step_id": {
+      "type": "string"
+    },
+    "phase": {
+      "enum": [
+        "initialization",
+        "s2h-plan-audit",
+        "decomposition",
+        "step-execution",
+        "final-verification",
+        "documentation",
+        "finalization"
+      ]
+    },
+    "status": {
+      "enum": [
+        "pending",
+        "running",
+        "completed",
+        "verification-failed",
+        "interrupted",
+        "recoverable",
+        "blocked",
+        "abandoned"
+      ]
+    },
+    "attempt": {
+      "type": "integer",
+      "minimum": 0
+    },
+    "assigned_agent": {
+      "type": "string"
+    },
+    "repository": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["branch", "last_commit", "worktree"],
+      "properties": {
+        "branch": {"type": "string"},
+        "last_commit": {"type": "string"},
+        "worktree": {
+          "enum": ["CLEAN", "CHANGED", "UNKNOWN", "N/A"]
+        }
+      }
+    },
+    "changed_files": {
+      "type": "array",
+      "items": {"type": "string"}
+    },
+    "validation": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": ["command", "result", "evidence"],
+        "properties": {
+          "command": {"type": "string"},
+          "result": {
+            "enum": ["PASS", "FAIL", "NOT_RUN"]
+          },
+          "evidence": {"type": "string"}
+        }
+      }
+    },
+    "model_assignment": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "requested",
+        "resolved",
+        "portable_id",
+        "role",
+        "source",
+        "fallback",
+        "applied",
+        "adapter",
+        "evidence",
+        "runtime_model",
+        "rationale",
+        "warning"
+      ],
+      "properties": {
+        "requested": {"type": "string"},
+        "resolved": {"type": "string"},
+        "portable_id": {"type": "string"},
+        "role": {"type": "string"},
+        "source": {
+          "enum": ["user", "policy", "decomposer", "orchestrator", "fallback"]
+        },
+        "fallback": {"type": ["string", "null"]},
+        "applied": {"type": "boolean"},
+        "adapter": {"type": "string"},
+        "evidence": {
+          "enum": [
+            "adapter-confirmed",
+            "host-reported",
+            "self-reported",
+            "tool-reported",
+            "unknown"
+          ]
+        },
+        "runtime_model": {"type": ["string", "null"]},
+        "rationale": {"type": "string"},
+        "warning": {"type": ["string", "null"]}
+      }
+    },
+    "attempt_history": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": ["attempt", "assignment", "outcome", "escalation"],
+        "properties": {
+          "attempt": {"type": "integer", "minimum": 0},
+          "assignment": {
+            "type": "object",
+            "additionalProperties": false,
+            "required": [
+              "portable_id",
+              "requested",
+              "resolved",
+              "source",
+              "fallback",
+              "applied",
+              "evidence",
+              "runtime_model",
+              "warning"
+            ],
+            "properties": {
+              "portable_id": {"type": "string"},
+              "requested": {"type": "string"},
+              "resolved": {"type": "string"},
+              "source": {
+                "enum": ["user", "policy", "decomposer", "orchestrator", "fallback"]
+              },
+              "fallback": {"type": ["string", "null"]},
+              "applied": {"type": "boolean"},
+              "evidence": {
+                "enum": [
+                  "adapter-confirmed",
+                  "host-reported",
+                  "self-reported",
+                  "tool-reported",
+                  "unknown"
+                ]
+              },
+              "runtime_model": {"type": ["string", "null"]},
+              "warning": {"type": ["string", "null"]}
+            }
+          },
+          "outcome": {"type": "string"},
+          "escalation": {
+            "type": "object",
+            "additionalProperties": false,
+            "required": ["triggered", "prior_model", "new_model", "policy_rule"],
+            "properties": {
+              "triggered": {"type": "boolean"},
+              "prior_model": {"type": ["string", "null"]},
+              "new_model": {"type": ["string", "null"]},
+              "policy_rule": {"type": ["string", "null"]}
+            }
+          }
+        }
+      }
+    },
+    "timestamps": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["started", "updated"],
+      "properties": {
+        "started": {"type": "string"},
+        "updated": {"type": "string"}
+      }
+    },
+    "blockers": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "required": ["reason"],
+        "properties": {
+          "reason": {"type": "string"},
+          "id": {"type": "string"}
+        }
+      }
+    },
+    "resume_from": {
+      "type": ["string", "null"]
+    }
+  }
+}

@@ -10,7 +10,7 @@ disable-model-invocation: true
 # Atomic Step Commit
 
 The final report in this sequence must use `s2h-handoff`. Persist it as
-`reports/<phase>-<subject>-<attempt>.yaml` in the run directory per
+`reports/<phase>-<subject>-<attempt>.json` in the run directory per
 `s2h-handoff`. Include changed files, validation evidence, commit hash,
 repository state, blockers, and resume instructions.
 

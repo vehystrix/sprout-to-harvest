@@ -1,0 +1,55 @@
+{
+  "models": [
+    {
+      "id": "reasoning-pro",
+      "capabilities": ["reasoning", "planning", "verification"],
+      "tier": 3,
+      "cost": "high",
+      "reasoning_effort": "high",
+      "context_window": 200000,
+      "hosts": {
+        "copilot": "Claude Opus 4.8 (copilot)"
+      }
+    },
+    {
+      "id": "coding-standard",
+      "capabilities": ["coding", "testing"],
+      "tier": 1,
+      "cost": "medium",
+      "context_window": 128000,
+      "hosts": {
+        "copilot": "Code Model (copilot)"
+      }
+    },
+    {
+      "id": "doc-verification",
+      "capabilities": ["documentation", "verification"],
+      "tier": 2,
+      "cost": "medium",
+      "context_window": 128000,
+      "hosts": {
+        "copilot": "Claude Sonnet 4.5 (copilot)"
+      }
+    },
+    {
+      "id": "documentation-standard",
+      "capabilities": ["documentation"],
+      "tier": 1,
+      "cost": "low",
+      "context_window": 64000,
+      "hosts": {
+        "copilot": "Code Model (copilot)"
+      }
+    },
+    {
+      "id": "cheap-general",
+      "capabilities": ["general"],
+      "tier": 0,
+      "cost": "low",
+      "context_window": 64000,
+      "hosts": {
+        "copilot": "Haiku (copilot)"
+      }
+    }
+  ]
+}

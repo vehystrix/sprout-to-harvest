@@ -1,0 +1,68 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "s2h-checkpoint/v1",
+  "title": "s2h checkpoint",
+  "description": "Resumable step checkpoint (s2h-checkpoint/v1).",
+  "type": "object",
+  "required": [
+    "schema",
+    "run_id",
+    "step_id",
+    "status",
+    "last_completed_action",
+    "changed_files",
+    "validation",
+    "repository",
+    "timestamp",
+    "blockers",
+    "resume_from"
+  ],
+  "additionalProperties": false,
+  "properties": {
+    "schema": {"const": "s2h-checkpoint/v1"},
+    "run_id": {"type": "string"},
+    "step_id": {"type": "string"},
+    "status": {
+      "enum": ["running", "completed", "recoverable", "interrupted", "blocked"]
+    },
+    "last_completed_action": {"type": "string"},
+    "changed_files": {"type": "array", "items": {"type": "string"}},
+    "validation": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "required": ["command", "result", "evidence"],
+        "additionalProperties": false,
+        "properties": {
+          "command": {"type": "string"},
+          "result": {"enum": ["PASS", "FAIL"]},
+          "evidence": {"type": "string"}
+        }
+      }
+    },
+    "repository": {
+      "type": "object",
+      "required": ["branch", "last_commit", "worktree"],
+      "additionalProperties": false,
+      "properties": {
+        "branch": {"type": "string"},
+        "last_commit": {"type": "string"},
+        "worktree": {"enum": ["CLEAN", "CHANGED", "UNKNOWN", "N/A"]}
+      }
+    },
+    "timestamp": {"type": "string"},
+    "blockers": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "required": ["reason"],
+        "additionalProperties": false,
+        "properties": {
+          "reason": {"type": "string"},
+          "id": {"type": "string"}
+        }
+      }
+    },
+    "resume_from": {"type": ["string", "null"]}
+  }
+}

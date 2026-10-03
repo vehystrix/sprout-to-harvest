@@ -1,0 +1,29 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "s2h-requirements/v1",
+  "title": "Persisted requirements inventory (requirements.json)",
+  "description": "Top level of .agent-work/<run-id>/requirements.json.",
+  "type": "object",
+  "required": ["schema", "run_id", "source", "created_at", "requirements"],
+  "properties": {
+    "schema": {"const": "s2h-requirements/v1"},
+    "run_id": {"type": "string"},
+    "source": {"enum": ["plan-auditor", "plan-decomposer"]},
+    "created_at": {"type": "string"},
+    "requirements": {
+      "type": "array",
+      "minItems": 1,
+      "items": {
+        "type": "object",
+        "required": ["id", "name", "excerpt"],
+        "properties": {
+          "id": {"type": "string", "minLength": 1},
+          "name": {"type": "string", "minLength": 1},
+          "excerpt": {"type": "string", "minLength": 1}
+        },
+        "additionalProperties": false
+      }
+    }
+  },
+  "additionalProperties": false
+}

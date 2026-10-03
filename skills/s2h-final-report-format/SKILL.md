@@ -1,34 +1,41 @@
 ---
 name: s2h-final-report-format
 description: Only use when explicitly invoked
-# description: "Defines the persisted YAML structure and user-facing
+# description: "Defines the persisted JSON structure and user-facing
 #   response template for the final workflow report."
 user-invocable: false
 disable-model-invocation: true
 ---
 # Final Report Format
 
-Use this skill when the orchestrator writes `.agent-work/<run-id>/final-report.yaml`.
+Use this skill when the orchestrator writes `.agent-work/<run-id>/final-report.json`.
 
 ## Structure
 
 The file is a complete `s2h-handoff/v1` report. Put the plan-level
 result under `details` using these required fields:
 
-```yaml
-details:
-  audit_status: PASS
-  completed_steps: []
-  traceability: []
-  documentation:
-    source_assignments: []
-    user_documentation: []
-  warnings: []
-  final_repository_check:
-    command: git status --short
-    result: PASS
-    evidence: Working tree is clean except for ignored .agent-work/.
+```json
+{
+  "details": {
+    "audit_status": "PASS",
+    "completed_steps": [],
+    "traceability": [],
+    "documentation": {
+      "source_assignments": [],
+      "user_documentation": []
+    },
+    "warnings": [],
+    "final_repository_check": {
+      "command": "git status --short",
+      "result": "PASS",
+      "evidence": "Working tree is clean except for ignored .agent-work/."
+    }
+  }
+}
 ```
+The machine-readable form is defined by `references/schema.json`; validate a file with
+`scripts/validate.py <file>`.
 
 `traceability` entries follow the chain defined by `s2h-requirements-traceability`.
 `completed_steps` must name only steps with a verified handoff. `final_repository_check`
@@ -39,7 +46,7 @@ only when all required verification and documentation checks are verified.
 
 After the report is atomically persisted and schema-validated, the
 orchestrator must summarize it directly in its response. The user must
-not need to open `final-report.yaml` to understand the outcome. Use this
+not need to open `final-report.json` to understand the outcome. Use this
 structure, preserving the report's exact status and evidence:
 
 ```text

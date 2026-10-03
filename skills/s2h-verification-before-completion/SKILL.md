@@ -12,7 +12,7 @@ reports. Delegated mode: persist per this skill and its format skills.
 Verify only the assigned work; report defects without repairing them during verification.
 
 Return verification results through `s2h-handoff`; persisted reports
-must use its YAML schema. `VERIFIED` requires executable evidence in the
+must use its JSON schema. `VERIFIED` requires executable evidence in the
 handoff; missing or malformed handoff fields require `BLOCKED`. The final
 plan-level result must additionally follow `s2h-final-report-format`.
 
