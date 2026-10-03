@@ -131,7 +131,8 @@ a later phase because an earlier agent's narrative sounds complete.
    delegate one read-only format check per step file to a cheap subagent that
    applies `s2h-step-context-format`; resolve each model per step 7 as the cheapest
    portable ID satisfying a read-only capability, and accept only verified
-   reports per `s2h-handoff`. On any failed check, persist `blocked` and stop.
+   reports per `s2h-handoff`. Explicitly tell it to use both skills.
+   On any failed check, persist `blocked` and stop.
 6. **Select the next step.** Load `chunk-index.yaml` using
    `s2h-chunk-index-format` once when entering this phase; keep that copy in context
    and reuse it for every later selection in a continuous session; reload only when resuming.
