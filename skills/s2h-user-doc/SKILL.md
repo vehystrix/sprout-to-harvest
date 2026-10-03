@@ -14,3 +14,9 @@ public interfaces.
 
 Prefer concise task flows over architecture narration. Verify commands and
 examples against the repository before marking documentation complete.
+
+Never mix maintainer-facing or code-level documentation into user-facing
+files: per-function notes, invariants, and internal implementation details
+belong inline with the code under `s2h-source-doc`. Architectural overview
+material belongs in its own architecture documentation file, not in a README
+or other user-facing document.

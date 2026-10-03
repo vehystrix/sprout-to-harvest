@@ -18,3 +18,8 @@ Do not turn verification into copy editing.
 
 Keep source documentation close to the interface it describes.
 Keep user documentation task-oriented and separate from internal implementation details.
+
+Flag audience mixing between maintainer-facing and user-facing documents,
+per-function documentation that is not inline with the code it describes,
+and architectural overview material placed in a user-facing file such as
+a README or inside function-level documentation.
