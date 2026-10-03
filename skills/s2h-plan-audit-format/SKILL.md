@@ -7,7 +7,7 @@ disable-model-invocation: true
 ---
 # Plan Audit Format
 
-Use this skill when the Plan Auditor writes `.agent-work/<run-id>/s2h-plan-audit.yaml`.
+Use this skill when the `s2h-PlanAuditor` writes `.agent-work/<run-id>/s2h-plan-audit.yaml`.
 
 ## Structure
 
@@ -16,7 +16,7 @@ The file is a complete `s2h-handoff/v1` YAML report. Its role-specific
 
 ```yaml
 schema: s2h-handoff/v1
-agent: Plan Auditor
+agent: s2h-PlanAuditor
 task: run-001 s2h-plan-audit
 status: PASS
 summary: The plan is specific enough to decompose.

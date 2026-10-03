@@ -18,7 +18,7 @@ step_id: step-001-implementation
 phase: step-execution
 status: running
 attempt: 1
-assigned_agent: Step Implementer
+assigned_agent: s2h-StepImplementer
 repository:
   branch: implementation/run-001
   last_commit: abc1234

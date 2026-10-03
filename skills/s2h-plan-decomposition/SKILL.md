@@ -9,18 +9,18 @@ argument-hint: <plan-text-or-path> [<output-dir>]
 ---
 
 Use this skill to turn an approved implementation plan into a run of
-decomposed, chunk-level work items. The Plan Decomposer owns the whole
+decomposed, chunk-level work items. The `s2h-PlanDecomposer` owns the whole
 decomposition phase for one run: it consumes or derives the requirements
-inventory, writes `chunk-index.yaml`, runs each chunk's Chunk Writer and
-Chunk Verifier loop, and delegates the Whole-Plan Verifier pass.
+inventory, writes `chunk-index.yaml`, runs each chunk's `s2h-ChunkWriter` and
+`s2h-ChunkVerifier` loop, and delegates the `s2h-WholePlanVerifier` pass.
 
 ## Requirements inventory
 
 The inventory is always its own file, shaped by `s2h-requirements-format`:
 one entry per requirement with an `id`, a short `name`, and a verbatim plan
-`excerpt`. The Plan Decomposer consumes it or derives it:
+`excerpt`. The `s2h-PlanDecomposer` consumes it or derives it:
 
-- Delegated mode - consume: the Plan Auditor has already written
+- Delegated mode - consume: the `s2h-PlanAuditor` has already written
   `.agent-work/<run-id>/requirements.yaml` itself on a `PASS` audit,
   recorded in its handoff as `details.requirements_path`. Read it; never re-derive.
 - User mode, or any run where auditing is absent or skipped - derive: extract
@@ -33,7 +33,7 @@ one entry per requirement with an `id`, a short `name`, and a verbatim plan
 Coverage is a real check, not an assertion. When you write the chunk index,
 verify that every inventory requirement appears in exactly one chunk's
 `requirements_assigned` list and each assigned ID resolves into the file. The
-Whole-Plan Verifier repeats this check independently against the full plan; its
+`s2h-WholePlanVerifier` repeats this check independently against the full plan; its
 second pass catches drift the first one missed.
 
 ## Chunking rules
@@ -54,7 +54,7 @@ Chunk the plan into independently implementable units of work:
 
 `chunk-index.yaml`, shaped by `s2h-chunk-index-format`, is the machine state: one
 entry per chunk with its `requirements_assigned` IDs, `doc_status`, step list,
-and model blocks for all four roles. The Plan Decomposer initializes every
+and model blocks for all four roles. The `s2h-PlanDecomposer` initializes every
 `doc_status` to `pending` when it writes the index and persists status changes
 as the loops run.
 
@@ -69,7 +69,7 @@ For each chunk in dependency order:
    documentation-loop model assignments. The writer is this chunk's architect: it
    derives implementation detail into the step files, so missing detail is its
    normal job, not a defect.
-3. On a writer `PASS` or `RECOVERABLE`, delegate to a Chunk Verifier with the
+3. On a writer `PASS` or `RECOVERABLE`, delegate to a s2h-ChunkVerifier with the
    same template minus findings; on a writer `BLOCKED`, record the blocker and
    move on to the next chunk.
 4. On an `INCOMPLETE` verdict, persist `doc_status: verification-failed`,
@@ -88,12 +88,12 @@ Resolve the documentation-loop roles (`chunk-writer`, `chunk-verifier`) through
 the catalog routing path at delegation time, and persist each assignment into
 the index with its timestamp and `source: decomposer`; a null recommendation stays
 explicit in `model_recommendations` even when an assignment is persisted. The
-Whole-Plan Verifier's model assignment goes only in that delegation's handoff
+`s2h-WholePlanVerifier`'s model assignment goes only in that delegation's handoff
 details, never in the index.
 
 ## Whole-plan pass
 
-When every chunk has `doc_status: completed`, delegate to a Whole-Plan Verifier
+When every chunk has `doc_status: completed`, delegate to a `s2h-WholePlanVerifier`
 with only file paths - the plan, `requirements.yaml`, and
 `chunk-index.yaml`. It re-checks coverage against the full plan text and
 boundary fidelity across chunks, reading each chunk's Contracts from its step files.
@@ -117,7 +117,7 @@ decomposition-gap; any other finding is a boundary-mismatch.
 
 ## User-mode run directory
 
-In user mode the Plan Decomposer writes directly into `<output-dir>/.work/`:
+In user mode the `s2h-PlanDecomposer` writes directly into `<output-dir>/.work/`:
 `requirements.yaml` when it derived one, `chunk-index.yaml`, and one
 context file plus status file per step under `.work/steps/`. Delegation roles in
 user mode are limited to `chunk-writer`, `chunk-verifier`, `whole-plan-verifier`,

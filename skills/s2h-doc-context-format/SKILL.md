@@ -7,7 +7,7 @@ disable-model-invocation: true
 ---
 # Documentation Context Format
 
-Use this skill when the Plan Auditor creates the plan-level
+Use this skill when the `s2h-PlanAuditor` creates the plan-level
 documentation context under `.agent-work/<run-id>/documentation/`.
 
 The context is a flexible Markdown brief distilled from the immutable

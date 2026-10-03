@@ -81,11 +81,11 @@ descriptions, or exclusion lists. Each ID must resolve into the run's
 
 `doc_status` is a per-chunk value: `pending`, `running`, `verification-failed`, or `completed`.
 
-`model_recommendations` is optional and records the decomposer's non-final guidance for all
-four roles - `chunk-writer`, `chunk-verifier`, `implementer`, `verifier`; each role entry
+`model_recommendations` is optional and records the `s2h-PlanDecomposer`'s non-final guidance for
+all four roles - `chunk-writer`, `chunk-verifier`, `implementer`, `verifier`; each role entry
 carries `portable_id`, `rationale`, `required_capabilities`, and `complexity`, or an
 explicit `null`. `model_assignments` is required with one block per the four roles in the
-shape shown above. The whole-plan verifier's assignment is recorded only in that delegation's
+shape shown above. The `s2h-WholePlanVerifier`'s assignment is recorded only in that delegation's
 handoff details; it never appears in the index.
 
 ## Validation

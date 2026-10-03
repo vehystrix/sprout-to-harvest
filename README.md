@@ -129,9 +129,9 @@ For large systems it produces a tiered tree of documents whose leaves serve that
 Start the workflow with the plan path and optional audit/retry settings. The canonical
 orchestrator instructions live in
 [`skills/s2h-orchestrator`](skills/s2h-orchestrator/SKILL.md).
-In VS Code or Copilot CLI, select `Implementation Orchestrator`; its agent file is a
+In VS Code or Copilot CLI, select `s2h-OrchestratorAgent`; its agent file is a
 thin wrapper that explicitly invokes that skill. In Pi/oh-my-pi, invoke the installed
-prompt corresponding to `s2h-orchestrator.agent.md`.
+prompt corresponding to `s2h-orchestrator-agent.agent.md`.
 
 Or invoke the user-invocable `s2h-orchestrator` skill directly.
 The invocation input should contain:
@@ -271,7 +271,7 @@ without consuming a repair attempt. A step is `completed` only after its verifie
 
 ## Details: full workflow
 
-The workflow is coordinated by `Implementation Orchestrator`. The orchestrator owns sequencing,
+The workflow is coordinated by `s2h-OrchestratorAgent`. The orchestrator owns sequencing,
 persistent status, retry limits, and user-facing reports. Specialist agents do the plan reading
 and repository work in isolated contexts. The orchestrator should read summaries and reports
 rather than loading the entire plan into its own context.
@@ -314,7 +314,7 @@ The run directory is never committed.
 
 ### 2. Prepare Git isolation
 
-When the target workspace is a Git repository, `Implementation Orchestrator` uses
+When the target workspace is a Git repository, `s2h-OrchestratorAgent` uses
 `s2h-git-isolation` before any file-modifying subagent starts:
 
 1. Require no tracked staged or unstaged changes.
@@ -327,9 +327,9 @@ If a subagent needs multiple experimental commits, it creates a temporary child 
 merges the verified result back into the implementation branch. The orchestrator never resets
 or discards unrelated work.
 
-### 3. Audit the plan: `Plan Auditor`
+### 3. Audit the plan: `s2h-PlanAuditor`
 
-Unless the user explicitly skips the audit, the orchestrator starts `Plan Auditor` with the
+Unless the user explicitly skips the audit, the orchestrator starts `s2h-PlanAuditor` with the
 plan. The agent uses `s2h-plan-audit` and `s2h-requirements-traceability` to check:
 
 - Contradictions and missing requirements.
@@ -354,9 +354,10 @@ status. The orchestrator carries the relevant brief into later documentation ass
 it is reconciled with the verified implementation and changed files. This prevents documentation
 agents from rereading the complete plan while keeping the implementation authoritative.
 
-### 4. Decompose the plan: `Plan Decomposer`, `Chunk Writer`, `Chunk Verifier`, `Whole-Plan Verifier`
+### 4. Decompose the plan: `s2h-PlanDecomposer`, `s2h-ChunkWriter`, `s2h-ChunkVerifier`,
+`s2h-WholePlanVerifier`
 
-The orchestrator delegates decomposition exactly once to `Plan Decomposer`. The decomposer owns
+The orchestrator delegates decomposition exactly once to `s2h-PlanDecomposer`. The decomposer owns
 the whole phase, using [`s2h-plan-decomposition`](skills/s2h-plan-decomposition/SKILL.md) and
 the plan's requirements list: it chunks the plan by behavioral units - each chunk owns a contract
 of assigned requirement IDs with verbatim plan excerpts, interfaces in/out, an end-state, and
@@ -364,13 +365,13 @@ exclusions, and every inventory requirement is owned by exactly one chunk - writ
 `chunk-index.yaml` using `s2h-chunk-index-format` with the dependency order and model
 recommendations, then runs each chunk's writer and verifier loop.
 
-For each chunk, `Chunk Writer` creates that chunk's `steps/<step-id>.md` files per
-`s2h-step-context-format`, embedding the contract verbatim in every file; `Chunk Verifier`
+For each chunk, `s2h-ChunkWriter` creates that chunk's `steps/<step-id>.md` files per
+`s2h-step-context-format`, embedding the contract verbatim in every file; `s2h-ChunkVerifier`
 is read-only and confirms traceability for every requirement the chunk owns. Each writer and
 verifier loop gets its own repair cap: the same `L` passed to implementation and documentation
 loops. An exhausted allowance blocks the run with that chunk's evidence.
 
-After all chunks verify, `Whole-Plan Verifier` performs only global checks no single
+After all chunks verify, `s2h-WholePlanVerifier` performs only global checks no single
 chunk can see - unassigned content, duplicate ownership, and boundary consistency
 against the full plan. A `decomposition-gap` finding - one requiring a change to
 chunk assignments or boundaries - is repaired by the decomposer itself, which reruns
@@ -390,10 +391,10 @@ under `.work/steps/`); re-invoking the same inputs resumes from verified chunks.
 The orchestrator processes the dependency-ordered steps one at a time. A dependent step does
 not start until its predecessor is verified.
 
-#### 5a. Implement the step: `Step Implementer`
+#### 5a. Implement the step: `s2h-StepImplementer`
 
 Before launching the agent, the orchestrator persists the step as `running` using
-`s2h-step-status-format`. `Step Implementer` reads the step context, its checkpoint, and
+`s2h-step-status-format`. `s2h-StepImplementer` reads the step context, its checkpoint, and
 any prior verifier report using `s2h-step-context-format` and `s2h-checkpoint-format`. It uses:
 
 - `s2h-implementation` for bounded repository changes.
@@ -420,9 +421,9 @@ run focused validation -> create step commit -> persist commit hash -> report
 If the agent is interrupted or blocked by connection loss, cancellation, unavailable resources,
 or permissions, it persists a recoverable status and leaves the workspace intact.
 
-#### 5b. Verify the step: `Step Verifier`
+#### 5b. Verify the step: `s2h-StepVerifier`
 
-After the implementation agent returns, the orchestrator starts `Step Verifier` with the step
+After the implementation agent returns, the orchestrator starts `s2h-StepVerifier` with the step
 context, implementation report, and repository state. The verifier is read-only and uses
 `s2h-verification-before-completion`, `s2h-requirements-traceability`, and `s2h-test-first-plan-steps`.
 
@@ -440,17 +441,17 @@ validation evidence, missing work, blockers, and a resume point.
 
 #### 5c. Repair an incomplete step
 
-If verification returns `INCOMPLETE`, the orchestrator starts `Step Implementer` again with the
+If verification returns `INCOMPLETE`, the orchestrator starts `s2h-StepImplementer` again with the
 verifier report. The implementation agent repairs only that step, then commits the correction.
-The orchestrator reruns `Step Verifier`.
+The orchestrator reruns `s2h-StepVerifier`.
 
 This loop continues only up to the configured retry limit. A `BLOCKED` result or exhausted
 retry limit is reported to the user with the current branch, commit, changed files, and resume
 instructions. Completed and verified steps are not restarted.
 
-### 6. Verify the complete implementation: `Final Verifier`
+### 6. Verify the complete implementation: `s2h-FinalVerifier`
 
-After every step is verified, the orchestrator starts `Final Verifier` with the plan, step
+After every step is verified, the orchestrator starts `s2h-FinalVerifier` with the plan, step
 index, all reports, commit history, and repository state. It uses
 `s2h-verification-before-completion`, `s2h-requirements-traceability`, `s2h-git-isolation`,
 and `s2h-persistent-state`.
@@ -469,16 +470,16 @@ The final verifier checks:
 It writes a requirement-to-test-step-to-implementation-step-to-commit-to-validation matrix and
 returns `VERIFIED`, `INCOMPLETE`, or `BLOCKED`.
 
-If final verification fails, the orchestrator starts `Step Implementer` with the final report
-and affected step contexts, then reruns `Final Verifier` within the retry limit.
+If final verification fails, the orchestrator starts `s2h-StepImplementer` with the final report
+and affected step contexts, then reruns `s2h-FinalVerifier` within the retry limit.
 
-### 7. Document affected source files: `Documentation Writer`
+### 7. Document affected source files: `s2h-DocumentationWriter`
 
 Once the implementation is verified, the orchestrator builds a documentation assignment for
 each affected source file that needs maintainer-facing documentation. Independent assignments
 may run in parallel when they do not share ownership or create conflicting edits.
 
-For each assignment, `Documentation Writer` reads the relevant Markdown documentation context,
+For each assignment, `s2h-DocumentationWriter` reads the relevant Markdown documentation context,
 implementation context, and interfaces. It uses `s2h-source-doc`,
 `s2h-doc-verification`, `s2h-requirements-traceability`, `s2h-git-isolation`,
 `s2h-persistent-state`, and `s2h-atomic-step-commit`. The assignment should contain the
@@ -488,9 +489,9 @@ It documents public interfaces, invariants, side effects, error contracts, lifec
 constraints, and non-obvious behavior. It does not narrate obvious code or change
 implementation behavior. Documentation changes are validated and committed separately.
 
-### 8. Verify source documentation: `Documentation Verifier` (Subagent G)
+### 8. Verify source documentation: `s2h-DocumentationVerifier`
 
-The orchestrator starts `Documentation Verifier` for each `s2h-source-doc` assignment. It
+The orchestrator starts `s2h-DocumentationVerifier` for each `s2h-source-doc` assignment. It
 uses `s2h-doc-verification`, `s2h-source-doc`, `s2h-requirements-traceability`, and
 `s2h-verification-before-completion`.
 
@@ -502,20 +503,20 @@ The verifier checks only material issues:
 - Missing important interfaces, prerequisites, or limitations.
 
 It does not request stylistic rewrites. Failed documentation verification returns to
-`Documentation Writer` with the report and repeats within the retry limit.
+`s2h-DocumentationWriter` with the report and repeats within the retry limit.
 
 ### 9. Create and verify user documentation
 
-After source documentation is stable, the orchestrator starts `Documentation Writer` for the
+After source documentation is stable, the orchestrator starts `s2h-DocumentationWriter` for the
 user-facing documentation set using `documentation/user-doc-context.md` plus verified
 implementation evidence. The agent uses `s2h-user-doc`, `s2h-doc-verification`, and
 `s2h-requirements-traceability` to document supported workflows, prerequisites, configuration,
 commands, expected results, examples, limitations, and recovery guidance without rereading the
 complete plan.
 
-The orchestrator then starts `Documentation Verifier` with the plan, implementation reports,
+The orchestrator then starts `s2h-DocumentationVerifier` with the plan, implementation reports,
 public interfaces, and user documentation. It checks correctness and material completeness, not
-wording preferences. Failed verification returns to `Documentation Writer` and repeats within
+wording preferences. Failed verification returns to `s2h-DocumentationWriter` and repeats within
 the retry limit.
 
 ### 10. Finish and report

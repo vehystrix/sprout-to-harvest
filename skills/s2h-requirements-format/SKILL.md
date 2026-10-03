@@ -13,7 +13,7 @@ The single canonical list of requirements extracted from an implementation plan.
 - Persist every material requirement exactly once, with a stable ID and a verbatim
   excerpt, so downstream roles resolve references instead of re-deriving content.
 - Provide the source that `requirements_assigned` values in `chunk-index.yaml` resolve against.
-- Give the Whole-Plan Verifier the exact plan text against which it checks fidelity.
+- Give the `s2h-WholePlanVerifier` the exact plan text against which it checks fidelity.
 
 ## Schema (frontmatter-free YAML file)
 
@@ -34,9 +34,9 @@ requirements:
 
 - `schema`: literal `requirements/v1`.
 - `run_id`: matches the run directory; unique per run.
-- `source`: either `plan-auditor`, when the Plan Auditor derived and wrote the
+- `source`: either `plan-auditor`, when the `s2h-PlanAuditor` derived and wrote the
   file itself, or `plan-decomposer`, when no upstream inventory exists and the
-  Plan Decomposer derived and wrote the file.
+  `s2h-PlanDecomposer` derived and wrote the file.
 - `created_at`: ISO 8601 timestamp of persistence.
 - `requirements`: non-empty list; every entry carries `id`, `name`, and `excerpt`.
 

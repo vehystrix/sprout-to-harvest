@@ -2,7 +2,7 @@
 description: "Performs final plan-level verification for requirement
   coverage, cross-step behavior, interfaces, tests, commits, and
   repository readiness."
-name: "Final Verifier"
+name: "s2h-FinalVerifier"
 #tools: [read, search, execute]
 user-invocable: false
 ---

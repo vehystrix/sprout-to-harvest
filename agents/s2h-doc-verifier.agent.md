@@ -2,7 +2,7 @@
 description: "Verifies source or user documentation against the plan
   and implementation, reporting only major omissions, contradictions,
   or clarity problems."
-name: "Documentation Verifier"
+name: "s2h-DocumentationVerifier"
 #tools: [read, search, execute]
 user-invocable: false
 ---

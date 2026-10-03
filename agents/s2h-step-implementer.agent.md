@@ -2,7 +2,7 @@
 description: "Implements one test-first plan step, resumes recoverable work,
   runs focused validation, and commits the completed step on the
   implementation branch."
-name: "Step Implementer"
+name: "s2h-StepImplementer"
 #tools: [read, search, edit, execute]
 user-invocable: false
 ---

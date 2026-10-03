@@ -2,7 +2,7 @@
 description: "Audits an implementation plan for contradictions, ambiguity,
   feasibility blockers, missing interfaces, dependencies, and missing
   acceptance criteria."
-name: "Plan Auditor"
+name: "s2h-PlanAuditor"
 #tools: [read, search, write, edit]
 user-invocable: false
 ---

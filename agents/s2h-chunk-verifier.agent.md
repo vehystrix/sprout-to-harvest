@@ -1,7 +1,7 @@
 ---
 description: "Verifies one decomposition chunk's implementation step files against its
   contract; owns intra-chunk completeness and drift."
-name: "Chunk Verifier"
+name: "s2h-ChunkVerifier"
 #tools: [read, search]
 user-invocable: false
 ---

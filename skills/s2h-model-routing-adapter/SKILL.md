@@ -101,7 +101,7 @@ status is `routing-unavailable`, set no `model` field at all - omit the field
 entirely:
 
 ```yaml
-agent: Step Implementer
+agent: s2h-StepImplementer
 task: implement step-002
 model: "<resolved model name>"   # present only when probe status is passed
 ```

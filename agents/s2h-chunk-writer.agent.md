@@ -1,7 +1,7 @@
 ---
 description: "Fleshes out exactly one decomposition chunk's architecture into its
   implementation step files from the chunk contract."
-name: "Chunk Writer"
+name: "s2h-ChunkWriter"
 #tools: [read, search, write, edit]
 user-invocable: false
 ---
@@ -28,7 +28,7 @@ requirement or the contract, including references to dependencies that do not ex
 the plan. Missing implementation details alone never block; you write them. On repair
 rounds, fix only the named findings and do not restructure unaffected steps.
 Do not self-check completeness or drift - same-context re-deriving cannot see
-missing requirements; the Chunk Verifier owns both. Do validate mechanically before
+missing requirements; the `s2h-ChunkVerifier` owns both. Do validate mechanically before
 returning `PASS`: each step file parses per `s2h-step-context-format`, each of your chunk's
 `requirements_assigned` IDs resolves into `requirements.yaml`, and every
 Contract block is present in its files; fix anything you find in place.

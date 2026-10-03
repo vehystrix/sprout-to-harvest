@@ -73,13 +73,34 @@ Rules:
   records the exact model used for that attempt, including fallback
   and application warnings. `model_assignment` is required even when
   the assignment is unresolved or blocked.
-- Allowed role outcomes are: plan auditor `PASS`,
-  `NEEDS_CLARIFICATION`, or `BLOCKED`; decomposer `PASS` or `BLOCKED`;
-  implementer `PASS`, `RECOVERABLE`, or `BLOCKED`; step verifier,
-  final verifier, and documentation verifier `VERIFIED`, `INCOMPLETE`,
-  or `BLOCKED`; chunk writer `PASS`, `RECOVERABLE`, or `BLOCKED`;
-  documentation writer `PASS`, `RECOVERABLE`, or `BLOCKED`; whole-plan
-  and chunk verifier `VERIFIED`, `INCOMPLETE`, or `BLOCKED`.
+- Allowed role outcomes are:
+  - `s2h-PlanAuditor`:
+    - `PASS`
+    - `NEEDS_CLARIFICATION`
+    - `BLOCKED`
+  - `s2h-PlanDecomposer`:
+    - `PASS`
+    - `BLOCKED`
+  - `s2h-StepImplementer`:
+    - `PASS`
+    - `RECOVERABLE`
+    - `BLOCKED`
+  - `s2h-StepVerifier`, `s2h-FinalVerifier`, and `s2h-DocumentationVerifier`:
+    - `VERIFIED`
+    - `INCOMPLETE`
+    - `BLOCKED`
+  - `s2h-ChunkWriter`:
+    - `PASS`
+    - `RECOVERABLE`
+    - `BLOCKED`
+  - `s2h-DocumentationWriter`:
+    - `PASS`
+    - `RECOVERABLE`
+    - `BLOCKED`
+  - `s2h-WholePlanVerifier` and `s2h-ChunkVerifier`:
+    - `VERIFIED`
+    - `INCOMPLETE`
+    - `BLOCKED`
 - Every requirement and validation item needs evidence. A `VERIFIED`
   handoff must associate executable `PASS` validation evidence with
   every material requirement. Do not claim success from changed files

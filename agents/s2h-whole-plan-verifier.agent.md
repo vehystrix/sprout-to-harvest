@@ -1,7 +1,7 @@
 ---
 description: "Verifies the complete requirement-assignment inventory against
   the full plan; read-only global coverage, ownership, and boundary checks."
-name: "Whole-Plan Verifier"
+name: "s2h-WholePlanVerifier"
 #tools: [read, search]
 user-invocable: false
 ---

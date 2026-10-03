@@ -48,7 +48,7 @@ context; pass only its path in every delegation, and delegate plan reading
 to the roles that need the content.
 - The orchestrator is the sole authority for implementation-loop model
   assignments. Agents may recommend models, but they cannot finalize or apply
-  them. In the decomposition phase, the Plan Decomposer finalizes
+  them. In the decomposition phase, the `s2h-PlanDecomposer` finalizes
   documentation-loop assignments per `s2h-plan-decomposition`; the orchestrator
   validates them at phase acceptance.
 - Treat the configured retry limit as repair attempts after the initial
@@ -101,7 +101,7 @@ a later phase because an earlier agent's narrative sounds complete.
    fails, persist `blocked` and stop.
 4. **Audit the plan.** Unless `Skip plan audit` is `true`, persist
    `phase: s2h-plan-audit`, `status: running`, and `attempt: 1`; delegate exactly once
-   to `Plan Auditor` with only the plan path from `run.yaml` and the run
+   to `s2h-PlanAuditor` with only the plan path from `run.yaml` and the run
    directory. Validate its handoff using `s2h-handoff` and
    `s2h-plan-audit-format`, validate the `s2h-plan-audit.yaml` the auditor wrote in
    the run directory, record in run state the path of the
@@ -119,7 +119,7 @@ a later phase because an earlier agent's narrative sounds complete.
    later documentation assignments must then be built from verified
    implementation evidence rather than a plan brief.
 5. **Decompose the plan.** Persist `phase: decomposition`, `status: running`.
-   Delegate exactly once to `Plan Decomposer` with only file paths - the plan
+   Delegate exactly once to `s2h-PlanDecomposer` with only file paths - the plan
    from `run.yaml`, the persisted `s2h-plan-audit.yaml`, and - when the audit ran -
    `requirements.yaml`; when the audit was skipped, it derives the inventory
    itself. You pass the run's per-loop retry cap in that delegation; it owns the whole
@@ -165,7 +165,7 @@ a later phase because an earlier agent's narrative sounds complete.
    directly, probes once, and delegates with a `model` field only when
    confirmed.
 8. **Implement and verify the selected step.** For each implementation cycle:
-	- Persist the step as `running` before delegating `Step Implementer`.
+	- Persist the step as `running` before delegating `s2h-StepImplementer`.
 	- Pass only file paths: the step context, its latest checkpoint, and
 	  the latest relevant verifier report; the delegated agent reads them.
 	- Validate the implementer handoff. `PASS` may proceed to verification;
@@ -173,7 +173,7 @@ a later phase because an earlier agent's narrative sounds complete.
 	  blocker and stops. A missing or malformed handoff is `blocked` and does not
 	  consume a retry. This stop on `RECOVERABLE` is implementation-loop only;
 	  the decomposition loops proceed per `s2h-plan-decomposition`.
-	- Persist the step as `running` before delegating `Step Verifier`.
+	- Persist the step as `running` before delegating `s2h-StepVerifier`.
 	- Validate the verifier handoff. `VERIFIED` marks the step `completed` and
 	  records its evidence and commit. `INCOMPLETE` marks it
 	  `verification-failed`, increments the repair-attempt counter, and returns
@@ -185,7 +185,7 @@ a later phase because an earlier agent's narrative sounds complete.
 	  ledger before making the next delegation.
 9. **Verify the complete implementation.** After every step is `completed`,
    persist `phase: final-verification`, `status: running`; delegate exactly
-   once to `Final Verifier` with only file paths - the plan from `run.yaml`,
+   once to `s2h-FinalVerifier` with only file paths - the plan from `run.yaml`,
    `chunk-index.yaml`, every persisted handoff report, and the ledger's commit
    and repository state. `VERIFIED` continues; `INCOMPLETE` identifies the
    affected steps, consumes one final-verification repair attempt recorded as
@@ -199,7 +199,7 @@ a later phase because an earlier agent's narrative sounds complete.
     the initial brief; refine the assignment with the final
     changed files, and relevant step reports; the implementation evidence is
     authoritative if it differs from the plan brief. For independent
-    assignments, delegate `Documentation Writer` instances in parallel only
+    assignments, delegate `s2h-DocumentationWriter` instances in parallel only
     when their files and ownership do not overlap; otherwise delegate
     sequentially. Persist each assignment before and after delegation. Require
     `PASS` plus a separate documentation commit, or `changed_files: []` with a
@@ -207,7 +207,7 @@ a later phase because an earlier agent's narrative sounds complete.
     `RECOVERABLE` or `BLOCKED` result stops the documentation phase.
     Documentation assignments are selected only after final verification; they
     never inherit the decomposer step recommendations as final state.
-11. **Verify source documentation.** Delegate `Documentation Verifier` for
+11. **Verify source documentation.** Delegate `s2h-DocumentationVerifier` for
     every completed s2h-source-doc assignment. `VERIFIED` accepts the
     assignment; `INCOMPLETE` returns only that assignment to the documentation
     agent within the retry limit; `BLOCKED` stops. Do not request stylistic
@@ -218,8 +218,8 @@ a later phase because an earlier agent's narrative sounds complete.
     verified requirements, and repository-specific examples. Do not require the
     Documentation Writer to reread the complete plan when the Markdown brief and
     implementation context cover the assignment; the final implementation
-    remains authoritative. Delegate `Documentation Writer`, then delegate
-    `Documentation Verifier` with the paths of both files. Require
+    remains authoritative. Delegate `s2h-DocumentationWriter`, then delegate
+    `s2h-DocumentationVerifier` with the paths of both files. Require
     `VERIFIED` before finalization; apply the same bounded retry rule and stop
     on `BLOCKED` or malformed handoffs.
 13. **Finalize.** Run the final repository and validation checks. Build
@@ -269,11 +269,11 @@ Report completed work, validation evidence, blockers, and resume instructions us
 
 ## Related agents
 
-- Implementation Orchestrator (`agents/s2h-orchestrator.agent.md`)
-- Plan Auditor (`agents/plan-auditor.agent.md`)
-- Plan Decomposer (`agents/plan-decomposer.agent.md`)
-- Step Implementer (`agents/step-implementer.agent.md`)
-- Step Verifier (`agents/step-verifier.agent.md`)
-- Final Verifier (`agents/final-verifier.agent.md`)
-- Documentation Writer (`agents/doc-writer.agent.md`)
-- Documentation Verifier (`agents/doc-verifier.agent.md`)
+- s2h-OrchestratorAgent
+- s2h-PlanAuditor
+- s2h-PlanDecomposer
+- s2h-StepImplementer
+- s2h-StepVerifier
+- s2h-FinalVerifier
+- s2h-DocumentationWriter
+- s2h-DocumentationVerifier

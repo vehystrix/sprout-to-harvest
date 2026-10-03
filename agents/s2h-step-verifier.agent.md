@@ -1,7 +1,7 @@
 ---
 description: "Verifies one implementation or primary-test step against its context file,
   requirements, intended failures or passing behavior, validation evidence, and commit."
-name: "Step Verifier"
+name: "s2h-StepVerifier"
 #tools: [read, search, execute]
 user-invocable: false
 ---
