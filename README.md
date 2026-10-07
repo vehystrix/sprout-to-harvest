@@ -141,7 +141,11 @@ Plan: path/to/plan.md
 Run directory: .agent-work/run-001
 Maximum retries per verification loop: 2
 Skip plan audit: false
+Include global model repository: false
 ```
+
+The `Include global model repository` line is optional and defaults to `false`; see the
+Global model repository subsection below.
 
 The orchestrator writes all handoff files, reports, and checkpoints under `.agent-work/`. It
 never commits those files. Add `.agent-work/` to `.gitignore` if desired.
@@ -155,6 +159,23 @@ catalog and policy normally live at:
 .sprout-to-harvest/model-catalog.json
 .sprout-to-harvest/model-policy.json
 ```
+
+### Global model repository
+
+A user-level global model repository lives at `~/.sprout-to-harvest/` with the same two
+file names. The orchestrator resolves each source independently: the workspace file is
+primary; the global file is used only when the workspace file is missing, or when the
+invocation sets `Include global model repository` to `true`. With explicit inclusion and
+both files present, workspace entries win every conflict - catalog entries merge by
+model `id`, and policy roles and scalar fields fall back to global values only where the
+workspace leaves them undefined; see `s2h-orchestrator` for the full rules.
+
+If no file exists for a source, dynamic model selection is disabled: delegations omit
+the `model` field with routing-unavailable warnings - the catalog and policy are not
+mandatory.
+
+Use the [`s2h-model-config`](skills/s2h-model-config/SKILL.md) skill with `scope: global`
+to create or edit the global files.
 
 Use the separately invocable [`s2h-model-config`](skills/s2h-model-config/SKILL.md)
 skill to create or edit them. It asks for structured capabilities, tier, cost, optional

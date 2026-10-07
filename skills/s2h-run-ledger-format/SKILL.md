@@ -76,9 +76,11 @@ The machine-readable form is defined by `references/schema.json`; validate a fil
 `scripts/validate.py <file>`.
 
 The `model_routing` block is required whenever dynamic routing is enabled. It records
-the effective catalog and policy source files, the active host identifier, and the
-one-time capability probe result: `catalog_source` and `policy_source` identify the JSON
-configuration files used for this run; `adapter` is the active host identifier - the value
+the effective catalog and policy sources, the active host identifier, and the
+one-time capability probe result: `catalog_source` and `policy_source` record the
+resolved source of each file - a workspace path, a global repository path, a
+merged descriptor (`merged: <workspace> + <global>`), or `none`; 
+`adapter` is the active host identifier - the value
 appearing under `hosts.*` in the catalog - not a compiled module; and the `preflight`
 block records the capability probe result (`status`, `mechanism`, `evidence_channel`). It
 also holds the canonicalized fingerprints of the confirmed configuration, whether an
@@ -88,7 +90,7 @@ A missing or malformed `model_routing` block is `BLOCKED` before delegated
 implementation work. Fingerprints are canonical SHA-256 values per
 `s2h-model-catalog-format`; they serve as resume, override-review, and audit evidence.
 Resumed runs reuse the copied run-level files when present and compare their
-fingerprints against the current repository configuration before continuing.
+fingerprints against the current resolved sources before continuing.
 On a fingerprint mismatch, persist `blocked` and request explicit user
 confirmation; on confirmation, recopy the effective configuration, re-run the
 capability probe per `s2h-model-routing-adapter`, record a warning, then continue.

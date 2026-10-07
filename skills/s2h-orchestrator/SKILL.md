@@ -16,12 +16,43 @@ Plan: <path to the immutable plan>
 Run directory: <.agent-work/<run-id>>
 Maximum retries per verification loop: <non-negative integer>
 Skip plan audit: true | false
+Include global model repository: true | false (default: false)
 ```
 
 Reject the invocation as `BLOCKED` if `Plan` or `Run directory` is missing,
 the retry value is not a non-negative integer, or `Skip plan audit` is not
 explicitly `true` or `false`. Resolve the run directory relative to the target
 repository and do not silently select a different run.
+
+## Model source resolution
+
+Each of the two model files - `.sprout-to-harvest/model-catalog.json` and
+`.sprout-to-harvest/model-policy.json` - is resolved independently, from the
+workspace file first and then from the user-level global repository at
+`~/.sprout-to-harvest/`:
+
+1. The workspace file exists. It is the effective source; the global file
+   contributes nothing.
+2. The workspace file does not exist and a global file does. The global file
+   becomes the effective source for that run.
+3. `Include global model repository` is `true` while the workspace file also
+   exists. The workspace entry wins every conflict; the global file
+   contributes only what the workspace does not define:
+   - Catalog merge: keep all local entries in their declared order and append
+     global-only model entries after them; on a duplicate `id`, the local
+     entry wins.
+   - Policy merge: roles defined locally keep their local definition; absent
+     roles are inherited from the global policy. Scalar fields (`fallback`,
+     `retry`, `host`) take the local value when present, else the global one.
+4. No file exists for a source and no inclusion applies. The effective
+   configuration is empty: dynamic model selection is disabled for that run,
+   no run copies are frozen for it, and every delegation omits the `model`
+   field with a routing-unavailable warning per `s2h-model-routing-adapter`.
+
+The merged result is validated exactly like a single-file configuration before
+the orchestrator freezes it; validation failures are `BLOCKED` naming the
+failing field paths. The fingerprint covers the effective (merged) bytes, not
+either source file separately.
 
 ## Related skills
 - `s2h-persistent-state`: use for the run ledger, checkpoints, recovery
@@ -81,10 +112,12 @@ a later phase because an earlier agent's narrative sounds complete.
    path, run directory, retry limit, and audit setting match the invocation.
    Resume the first non-completed phase or step selected by the
    persistent-state rules. Never overwrite a completed result.
-2. **Confirm effective configuration and run the capability probe.** Load the
-   effective catalog and policy (repository files, merged overrides confirmed
-   as required), canonicalize both, copy them under `.agent-work/<run-id>/`,
-   and calculate `sha256:` fingerprints. Run the capability probe exactly once
+2. **Confirm effective configuration and run the capability probe.** Resolve
+   each source per Model source resolution above, load the effective catalog
+   and policy (merged overrides confirmed as required), canonicalize both, copy
+   them under `.agent-work/<run-id>/`, and calculate `sha256:` fingerprints - for
+   a source with no file, freeze nothing and record it as `none`. Run the
+   capability probe exactly once
    per the `s2h-model-routing-adapter` skill; it determines whether the delegation
    tool surface accepts a per-delegation `model` parameter and pins the evidence
    channel. Persist `model_routing` in `run.json`: `catalog_source`, `policy_source`,

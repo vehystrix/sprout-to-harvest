@@ -1,6 +1,6 @@
 ---
 name: s2h-model-config
-description: "Guides creation and editing of the repository model catalog and routing policy."
+description: "Creates or edits the workspace or global model catalog and routing policy."
 user-invocable: true
 disable-model-invocation: true
 ---
@@ -17,14 +17,18 @@ The canonical files are repository configuration inputs:
 .sprout-to-harvest/model-policy.json
 ```
 
+These are the workspace model repository. A user-level global model
+repository stores the same two file types at `~/.sprout-to-harvest/`.
+
 Only the orchestrator creates effective run copies under
 `.agent-work/<run-id>/`. This skill must never write a catalog, policy, or effective
 configuration under `.agent-work/`.
 
 ## Invocation inputs
 
-Accept the following inputs when supplied:
-
+- `scope`: which repository to edit - `local` (default) or `global`; local
+  paths are workspace-relative, global paths are `$HOME/.sprout-to-harvest/model-
+  catalog.json` and `$HOME/.sprout-to-harvest/model-policy.json`.
 - `catalog_path`: catalog path, defaulting to `.sprout-to-harvest/model-catalog.json`.
 - `policy_path`: policy path, defaulting to `.sprout-to-harvest/model-policy.json`.
 - `catalog_overrides`: optional field-level catalog changes.
@@ -37,8 +41,8 @@ structured data only.
 
 ## Inspect before asking
 
-1. Resolve the two paths relative to the repository and confirm neither path is inside
-   `.agent-work/`.
+1. Resolve the destination paths - workspace-relative for `local`, $HOME-based
+   for `global` - and confirm neither path is inside `.agent-work/`.
 Read existing JSON when a file exists. Treat a missing file as an empty configuration
    that must be completed by the user.
 3. Parse objects and arrays as structured JSON. Reject malformed JSON before proposing
