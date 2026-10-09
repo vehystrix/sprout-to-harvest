@@ -58,7 +58,7 @@ and model blocks for all four roles. The `s2h-PlanDecomposer` initializes every
 `doc_status` to `pending` when it writes the index and persists status changes
 as the loops run.
 
-## Per-chunk documentation loop
+## Per-chunk loop
 
 For each chunk in dependency order:
 
@@ -66,7 +66,7 @@ For each chunk in dependency order:
 2. Delegate to a Chunk Writer with only file paths - the plan, `chunk-index.json`,
    and `requirements.json`, from which the chunk's contract resolves; on
    repair rounds include the prior findings - using the persisted
-   documentation-loop model assignments. The writer is this chunk's architect: it
+   loop model assignments. The writer is this chunk's architect: it
    derives implementation detail into the step files, so missing detail is its
    normal job, not a defect.
 3. On a writer `PASS` or `RECOVERABLE`, delegate to a s2h-ChunkVerifier with the
@@ -84,7 +84,7 @@ becomes one of the blocked conditions below.
 
 ## Model assignments
 
-Resolve the documentation-loop roles (`chunk-writer`, `chunk-verifier`) through
+Resolve the loop roles (`chunk-writer`, `chunk-verifier`) through
 the catalog routing path at delegation time, and persist each assignment into
 the index with its timestamp and `source: decomposer`; a null recommendation stays
 explicit in `model_recommendations` even when an assignment is persisted. The
@@ -135,3 +135,16 @@ Return `BLOCKED` when:
   the per-loop allowances cannot fix, including findings on the `(L+2)`nd pass.
 
 Every other failure mode is repairable inside the loops above; do not escalate it.
+
+## Completion
+
+The `s2h-PlanDecomposer` returns `PASS` when every chunk has `doc_status: completed`
+and the whole-plan pass returns `PASS`. The final handoff includes the
+`chunk-index.json` path, the `requirements.json` path, and the `doc_status` of every chunk.
+
+**IMPORTANT:** each chunk MUST be delegated to a `s2h-ChunkWriter` and `s2h-ChunkVerifier` loop,
+and the whole plan MUST be delegated to a `s2h-WholePlanVerifier`, for the run to be considered
+complete.
+The chunk contents are not written or verified by the `s2h-PlanDecomposer` itself, and the whole
+plan is not verified by it either. All of this MUST be done by delegation, and the
+`s2h-PlanDecomposer` only orchestrates the process.
