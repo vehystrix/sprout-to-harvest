@@ -115,6 +115,60 @@ decomposition-gap; any other finding is a boundary-mismatch.
 - An infrastructure failure (unreadable files, missing handoff) escalates: the
   phase returns `BLOCKED`.
 
+## Delegation prompt templates
+
+Every delegation from the `s2h-PlanDecomposer` MUST be the verbatim block below
+for that role, with placeholders filled and nothing else added. The line labels
+(`Role:`, `Task ID and attempt:`, `Paths:`, `Constraint:`), the bullet markers,
+and each Constraint sentence are sent exactly as written; only placeholder values
+are substituted at delegation time. Every Paths entry MUST be a concrete file
+path. Never inline plan text, contract excerpts, inventory entries, model
+recommendations, or prior narratives beyond the named finding lines below; each
+agent reads its own files and returns exactly one `s2h-handoff/v1` report.
+Placeholders: `<plan-path>` is the plan file path; `<work-root>` is the run
+directory in delegated mode and `<output-dir>/.work/` in user mode;
+`<chunk-id>` names the chunk; `<n>` is the 1-based attempt number of the loop
+instance.
+
+**s2h-ChunkWriter** (one delegation per attempt)
+
+```text
+Role: s2h-ChunkWriter
+Task ID and attempt: <chunk-id>, attempt <n>
+Paths:
+  - Plan: <plan-path>
+  - Chunk index: <work-root>/chunk-index.json
+  - Requirements: <work-root>/requirements.json
+Prior findings (repair rounds only, one per line):
+  - <finding-id>: <requirement ref> - <one-line description>
+Constraint: file-modifying; write or update only this chunk's step files; never
+commit .agent-work files
+```
+
+**s2h-ChunkVerifier** (one delegation per attempt)
+
+```text
+Role: s2h-ChunkVerifier
+Task ID and attempt: <chunk-id>, attempt <n>
+Paths:
+  - Plan: <plan-path>
+  - Chunk index: <work-root>/chunk-index.json
+  - Requirements: <work-root>/requirements.json
+Constraint: read-only
+```
+
+**s2h-WholePlanVerifier** (one delegation per pass)
+
+```text
+Role: s2h-WholePlanVerifier
+Task ID and attempt: whole-plan, attempt <n>
+Paths:
+  - Plan: <plan-path>
+  - Chunk index: <work-root>/chunk-index.json
+  - Requirements: <work-root>/requirements.json
+Constraint: read-only
+```
+
 ## User-mode run directory
 
 In user mode the `s2h-PlanDecomposer` writes directly into `<output-dir>/.work/`:
