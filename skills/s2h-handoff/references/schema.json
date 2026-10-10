@@ -64,7 +64,6 @@
     "details": {
       "type": "object",
       "required": ["model_assignment"],
-      "additionalProperties": false,
       "properties": {
         "model_assignment": {
           "type": "object",
