@@ -180,7 +180,7 @@ a later phase because an earlier agent's narrative sounds complete.
    before use.
    (2) evaluate role requirements (`required_capabilities`, `minimum_tier`) for
    the current delegation;
-   (3) select a portable ID — evaluate in order: the decomposer recommendation for this step/role
+   (3) select a portable ID - evaluate in order: the decomposer recommendation for this step/role
    from `chunk-index.json` (when present and satisfying `required_capabilities`, `minimum_tier`,
    and the tier rules, use it), else the role's policy default; recording the selection source;
    (4) resolve the host selector by looking up `models[].id == selected_portable_id` and
