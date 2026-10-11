@@ -80,7 +80,7 @@ to the roles that need the content.
 - The orchestrator is the sole authority for implementation-loop model
   assignments. Agents may recommend models, but they cannot finalize or apply
   them. In the decomposition phase, the `s2h-PlanDecomposer` finalizes
-  documentation-loop assignments per `s2h-plan-decomposition`; the orchestrator
+  loop assignments per `s2h-plan-decomposition`; the orchestrator
   validates them at phase acceptance.
 - Treat the configured retry limit as repair attempts after the initial
   implementation attempt; a verification loop that exhausts its allowance
@@ -174,24 +174,27 @@ a later phase because an earlier agent's narrative sounds complete.
    are completed, continue to final verification. For a selected step,
    create or load `steps/<step-id>-status.json` using `s2h-step-status-format` and
    preserve its attempt count.
-7. **Resolve the step assignment from the catalog.** Before each delegated
-   call: (1) use the catalog and policy loaded in step 2; do not re-read them
-   per delegation; on resume, confirm their fingerprints are unchanged before use.
+7. **Resolve the step assignment from the catalog.** Before each delegated call:
+   (1) use the catalog and policy loaded in step 2; only re-read them
+   if they are not in the current context; on resume, confirm their fingerprints are unchanged
+   before use.
    (2) evaluate role requirements (`required_capabilities`, `minimum_tier`) for
-   the current delegation; (3) select a portable ID - the role's policy
-   `default`, which a decomposer recommendation may replace only when it
-   satisfies the same validation, recording the selection source; (4) resolve
-   the host selector by looking up `models[].id == selected_portable_id` and
+   the current delegation;
+   (3) select a portable ID — evaluate in order: the decomposer recommendation for this step/role
+   from `chunk-index.json` (when present and satisfying `required_capabilities`, `minimum_tier`,
+   and the tier rules, use it), else the role's policy default; recording the selection source;
+   (4) resolve the host selector by looking up `models[].id == selected_portable_id` and
    extracting `hosts.<active_host>`; if the mapping is missing, try the policy
    `fallback` portable ID once, and if that also lacks a mapping, stop as
    BLOCKED naming the missing entry when `require_application` is true,
    otherwise continue without a model field with `applied: false` and a warning
-   naming the missing entry (config failure); (5) persist the pre-delegation
-   assignment - requested portable ID, resolved model name, selection source,
-   fallback used if any; (6) delegate - when probe status is passed, set
-   `model` to the resolved value on the delegation call, when routing-unavailable
-   set no `model` field and record a routing-unavailable warning with
-   `applied: false`; (7) after delegation, persist the application result per
+   naming the missing entry (config failure);
+   (5) persist the pre-delegation assignment - requested portable ID, resolved model name,
+   selection source, fallback used if any;
+   (6) delegate - when probe status is passed, set `model` to the resolved value on the
+   delegation call, when routing-unavailable set no `model` field and record a routing-unavailable
+   warning with `applied: false`;
+   (7) after delegation, persist the application result per
    probed evidence channel - runtime model (tool-reported payload first,
    self-ID otherwise), `evidence`, and any warnings. Never claim dynamic
    selection when status is routing-unavailable. There is no preflight step and
@@ -288,9 +291,9 @@ raw failure description and exact resume action. Do not reinterpret the result
 as `INCOMPLETE`, retry it automatically, or continue to another phase.
 
 ## Delegation prompt templates
-Every delegation prompt MUST be the verbatim block below for that role, with
-placeholders filled from persistent state and nothing else added. Every block
-follows the same line order: Role, Task ID and attempt, Paths (and any named
+Every delegation prompts MUST contain ONLY the verbatim block lines for that role;
+they MUST NOT restate acceptance criteria, requirement IDs, or any status vocabulary.
+Every block follows the same line order: Role, Task ID and attempt, Paths (and any named
 persisted values), Skills and Instructions (both present only on generic
 subagent launches; named agents carry their skill bindings and task contract
 through their agent definitions), and Constraint. Never inline plan text, step

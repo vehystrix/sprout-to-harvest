@@ -8,17 +8,15 @@ disable-model-invocation: true
 # Agent Handoff
 
 Every delegated agent must end with one handoff using this exact JSON
-shape. The handoff may be saved in the run directory and summarized to
-the caller, but the field names and meanings are stable across agents.
+shape. The handoff MUST be saved in the run directory and summarized to
+the caller.
 
-Use this skill whenever a delegated agent creates, validates, or reads
-a handoff. The handoff is JSON and is the sole communication contract
-between agents.
+Use this skill whenever a delegated agent creates or validates a handoff.
+The handoff is JSON and is the sole communication contract between agents.
 
-When persisted, save the complete handoff as JSON under
-`reports/<phase>-<subject>-<attempt>.json`; `s2h-plan-audit.json` is the
-named exception for the s2h-plan-audit handoff and `final-report.json`
-is the named exception for the final handoff. Do not persist handoffs
+Save the complete handoff as JSON under `reports/<phase>-<subject>-<attempt>.json`;
+`s2h-plan-audit.json` is the named exception for the s2h-plan-audit handoff and
+`final-report.json` is the named exception for the final handoff. Do not save handoffs
 as Markdown or extensionless files.
 
 ```json
