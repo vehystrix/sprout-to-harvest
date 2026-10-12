@@ -69,6 +69,8 @@ For each new or changed model, ask for:
   reasoning-effort control - effort level names such as `low`, `high`, and
   numeric budgets vary by model; this value is not pinned to one vocabulary;
 - positive `context_window` in tokens;
+- an optional `selection_advice` string - advisory selection guidance for the
+  decomposer, not a routing requirement.
 - data-only host mappings for `copilot` and/or `omp`.
 
 The host mapping is a selector string or `null`; it is never an executable command.

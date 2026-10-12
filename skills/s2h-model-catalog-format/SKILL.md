@@ -73,6 +73,10 @@ Each catalog entry must satisfy these requirements:
   the settings that model's host mechanism supports. It records how much
   reasoning effort to request for this model and never changes routing
   requirements by itself.
+- `selection_advice` is optional free-form guidance for model selection; it
+  is advisory only - recorded for decomposer rationale, never a routing
+  requirement, and hashed into the catalog fingerprint but not validated
+  for truth claims.
 
 Unknown capabilities are invalid unless the format explicitly supports a
 namespaced extension. Duplicate model IDs, missing required fields,

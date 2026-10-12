@@ -90,6 +90,9 @@ the index with its timestamp and `source: decomposer`; a null recommendation sta
 explicit in `model_recommendations` even when an assignment is persisted. The
 `s2h-WholePlanVerifier`'s model assignment goes only in that delegation's handoff
 details, never in the index.
+The decomposer SHOULD consult `models[].selection_advice` as advice when
+forming `model_recommendations`; it does not override `required_capabilities`,
+`minimum_tier`, or a policy `default`.
 
 ## Whole-plan pass
 

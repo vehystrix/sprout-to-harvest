@@ -28,7 +28,8 @@
             "type": "object",
             "additionalProperties": { "type": ["string", "null"] }
           },
-          "reasoning_effort": { "type": ["string", "integer"] }
+          "reasoning_effort": { "type": ["string", "integer"] },
+          "selection_advice": { "type": "string" }
         }
       }
     }
