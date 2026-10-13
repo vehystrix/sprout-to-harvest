@@ -6,7 +6,8 @@
   "license": "MIT",
   "pi": {
     "prompts": ["./agents/*.agent.md"],
-    "skills": ["./skills"]
+    "skills": ["./skills"],
+    "subagents": ["./agents"]
   },
   "omp": {
     "extensions": []

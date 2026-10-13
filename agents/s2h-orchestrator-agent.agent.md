@@ -4,6 +4,12 @@ description: >-
   decomposition, implementation, verification, and documentation agents.
 name: "s2h-OrchestratorAgent"
 #tools: [read, search, edit, execute, agent, todo]
+#allowed_subagents: subagent roles this agent may delegate to; read by pi; ignored elsewhere.
+allowed_subagents: >-
+  s2h-PlanAuditor, s2h-PlanDecomposer, s2h-StepImplementer,
+  s2h-StepVerifier, s2h-FinalVerifier, s2h-DocumentationWriter,
+  s2h-DocumentationVerifier, general-purpose, Explore
+#spawns: subagent roles this agent may delegate to; read by OMP; ignored elsewhere.
 spawns:
   - s2h-PlanAuditor
   - s2h-PlanDecomposer

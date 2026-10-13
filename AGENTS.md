@@ -9,7 +9,9 @@
 - `templates/` - model routing/catalog policy JSON templates. NOT skills:
   infrastructure artifacts copied into target repos; no SKILL.md there means
   it is not a valid skill.
-- `package.json`, `plugin.json` - manifests referencing `skills/`.
+- `package.json`, `plugin.json` - manifests referencing `agents/` and `skills/`; the
+  Pi manifest also declares `pi.subagents` so the pi-subagents extension registers each
+  role file as an agent type.
 
 Eight user-facing entry points; the rest set `user-invocable: false`. See the
 README Layout section for the list.

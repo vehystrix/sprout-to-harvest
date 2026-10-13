@@ -4,6 +4,9 @@ description: "Audits an implementation plan for contradictions, ambiguity,
   acceptance criteria."
 name: "s2h-PlanAuditor"
 #tools: [read, search, write, edit]
+#allowed_subagents: subagent roles this agent may delegate to; read by pi; ignored elsewhere.
+allowed_subagents: Explore
+#spawns: subagent roles this agent may delegate to; read by OMP; ignored elsewhere.
 spawns: scout
 user-invocable: false
 ---

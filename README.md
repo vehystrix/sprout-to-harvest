@@ -54,8 +54,9 @@ The workflow:
 - `templates/`: model catalog and policy JSON templates; target repositories
   copy them to `.sprout-to-harvest/model-catalog.json` and
   `.sprout-to-harvest/model-policy.json`.
-- `package.json`: Pi/oh-my-pi package manifest. It exposes the same agent Markdown as prompt
-resources and the same skills as Agent Skills.
+- `package.json`: Pi/oh-my-pi package manifest. It exposes the same agent Markdown as
+prompt resources, the same skills as Agent Skills, and the role files to the pi-subagents
+extension through its `pi.subagents` declaration.
 - `plugin.json`: Copilot plugin manifest. It exposes the same `agents/` and `skills/`
 directories without copying them into a project.
 - `.agent-work/`: created by the orchestrator at runtime; keep it untracked.
@@ -89,6 +90,22 @@ prompt resources. The role files are not copied into a second Pi-specific direct
 Because the bundled skills set `disable-model-invocation`, hosts that honor the flag omit
 them from automatic model skill discovery; they load only when a role file or another
 skill invokes them by name.
+
+### Sub-agents with the pi-subagents extension
+
+The `pi.subagents` declaration in `package.json` registers each role file as a spawnable
+agent type for the [pi-subagents](https://github.com/tintinweb/pi-subagents) extension.
+Install that extension first, then this package:
+
+```bash
+pi install npm:@tintinweb/pi-subagents
+pi install git:github.com/vehystrix/sprout-to-harvest
+```
+
+The orchestrator and plan decomposer role files set `allowed_subagents`, so their sessions
+can spawn the roles they delegate to; every other role is a leaf. Model, thinking level,
+and turn limits are inherited from the session or chosen at spawn time, keeping the
+package host-agnostic.
 
 ## Install as a Copilot plugin
 

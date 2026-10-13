@@ -3,6 +3,11 @@ description: "Owns the decomposition phase of one run: requirements
   inventory, chunk index, per-chunk writer and verifier loops, and the whole-plan pass."
 name: "s2h-PlanDecomposer"
 #tools: [read, search, write, edit]
+#allowed_subagents: subagent roles this agent may delegate to; read by pi; ignored elsewhere.
+allowed_subagents: >-
+  s2h-ChunkWriter, s2h-ChunkVerifier, s2h-WholePlanVerifier,
+  general-purpose, Explore
+#spawns: subagent roles this agent may delegate to; read by OMP; ignored elsewhere.
 spawns: [s2h-ChunkWriter, s2h-ChunkVerifier, s2h-WholePlanVerifier, scout]
 user-invocable: false
 ---
