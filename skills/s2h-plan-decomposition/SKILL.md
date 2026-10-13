@@ -84,15 +84,23 @@ becomes one of the blocked conditions below.
 
 ## Model assignments
 
-Resolve the loop roles (`chunk-writer`, `chunk-verifier`) through
-the catalog routing path at delegation time, and persist each assignment into
-the index with its timestamp and `source: decomposer`; a null recommendation stays
-explicit in `model_recommendations` even when an assignment is persisted. The
-`s2h-WholePlanVerifier`'s model assignment goes only in that delegation's handoff
-details, never in the index.
-The decomposer SHOULD consult `models[].selection_advice` as advice when
-forming `model_recommendations`; it does not override `required_capabilities`,
-`minimum_tier`, or a policy `default`.
+Resolve each loop role (`chunk-writer`, `chunk-verifier`) at delegation time per
+`s2h-model-routing-adapter`. In delegated mode read the frozen run copies and the
+probe status from `run.json` (`model_routing.preflight.status`); in user mode resolve
+each model file per that skill's model source resolution and apply its static
+tool-surface check. Select each portable ID by evaluating the role's policy
+`required_capabilities` and `minimum_tier`: use the chunk's persisted recommendation
+when it satisfies them, else the role's policy default; resolve its host mapping per
+the adapter's catalog lookup procedure, trying the policy fallback once before
+recording a config failure. When the status is `routing-unavailable`, every delegation
+follows the adapter's run-level routing-unavailable handling.
+Persist each assignment into the index with its timestamp and `source: decomposer`;
+a null recommendation stays explicit in `model_recommendations` even when an assignment
+is persisted. The `s2h-WholePlanVerifier`'s model assignment goes only in that delegation's
+handoff details, never in the index.
+The decomposer SHOULD consult `models[].selection_advice` as advice when forming
+`model_recommendations`; it does not override `required_capabilities`, `minimum_tier`,
+or a policy `default`.
 
 ## Whole-plan pass
 

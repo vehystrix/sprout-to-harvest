@@ -186,7 +186,7 @@ not write either file when validation fails.
 
 Validation is a configuration check only. It is separate from runtime model
 confirmation, which happens exclusively through the orchestrator's one-time
-capability probe documented in `s2h-model-routing-adapter`.
+capability probe documented in `s2h-model-probe`.
 
 ## Confirmation and write behavior
 
@@ -228,3 +228,4 @@ one-time capability probe and evidence recording; refer to the catalog and the
 
 - `s2h-model-catalog-format`
 - `s2h-model-routing-adapter`
+- `s2h-model-probe`

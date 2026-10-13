@@ -26,33 +26,11 @@ repository and do not silently select a different run.
 
 ## Model source resolution
 
-Each of the two model files - `.sprout-to-harvest/model-catalog.json` and
-`.sprout-to-harvest/model-policy.json` - is resolved independently, from the
-workspace file first and then from the user-level global repository at
-`~/.sprout-to-harvest/`:
-
-1. The workspace file exists. It is the effective source; the global file
-   contributes nothing.
-2. The workspace file does not exist and a global file does. The global file
-   becomes the effective source for that run.
-3. `Include global model repository` is `true` while the workspace file also
-   exists. The workspace entry wins every conflict; the global file
-   contributes only what the workspace does not define:
-   - Catalog merge: keep all local entries in their declared order and append
-     global-only model entries after them; on a duplicate `id`, the local
-     entry wins.
-   - Policy merge: roles defined locally keep their local definition; absent
-     roles are inherited from the global policy. Scalar fields (`fallback`,
-     `retry`, `host`) take the local value when present, else the global one.
-4. No file exists for a source and no inclusion applies. The effective
-   configuration is empty: dynamic model selection is disabled for that run,
-   no run copies are frozen for it, and every delegation omits the `model`
-   field with a routing-unavailable warning per `s2h-model-routing-adapter`.
-
-The merged result is validated exactly like a single-file configuration before
-the orchestrator freezes it; validation failures are `BLOCKED` naming the
-failing field paths. The fingerprint covers the effective (merged) bytes, not
-either source file separately.
+Resolve each model file per `s2h-model-routing-adapter`'s model source resolution; the
+merge applies when `Include global model repository` is `true`. The merged result is
+validated exactly like a single-file configuration before the orchestrator freezes it;
+validation failures are `BLOCKED` naming the failing field paths. The fingerprint covers
+the effective (merged) bytes, not either source file separately.
 
 ## Related skills
 - `s2h-persistent-state`: use for the run ledger, checkpoints, recovery
@@ -63,8 +41,9 @@ either source file separately.
 - `s2h-requirements-traceability`: use to coordinate requirement, step, commit,
   validation, and documentation coverage.
 - `s2h-handoff`: use to validate every delegated agent's final handoff before consuming it.
-- `s2h-model-catalog-format` and `s2h-model-routing-adapter`: use to freeze the effective
-  catalog and policy, run the one-time capability probe, and resolve portable IDs.
+- `s2h-model-catalog-format` and `s2h-model-routing-adapter`: use to resolve model
+  sources, freeze the effective catalog and policy, and resolve portable IDs.
+- `s2h-model-probe`: use for the one-time per-run capability probe.
 - `s2h-run-ledger-format`, `s2h-plan-audit-format`, `s2h-chunk-index-format`,
   `s2h-requirements-format`, `s2h-step-context-format`,
   `s2h-step-status-format`, `s2h-checkpoint-format`,
@@ -117,15 +96,11 @@ a later phase because an earlier agent's narrative sounds complete.
    and policy (merged overrides confirmed as required), canonicalize both, copy
    them under `.agent-work/<run-id>/`, and calculate `sha256:` fingerprints - for
    a source with no file, freeze nothing and record it as `none`. Run the
-   capability probe exactly once
-   per the `s2h-model-routing-adapter` skill; it determines whether the delegation
-   tool surface accepts a per-delegation `model` parameter and pins the evidence
-   channel. Persist `model_routing` in `run.json`: `catalog_source`, `policy_source`,
-   `adapter` (active host identifier), `preflight: { status, mechanism, evidence_channel }`,
-   fingerprints, and warnings including any routing-unavailable warning. If probe status is
-   `routing-unavailable` and `require_application` is true, persist `blocked` and stop; otherwise
-   continue - every later delegation omits the `model` field and records a
-   routing-unavailable warning with `applied: false`.
+   capability probe exactly once per the `s2h-model-probe` skill; persist its
+   result in `run.json.model_routing`, whose block is defined by
+   `s2h-run-ledger-format`. If probe status is `routing-unavailable` and
+   `require_application` is true, persist `blocked` and stop; every later
+   delegation then follows the adapter's run-level routing-unavailable handling.
 3. **Prepare repository isolation.** Inspect Git before any file-modifying
    delegation. If Git exists, apply `s2h-git-isolation`, record the
    starting branch and commit, require clean tracked changes, and create or
@@ -191,9 +166,7 @@ a later phase because an earlier agent's narrative sounds complete.
    naming the missing entry (config failure);
    (5) persist the pre-delegation assignment - requested portable ID, resolved model name,
    selection source, fallback used if any;
-   (6) delegate - when probe status is passed, set `model` to the resolved value on the
-   delegation call, when routing-unavailable set no `model` field and record a routing-unavailable
-   warning with `applied: false`;
+   (6) delegate - pass every delegation per `s2h-model-routing-adapter`;
    (7) after delegation, persist the application result per
    probed evidence channel - runtime model (tool-reported payload first,
    self-ID otherwise), `evidence`, and any warnings. Never claim dynamic

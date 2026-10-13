@@ -9,70 +9,49 @@ disable-model-invocation: true
 ---
 # Model Routing Adapter - Delegation Guide
 
-## Capability probe (exactly once per run)
+## Model source resolution
 
-The orchestrator runs this probe exactly once per run, before plan auditing
-begins, after the effective catalog and policy have been copied under
-`.agent-work/<run-id>/`. Its result is cached in `run.json.model_routing.preflight`
-and reused for every later delegation of that run. Reusing a cached probe
-result is valid only while the same host, session, and effective configuration
-fingerprint are still in use; if any of those change on resume, re-run the
-probe and record a warning.
+Each of the two model files - `.sprout-to-harvest/model-catalog.json` and
+`.sprout-to-harvest/model-policy.json` - is resolved independently, workspace file
+first, then the user-level global repository at `~/.sprout-to-harvest/`:
 
-1. **Static tool-surface check first.** Does the active host's delegation tool
-   expose a per-delegation `model` parameter? If not, no live probes are needed:
-   record `status: routing-unavailable`, `mechanism: none`, and pin
-   `evidence_channel` by inspecting the response payload of the first real
-   delegation - record `self-reported` if that payload has no structured
-   runtime-model field.
-2. **Probe P1 (if a `model` parameter exists).** Delegate a trivial
-   self-identification task to a candidate model: the cheapest catalog entry
-   with a mapping for the active host whose mapped value differs from the
-   current session default; ties on cost break by lowest tier, then by
-   catalog order. The "current session default" is the model identifier
-   exposed in the host context when visible (for example, the Model line of the
-   workstation/system block); if it is not visible, treat it as unknown so no
-   candidate is excluded by that rule. The prompt must ask the subagent to state
-   its runtime model identifier if one is visible in its context, and MUST NOT
-   name the expected model - a self-ID echoing the instruction proves nothing.
-3. **Probe P2 (baseline).** Delegate the same self-identification task with no
-   `model` request, as a baseline so the orchestrator can tell "host honored the
-   request" from "request ignored." If Probe P1 shows the requested model was
-   not honored by the response payload or self-ID, the host has an exposed
-   parameter that ignores selections: record `status: routing-unavailable` with
-   a warning - never `passed`.
-4. **Evidence-channel determination.** Inspect the delegation response payload
-   for a structured runtime-model field; its presence pins
-   `evidence_channel: tool-reported`, and its absence pins
-   `evidence_channel: self-reported` for the whole run.
+1. The workspace file exists. It is the effective source; the global file
+   contributes nothing.
+2. The workspace file does not exist and a global file does. The global file
+   becomes the effective source for that run.
+3. An explicit inclusion applies while the workspace file also exists. The
+   workspace entry wins every conflict; the global file contributes only what
+   the workspace does not define:
+   - Catalog merge: keep all local entries in their declared order and append
+     global-only model entries after them; on a duplicate `id`, the local
+     entry wins.
+   - Policy merge: roles defined locally keep their local definition; absent
+     roles are inherited from the global policy. Scalar fields (`fallback`,
+     `retry`, `host`) take the local value when present, else the global one.
+4. No file exists for a source and no inclusion applies. The effective
+   configuration is empty: dynamic model selection is disabled; every delegation
+   omits the `model` field with a routing-unavailable warning.
 
-If no probe candidate remains (no catalog mapping for the active host, or every
-mapped value equals the visible session default), record
-`status: routing-unavailable` with the warning "probe inconclusive - no distinct
-probe target", still run Probe P2 to pin `evidence_channel`, and set no `model`
-field on any delegation in this run.
+In delegated mode the orchestrator validates, canonicalizes, freezes, and fingerprints
+the effective configuration as run copies under `.agent-work/<run-id>/`; readers of the
+resolution (orchestrator or decomposer) read those frozen copies. In user mode there is
+no freezing: each resolved file is used directly. The merged result is validated exactly
+like a single-file configuration before use; validation failures are `BLOCKED` naming
+the failing field paths. The fingerprint covers the effective (merged) bytes, not
+either source file separately.
 
-Result values are exactly:
+## Static tool-surface check
 
-- `status`: `passed | routing-unavailable`
-- `mechanism`: `model-parameter | none`
-- `evidence_channel`: `tool-reported | self-reported`
+Every delegating agent applies this before any model-bearing delegation, and it is the
+only probe step that runs outside delegated mode. Does the active host's delegation tool
+expose a per-delegation `model` parameter? If not, record `status: routing-unavailable`,
+`mechanism: none`, and pin `evidence_channel` by inspecting the response payload of the
+first real delegation - record `self-reported` if that payload has no structured
+runtime-model field.
 
-Persist the result under `run.json.model_routing.preflight` as a data block,
-alongside `catalog_source`, `policy_source`, `adapter` (the active host
-identifier), fingerprints, and warnings:
-
-```json
-{
-  "model_routing": {
-    "preflight": {
-      "status": "passed",
-      "mechanism": "model-parameter",
-      "evidence_channel": "tool-reported"
-    }
-  }
-}
-```
+In delegated mode the orchestrator has already run this check; every later delegation
+consumes its result from `run.json.model_routing.preflight`. In user mode there is no
+per-run probe: the delegating agent applies only this check, which needs no live probes.
 
 ## Catalog lookup procedure
 
@@ -104,9 +83,12 @@ Example lookup:
 ## Delegation
 
 When the probe status is `passed`, pass the resolved model name (or an accepted
-role alias for it) as the `model` field on the delegation call. When the probe
-status is `routing-unavailable`, set no `model` field at all - omit the field
-entirely:
+role alias for it) as the `model` field on the delegation call. Every passed
+delegation also states its effort explicitly: when the selected entry declares
+`reasoning_effort`, pass that value on the delegation call alongside `model`;
+when no such declaration exists, state no effort - never invent one. When the
+probe status is `routing-unavailable`, set no `model` field at all - omit the
+field entirely:
 
 ```json
 {

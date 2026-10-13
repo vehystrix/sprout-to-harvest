@@ -40,5 +40,7 @@ rules, loop mechanics, retry caps, finding routing, and blocked conditions:
   and blocked conditions you enforce.
 - `s2h-requirements-format`, `s2h-chunk-index-format`, `s2h-step-context-format`:
   use for the file schemas you author or validate.
+- `s2h-model-routing-adapter`: use to resolve each loop role's model assignment at
+  delegation time, including host mapping lookup and fallback order.
 - `s2h-handoff`: use for delegation templates and the required final report;
   outcomes are `PASS` (phase complete, every chunk `completed`) or `BLOCKED`.

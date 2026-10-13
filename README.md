@@ -291,8 +291,9 @@ model name via `hosts.<host>`.
 2. A one-time capability probe (a cheap self-identification delegation)
 confirms whether the active host honors per-delegation model selection and pins
 the evidence channel for the run.
-3. When confirmed, the `model` field is set on each delegation; otherwise
-no model field is set and warnings are recorded.
+3. When confirmed, the `model` field - and its declared `reasoning_effort`,
+if any - is set on each delegation; otherwise no model field is set and
+warnings are recorded.
 
 ## Inter-agent communication
 

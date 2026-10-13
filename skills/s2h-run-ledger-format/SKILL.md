@@ -93,6 +93,6 @@ Resumed runs reuse the copied run-level files when present and compare their
 fingerprints against the current resolved sources before continuing.
 On a fingerprint mismatch, persist `blocked` and request explicit user
 confirmation; on confirmation, recopy the effective configuration, re-run the
-capability probe per `s2h-model-routing-adapter`, record a warning, then continue.
+capability probe per `s2h-model-probe`, record a warning, then continue.
 `final_verification_repairs` counts final-verification repair attempts
 consumed against `maximum_retries`.
