@@ -9,12 +9,8 @@ disable-model-invocation: true
 ---
 # Persistent Workflow State
 
-Use `s2h-handoff` for every subagent result. Use
-`s2h-run-ledger-format`, `s2h-step-status-format`,
-`s2h-checkpoint-format`, `s2h-plan-audit-format`,
-`s2h-chunk-index-format`, `s2h-requirements-format`,
-`s2h-step-context-format`, `s2h-doc-assignment-format`, and
-`s2h-final-report-format` for the corresponding persisted files.
+Use `s2h-handoff` for every subagent result. Use the format skills mapped
+in the Artifact format index below for the corresponding persisted files.
 Validate each format before copying its status, evidence,
 artifacts, blockers, or resume point into the run ledger; an
 invalid artifact is `blocked`.
@@ -34,7 +30,8 @@ these explicit formats and filename patterns:
 | --- | --- | --- |
 | Run ledger | `run.json` | `s2h-run-ledger-format` |
 | Plan audit | `s2h-plan-audit.json` | `s2h-plan-audit-format` |
-| Documentation context | `documentation/source-doc-context.md` and `documentation/user-doc-context.md` | `s2h-doc-context-format` |
+| Source documentation context | `documentation/source-doc-context.md` | `s2h-doc-context-format` |
+| User documentation context | `documentation/user-doc-context.md` | `s2h-doc-context-format` |
 | Chunk index | `chunk-index.json` | `s2h-chunk-index-format` |
 | Requirement inventory | `requirements.json` | `s2h-requirements-format` |
 | Step context | `steps/<step-id>.md` | `s2h-step-context-format` |
@@ -43,6 +40,7 @@ these explicit formats and filename patterns:
 | Handoff report | `reports/<phase>-<subject>-<attempt>.json` | `s2h-handoff` |
 | Documentation assignment | `documentation/<assignment-id>.md` | `s2h-doc-assignment-format` |
 | Final report | `final-report.json` | `s2h-final-report-format` |
+| Session survival list | `sessions/<role>-<id>-survivable.md` | `s2h-compaction-recovery` |
 
 No extensionless, YAML, or ad hoc text artifacts are permitted.
 Markdown frontmatter must identify the artifact kind,
@@ -82,17 +80,3 @@ a verified step unless the user explicitly requests it. Preserve
 recoverable workspace changes and report blockers to the user.
 
 Never commit the run directory. Add it to `.git/info/exclude` when appropriate.
-
-## Related skills
-
-- `s2h-handoff`
-- `s2h-checkpoint-format`
-- `s2h-doc-assignment-format`
-- `s2h-doc-context-format`
-- `s2h-final-report-format`
-- `s2h-chunk-index-format`
-- `s2h-plan-audit-format`
-- `s2h-requirements-format`
-- `s2h-run-ledger-format`
-- `s2h-step-context-format`
-- `s2h-step-status-format`

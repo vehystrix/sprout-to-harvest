@@ -32,18 +32,12 @@ files outside the allowed scope, return `BLOCKED` before editing.
 - `s2h-step-context-format`, `s2h-step-status-format`, and `s2h-checkpoint-format`: use
   when reading or persisting the assigned context, status, or checkpoint.
 
-For a primary-test step, follow `s2h-test-first-plan-steps`: write the planned
-failing tests and record the intended failure. For an implementation step,
-implement the smallest behavior that passes them.
-For a primary-test step, do not change production code and do not make the
-step appear green. For an implementation step, preserve the primary tests and
-do not weaken assertions to obtain a pass. If the required validation cannot
-run, record `NOT_RUN` with the concrete blocker; do not claim `PASS`.
+Follow `s2h-test-first-plan-steps` for both step types. If the required
+validation cannot run, record `NOT_RUN` with the concrete blocker; do not
+claim `PASS`.
 
-Preserve unrelated work and never reset the repository; persist a
-recoverable status per `s2h-subagent-recovery` when blocked. Before returning
-from file-modifying work: run required validation, then commit per
-`s2h-atomic-step-commit`, reporting the commit hash.
+Persist a recoverable status per `s2h-subagent-recovery` when blocked.
+Finish file-modifying work per `s2h-atomic-step-commit`.
 
 Return an `s2h-handoff/v1` report. A primary-test step may use `PASS` with
 the intentional failing validation recorded; an interrupted step uses

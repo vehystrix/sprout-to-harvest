@@ -21,11 +21,7 @@ If Git is unavailable, skip branch and commit operations, record `N/A`
 for the repository branch and commit fields, and preserve the same
 changed-file and validation evidence requirements.
 
-File-modifying subagents validate their step, commit the completed
-work, and report the commit hash before returning.
-Verification agents are read-only.
-When a subagent needs multiple commits for experimentation or rollback,
-use a temporary child branch and merge it into the implementation
-branch after verification.
+File-modifying subagents validate, commit, and report per
+`s2h-atomic-step-commit`. Verification agents are read-only.
 
 Never reset or discard unrelated changes. Never commit `.agent-work/`.

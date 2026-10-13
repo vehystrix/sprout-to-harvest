@@ -27,20 +27,7 @@ Use this skill when the orchestrator creates `steps/<step-id>-status.json`.
   },
   "changed_files": [],
   "validation": [],
-  "model_assignment": {
-    "requested": "coding-standard",
-    "resolved": "Code Model (copilot)",
-    "portable_id": "coding-standard",
-    "role": "implementer",
-    "source": "orchestrator",
-    "fallback": null,
-    "applied": true,
-    "adapter": "copilot",
-    "evidence": "adapter-confirmed",
-    "runtime_model": "Code Model (copilot)",
-    "rationale": "Implementation requires coding and testing support.",
-    "warning": null
-  },
+  "model_assignment": "<fields per s2h-handoff's Required delegated model assignment block>",
   "attempt_history": [
     {
       "attempt": 0,
@@ -79,10 +66,8 @@ The machine-readable form is defined by `references/schema.json`; validate a fil
 Allowed statuses are `pending`, `running`, `completed`,
 `verification-failed`, `interrupted`, `recoverable`, `blocked`,
 and `abandoned`.
-`completed` is legal only after a verifier returns `VERIFIED`; an agent's
-`PASS` does not complete a behavioral step.
+`completed` is legal only after a verifier returns `VERIFIED`.
 
-`model_assignment` is the resolved assignment for the current attempt.
 `attempt_history` is append-only, in chronological order; each entry records
 the attempt number, the prior assignment snapshot, the documented outcome,
 and any escalation metadata: `triggered`, `prior_model`, `new_model`, and `policy_rule`.

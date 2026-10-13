@@ -31,20 +31,7 @@ result under `details` using these required fields:
       "result": "PASS",
       "evidence": "Working tree is clean except for ignored .agent-work/."
     },
-    "model_assignment": {
-      "requested": "reasoning-pro",
-      "resolved": "Claude Opus 4.8 (copilot)",
-      "portable_id": "reasoning-pro",
-      "role": "final-report",
-      "source": "orchestrator",
-      "fallback": null,
-      "applied": true,
-      "adapter": "copilot",
-      "evidence": "adapter-confirmed",
-      "runtime_model": "Claude Opus 4.8 (copilot)",
-      "rationale": "The final report summarizes the completed run.",
-      "warning": null
-    }
+    "model_assignment": "<fields per s2h-handoff's Required delegated model assignment block>"
   }
 }
 ```

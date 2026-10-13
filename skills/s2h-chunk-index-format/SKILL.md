@@ -13,9 +13,8 @@ The machine-readable ownership map of a decomposed implementation plan.
 - Record one entry per chunk with its assigned requirement IDs,
   documentation-loop status, and step list.
 - Persist model recommendations and assignments for the four roles the pipeline delegates to.
-- Keep contracts out of the index: they live verbatim in each chunk's step files,
-  shaped by `s2h-step-context-format`, and every `requirements_assigned` ID resolves into
-  `requirements.json`.
+- Keep contracts out of the index: they live verbatim in each chunk's step
+  files, shaped by `s2h-step-context-format`.
 
 ## Schema (frontmatter-free JSON file)
 

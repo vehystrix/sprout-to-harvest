@@ -33,14 +33,9 @@ return `BLOCKED` with the exact path or ambiguity and stop.
 
 Create `documentation/source-doc-context.md` and
 `documentation/user-doc-context.md` under the run directory per
-`s2h-doc-context-format`. If no obligation exists, create valid
-context files stating that explicitly.
-On a `PASS` audit, write the complete requirements list to
-`requirements.json` in the run directory per
-`s2h-requirements-format` with `source: plan-auditor`, and record that
-path under `details.requirements_path`. A non-PASS audit writes no
-file; it records no path.
+`s2h-doc-context-format`. On a `PASS` audit, write the requirements
+inventory to `requirements.json` in the run directory per
+`s2h-requirements-format` and record its path per `s2h-plan-audit-format`.
 
-Return an `s2h-handoff/v1` report following `s2h-plan-audit-format`. Put the
-audit result in `status` and the required audit payload under `details`.
+Return an `s2h-handoff/v1` report per `s2h-plan-audit-format`.
 

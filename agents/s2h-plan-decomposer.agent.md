@@ -25,15 +25,13 @@ Execute per `s2h-plan-decomposition`, which owns the full phase contract - chunk
 rules, loop mechanics, retry caps, finding routing, and blocked conditions:
 
 1. Inventory - consume `.agent-work/<run-id>/requirements.json` when the
-   audit wrote one; derive and write it yourself when auditing is absent or skipped.
-2. Chunk index - write `chunk-index.json`; verify coverage on write before any loop starts.
-3. Per-chunk loops - drive each chunk's writer and verifier loop to completion under
-   the run's per-loop retry cap.
-4. Model assignments - persist documentation-loop assignments into the index per the
-   skill, including its timestamp and `source: decomposer` rules.
-5. Whole-plan pass - delegate the `s2h-WholePlanVerifier` when every chunk is completed,
-   route its findings per the skill's artifact-owner rule; stop within the whole-plan
-   pass cap.
+   audit wrote one, else derive it per the skill.
+2. Chunk index - write `chunk-index.json` per the skill's coverage rules.
+3. Per-chunk loops - drive each chunk's writer and verifier loop per the
+   skill.
+4. Model assignments - persist loop assignments into the index per the skill.
+5. Whole-plan pass - delegate the `s2h-WholePlanVerifier` when every chunk
+   is completed, route its findings and respect the pass cap per the skill.
 
 ## Related skills
 - `s2h-plan-decomposition`: use for the phase contract, chunking rules, per-loop retry caps,
@@ -42,5 +40,4 @@ rules, loop mechanics, retry caps, finding routing, and blocked conditions:
   use for the file schemas you author or validate.
 - `s2h-model-routing-adapter`: use to resolve each loop role's model assignment at
   delegation time, including host mapping lookup and fallback order.
-- `s2h-handoff`: use for delegation templates and the required final report;
-  outcomes are `PASS` (phase complete, every chunk `completed`) or `BLOCKED`.
+- `s2h-handoff`: use for delegation templates and the required final report.

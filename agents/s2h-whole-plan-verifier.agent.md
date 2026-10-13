@@ -28,14 +28,13 @@ inventory; do not sample.
   full plan text.
 - `s2h-chunk-index-format`: use for chunk identifiers, requirement assignment
   IDs, and model assignments when checking ownership.
-- `s2h-handoff`: use for the required final report shape; outcomes are
-  `VERIFIED`, `INCOMPLETE`, or `BLOCKED`.
+- `s2h-handoff`: use for the required final report shape.
 
 Return an `s2h-handoff/v1` report with `details.findings` entries shaped
 `{id, requirement ref, one-line description}`, each classified as
 `decomposition-gap` when it requires changing a chunk's `requirements_assigned`
-list or a chunk boundary, and a `boundary-mismatch` for any other finding; name the affected
-chunk ID(s). Use `VERIFIED` only when total coverage holds, ownership is unique,
-and all boundaries match; use `INCOMPLETE`
-for any finding of either class; use `BLOCKED` for an unreadable plan or a
-corrupted inventory.
+list or a chunk boundary, and `boundary-mismatch` for any other finding;
+name the affected chunk ID(s). Use `VERIFIED` only when total coverage
+holds, ownership is unique, and all boundaries match;
+use `INCOMPLETE` for any finding of either class; use `BLOCKED` for an
+unreadable plan or a corrupted inventory.

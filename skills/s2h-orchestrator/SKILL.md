@@ -27,10 +27,8 @@ repository and do not silently select a different run.
 ## Model source resolution
 
 Resolve each model file per `s2h-model-routing-adapter`'s model source resolution; the
-merge applies when `Include global model repository` is `true`. The merged result is
-validated exactly like a single-file configuration before the orchestrator freezes it;
-validation failures are `BLOCKED` naming the failing field paths. The fingerprint covers
-the effective (merged) bytes, not either source file separately.
+merge applies when `Include global model repository` is `true`. Validate, canonicalize,
+freeze, and fingerprint the merged result per that skill.
 
 ## Related skills
 - `s2h-persistent-state`: use for the run ledger, checkpoints, recovery
@@ -71,12 +69,6 @@ to the roles that need the content.
   parent-model substitution is forbidden; a fallback or default usage must be
   recorded as a warning with the exact reason.
 
-Before consuming a handoff, validate the schema version, every mandatory
-top-level field, status-specific resume rules, requirement evidence,
-validation evidence, changed-file and commit reporting, and repository state.
-A failed check is `BLOCKED` and is never retried as an ordinary verification
-failure.
-
 ## Execution procedure
 
 Follow this procedure in order. Do not skip a phase, reorder steps, or launch
@@ -116,9 +108,10 @@ a later phase because an earlier agent's narrative sounds complete.
    `requirements.json` the auditor wrote. Then delegate one read-only
    format check per documentation context file to a cheap subagent that applies
    `s2h-doc-context-format`, resolving each model per step 7 as the cheapest
-   portable ID satisfying a read-only capability, and accept only verified reports
-   per `s2h-handoff`. Explicitly tell it to use both skills. On any failed check,
-   persist `blocked` and stop. Then branch on its status:
+   portable ID satisfying a read-only capability, and accept only verified
+   reports per `s2h-handoff`; send the format check template verbatim.
+   Explicitly tell it to use both skills. On any failed check, persist
+   `blocked` and stop. Then branch on its status:
    `NEEDS_CLARIFICATION` reports the required questions to the user and stops as
    `blocked`; `BLOCKED` reports the findings and stops as `blocked`. When
    `Skip plan audit` is `true`, the orchestrator writes the `SKIPPED` record
@@ -139,7 +132,8 @@ a later phase because an earlier agent's narrative sounds complete.
    delegate one read-only format check per step file to a cheap subagent that
    applies `s2h-step-context-format`; resolve each model per step 7 as the cheapest
    portable ID satisfying a read-only capability, and accept only verified
-   reports per `s2h-handoff`. Explicitly tell it to use both skills.
+   reports per `s2h-handoff`; send the format check template verbatim.
+   Explicitly tell it to use both skills.
    On any failed check, persist `blocked` and stop.
 6. **Select the next step.** Load `chunk-index.json` using
    `s2h-chunk-index-format` once when entering this phase; keep that copy in context
@@ -158,12 +152,9 @@ a later phase because an earlier agent's narrative sounds complete.
    (3) select a portable ID - evaluate in order: the decomposer recommendation for this step/role
    from `chunk-index.json` (when present and satisfying `required_capabilities`, `minimum_tier`,
    and the tier rules, use it), else the role's policy default; recording the selection source;
-   (4) resolve the host selector by looking up `models[].id == selected_portable_id` and
-   extracting `hosts.<active_host>`; if the mapping is missing, try the policy
-   `fallback` portable ID once, and if that also lacks a mapping, stop as
-   BLOCKED naming the missing entry when `require_application` is true,
-   otherwise continue without a model field with `applied: false` and a warning
-   naming the missing entry (config failure);
+  (4) resolve the host selector and apply the single policy-fallback retry and
+  config-failure handling per `s2h-model-routing-adapter`'s catalog lookup and
+  fallback order;
    (5) persist the pre-delegation assignment - requested portable ID, resolved model name,
    selection source, fallback used if any;
    (6) delegate - pass every delegation per `s2h-model-routing-adapter`;
@@ -308,14 +299,11 @@ Paths:
   - Documentation context file: <doc-context-file>
 Skills: s2h-doc-context-format, s2h-handoff
 Instructions: Read exactly the named documentation context file. Apply every
-s2h-doc-context-format validation rule that a single file can satisfy: YAML
-frontmatter with kind, schema, run_id, and the correct context_type; every
-required heading present; at least one requirement or an explicit statement
-that no documentation obligation was identified. Do not check any other file
-and do not edit anything. Return exactly one s2h-handoff/v1 report per
-s2h-handoff: VERIFIED if the file fully conforms, INCOMPLETE with
-details.findings naming each defect, BLOCKED if the file is missing or
-unreadable.
+s2h-doc-context-format validation rule that a single file can satisfy. Do not
+check any other file and do not edit anything. Return exactly one
+s2h-handoff/v1 report per s2h-handoff: VERIFIED if the file fully conforms,
+INCOMPLETE with details.findings naming each defect, BLOCKED if the file is
+missing or unreadable.
 Constraint: read-only
 ```
 
@@ -328,14 +316,11 @@ Paths:
   - Step file: <run-dir>/steps/<step-id>.md
 Skills: s2h-step-context-format, s2h-handoff
 Instructions: Read exactly the named step file. Apply every
-s2h-step-context-format validation rule that a single file can satisfy:
-frontmatter with kind, schema, run_id, step_id, chunk_id, and type; every
-required heading present including Contract; each Requirements Covered entry
-naming only requirement IDs from its own Contract. Do not check any other file
-and do not edit anything. Return exactly one s2h-handoff/v1 report per
-s2h-handoff: VERIFIED if the file fully conforms, INCOMPLETE with
-details.findings naming each defect, BLOCKED if the file is missing or
-unreadable.
+s2h-step-context-format validation rule that a single file can satisfy. Do not
+check any other file and do not edit anything. Return exactly one
+s2h-handoff/v1 report per s2h-handoff: VERIFIED if the file fully conforms,
+INCOMPLETE with details.findings naming each defect, BLOCKED if the file is
+missing or unreadable.
 Constraint: read-only
 ```
 

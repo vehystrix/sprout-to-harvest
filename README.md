@@ -177,6 +177,10 @@ catalog and policy normally live at:
 .sprout-to-harvest/model-policy.json
 ```
 
+Starter files ship as `templates/model-catalog-template.json` and
+`templates/model-policy-template.json`; copy them to those paths to begin. The
+schema reference is `s2h-model-catalog-format`.
+
 ### Global model repository
 
 A user-level global model repository lives at `~/.sprout-to-harvest/` with the same two
@@ -203,48 +207,6 @@ before writing.
 Model IDs and host mappings are data, never executable commands. The catalog and policy
 schemas are defined by `s2h-model-catalog-format`.
 
-A minimal catalog entry and role policy look like this:
-
-```json
-{
-  "models": [
-    {
-      "id": "coding-standard",
-      "capabilities": ["coding", "testing"],
-      "tier": 1,
-      "cost": "medium",
-      "context_window": 128000,
-      "hosts": {
-        "copilot": "Code Model (copilot)",
-        "omp": "anthropic/claude-sonnet-4-5"
-      }
-    }
-  ]
-}
-```
-
-```json
-{
-  "model_policy": {
-    "roles": {
-      "implementer": {
-        "required_capabilities": ["coding", "testing"],
-        "minimum_tier": 1,
-        "default": "coding-standard"
-      }
-    },
-    "fallback": "cheap-general",
-    "retry": {
-      "preserve_assignment": true,
-      "allow_escalation": false
-    },
-    "host": {
-      "require_application": false
-    }
-  }
-}
-```
-
 These repository files are configuration inputs, not run state. After confirmed
 invocation overrides are merged and validated, the orchestrator freezes effective copies
 under `.agent-work/<run-id>/model-catalog.json` and
@@ -262,6 +224,8 @@ resolved model is not necessarily an applied model. The delegation guide in
 
 - `adapter-confirmed`: deterministic host or tool confirmation of the resolved model;
 - `host-reported`: the host exposed a runtime model without confirming the override;
+- `tool-reported`: the delegation response payload reports a runtime model in a
+  structured field; it supports applied claims only up to `host-reported`;
 - `self-reported`: the delegated agent reported what it observed;
 - `unknown`: no runtime model evidence was available.
 

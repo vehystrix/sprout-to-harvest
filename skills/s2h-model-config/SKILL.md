@@ -161,28 +161,18 @@ Merge each override into the parsed configuration by field path:
   policy fingerprints only after validation.
 
 When an override is present, identify changed field paths and retain unrelated fields in
-the complete effective result. Never write an effective run copy from this skill.
+the complete effective result.
 
 ## Pre-write validation
 
 Validate both proposed files before asking for confirmation. Report every failure and do
 not write either file when validation fails.
 
-1. Parse the result as JSON objects with the required `models` and `model_policy` roots.
-2. Check unique model IDs, required catalog fields, positive numeric values,
-   normalized capability names, supported cost classes, and that any
-   `reasoning_effort` value is a non-empty string or integer - effort settings
-   vary by model and are not pinned to one vocabulary.
-3. Check each role's `required_capabilities`, `minimum_tier`, and optional default model
-   against the catalog.
-4. Check fallback IDs and ordered fallback chains for missing or recursive references.
-5. Check `retry.preserve_assignment`, `retry.allow_escalation`, and
-   `host.require_application` are booleans.
-6. Check host mapping values are strings or `null`, and reject executable-looking
-   configuration fields or unsupported active-host mappings.
-7. Check that every required role can be satisfied by a catalog entry or its valid
-   fallback chain.
-8. Check the destination paths remain outside `.agent-work/` and are writable.
+Apply every field rule, required-fields rule, and invalid-override rule from
+`s2h-model-catalog-format` to the proposed catalog and policy. Then check
+that every required role can be satisfied by a catalog entry or its valid
+fallback chain, and that the destination paths remain outside `.agent-work/`
+and are writable.
 
 Validation is a configuration check only. It is separate from runtime model
 confirmation, which happens exclusively through the orchestrator's one-time

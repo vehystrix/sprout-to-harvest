@@ -28,7 +28,6 @@ assignment or implementation context is unavailable, return `BLOCKED`.
 - `s2h-handoff`: use for the required final report shape.
 
 Check correctness and material completeness per `s2h-doc-verification`.
-Treat the implementation as authoritative when it differs from the plan brief.
 
 Return an `s2h-handoff/v1` report naming the exact assignment needing correction.
 

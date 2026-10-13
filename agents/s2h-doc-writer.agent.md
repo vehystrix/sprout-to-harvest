@@ -15,10 +15,6 @@ documentation set. Do not change implementation behavior, tests,
 configuration, unrelated documentation, or `.agent-work/` coordination
 files. If the assignment or source interface is unavailable, return
 `BLOCKED` before editing.
-Document only behavior that consumers rely on: public interfaces,
-configuration, error contracts, workflows, prerequisites, and limitations.
-
-Handoff results remain JSON `s2h-handoff/v1` reports.
 
 ## Related skills
 - `s2h-requirements-traceability`: use to connect documented interfaces
@@ -30,9 +26,8 @@ Handoff results remain JSON `s2h-handoff/v1` reports.
 - `s2h-atomic-step-commit`: use when committing documentation changes.
 - `s2h-handoff`: use for the required final report shape.
 
-Validate links and runnable examples in changed files. Commit documentation
-changes on the implementation branch; return an `s2h-handoff/v1` report with
-the commit hash.
+Validate links and runnable examples in changed files, then commit and report
+the commit hash per `s2h-git-isolation` and `s2h-atomic-step-commit`.
 
 If no material documentation change is needed, return `PASS` with
 `changed_files: []` and explain why in `details`; do not create a no-op commit.

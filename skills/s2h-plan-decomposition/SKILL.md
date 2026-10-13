@@ -25,8 +25,8 @@ one entry per requirement with an `id`, a short `name`, and a verbatim plan
   recorded in its handoff as `details.requirements_path`. Read it; never re-derive.
 - User mode, or any run where auditing is absent or skipped - derive: extract
   every material requirement from the plan (explicit and implied), split
-  cross-cutting ones into `<parent-id><suffix>` sub-requirements so each final ID
-  fits one chunk, and write `<output-dir>/.work/requirements.json`
+  cross-cutting ones per `s2h-requirements-format` so each final ID fits one
+  chunk, and write `<output-dir>/.work/requirements.json`
   with `source: plan-decomposer`. In delegated mode a derived inventory goes
   to `.agent-work/<run-id>/requirements.json` with the same source.
 
@@ -66,9 +66,7 @@ For each chunk in dependency order:
 2. Delegate to a Chunk Writer with only file paths - the plan, `chunk-index.json`,
    and `requirements.json`, from which the chunk's contract resolves; on
    repair rounds include the prior findings - using the persisted
-   loop model assignments. The writer is this chunk's architect: it
-   derives implementation detail into the step files, so missing detail is its
-   normal job, not a defect.
+   loop model assignments.
 3. On a writer `PASS` or `RECOVERABLE`, delegate to a s2h-ChunkVerifier with the
    same template minus findings; on a writer `BLOCKED`, record the blocker and
    move on to the next chunk.
@@ -90,9 +88,9 @@ probe status from `run.json` (`model_routing.preflight.status`); in user mode re
 each model file per that skill's model source resolution and apply its static
 tool-surface check. Select each portable ID by evaluating the role's policy
 `required_capabilities` and `minimum_tier`: use the chunk's persisted recommendation
-when it satisfies them, else the role's policy default; resolve its host mapping per
-the adapter's catalog lookup procedure, trying the policy fallback once before
-recording a config failure. When the status is `routing-unavailable`, every delegation
+when it satisfies them, else the role's policy default; resolve the host mapping and
+apply the fallback and config-failure order per the adapter's catalog lookup and
+fallback rules. When the status is `routing-unavailable`, every delegation
 follows the adapter's run-level routing-unavailable handling.
 Persist each assignment into the index with its timestamp and `source: decomposer`;
 a null recommendation stays explicit in `model_recommendations` even when an assignment

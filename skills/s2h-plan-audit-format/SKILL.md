@@ -39,20 +39,7 @@ The file is a complete `s2h-handoff/v1` JSON report. Its role-specific
       "source_file": "documentation/source-doc-context.md",
       "user_file": "documentation/user-doc-context.md"
     },
-    "model_assignment": {
-      "requested": "reasoning-pro",
-      "resolved": "Claude Opus 4.8 (copilot)",
-      "portable_id": "reasoning-pro",
-      "role": "plan-auditor",
-      "source": "orchestrator",
-      "fallback": null,
-      "applied": true,
-      "adapter": "copilot",
-      "evidence": "adapter-confirmed",
-      "runtime_model": "Claude Opus 4.8 (copilot)",
-      "rationale": "Plan auditing requires reasoning and planning support.",
-      "warning": null
-    }
+    "model_assignment": "<fields per s2h-handoff's Required delegated model assignment block>"
   },
   "requirements": [
     {

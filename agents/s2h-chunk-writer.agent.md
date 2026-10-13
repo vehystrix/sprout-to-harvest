@@ -19,19 +19,18 @@ the contract and the overall plan design, and record those decisions concretely 
 step files so an implementer can build without re-deriving them. Deriving that detail is
 your normal job; a precise design with thin implementation notes is not a defect.
 
-Create or update only this chunk's `steps/<step-id>.md` files per `s2h-step-context-format`,
-embedding the chunk contract verbatim in every file of the chunk. Do not touch step
-files, index entries, or inventory belonging to any other chunk. Before writing, `BLOCK`
-only when a requirement is genuinely ambiguous - its required behavior cannot be
-determined from the plan and excerpts - or an edge case changes or invalidates a
+Create or update only this chunk's `steps/<step-id>.md` files per `s2h-step-context-format`.
+Do not touch step files, index entries, or inventory belonging to any other chunk.
+Before writing, `BLOCK` only when a requirement is genuinely ambiguous - its required behavior
+cannot be determined from the plan and excerpts - or an edge case changes or invalidates a
 requirement or the contract, including references to dependencies that do not exist in
 the plan. Missing implementation details alone never block; you write them. On repair
 rounds, fix only the named findings and do not restructure unaffected steps.
 Do not self-check completeness or drift - same-context re-deriving cannot see
 missing requirements; the `s2h-ChunkVerifier` owns both. Do validate mechanically before
-returning `PASS`: each step file parses per `s2h-step-context-format`, each of your chunk's
-`requirements_assigned` IDs resolve into `requirements.json`, and every
-Contract block is present in its files; fix anything you find in place.
+returning `PASS`: each step file passes `s2h-step-context-format` validation and
+each of your chunk's `requirements_assigned` IDs resolves into `requirements.json`;
+fix anything you find in place.
 
 ## Related skills
 - `s2h-step-context-format`: use for the required file shape, frontmatter, Contract section,
@@ -39,8 +38,7 @@ Contract block is present in its files; fix anything you find in place.
 - `s2h-requirements-traceability`: use to map each assigned requirement to concrete step work.
 - `s2h-test-first-plan-steps`: use to keep primary-test steps immediately before
   their implementation steps within the chunk.
-- `s2h-handoff`: use for the required final report shape; outcomes are `PASS`,
-  `RECOVERABLE`, or `BLOCKED`.
+- `s2h-handoff`: use for the required final report shape.
 
 Return an `s2h-handoff/v1` report following `s2h-handoff` whose
 `changed_files` lists every created step file and whose details carry

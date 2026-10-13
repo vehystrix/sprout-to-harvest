@@ -121,6 +121,21 @@ an explicit namespace policy; otherwise the value is invalid.
         "required_capabilities": ["planning", "reasoning"],
         "minimum_tier": 2
       },
+      "chunk-writer": {
+        "required_capabilities": ["planning", "reasoning"],
+        "minimum_tier": 2,
+        "default": "reasoning-pro"
+      },
+      "chunk-verifier": {
+        "required_capabilities": ["verification", "reasoning"],
+        "minimum_tier": 2,
+        "default": "reasoning-pro"
+      },
+      "whole-plan-verifier": {
+        "required_capabilities": ["verification", "reasoning"],
+        "minimum_tier": 2,
+        "default": "reasoning-pro"
+      },
       "implementer": {
         "required_capabilities": ["coding", "testing"],
         "minimum_tier": 1
