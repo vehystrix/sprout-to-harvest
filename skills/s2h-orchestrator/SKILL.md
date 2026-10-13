@@ -243,16 +243,17 @@ For every delegation, use this sequence exactly:
 ```text
 persist phase/step as running
 -> launch the named agent with only the listed context
--> receive exactly one s2h-handoff/v1 report
+-> receive a summary naming status and saved report path
 -> validate schema, allowed status, evidence, artifacts, and repository fields
 -> persist the report and derived durable state atomically
 -> apply the phase-specific branch above
 ```
 
-If the agent returns no report, more than one report, an unsupported status,
-missing evidence, or contradictory repository fields, record `blocked` with the
-raw failure description and exact resume action. Do not reinterpret the result
-as `INCOMPLETE`, retry it automatically, or continue to another phase.
+If the agent's final message lacks a valid summary, points at a missing or
+unreadable saved report, or reports an unsupported status, missing evidence,
+or contradictory repository fields, record `blocked` with the raw failure
+description and exact resume action. Do not reinterpret the result as
+`INCOMPLETE`, retry it automatically, or continue to another phase.
 
 ## Delegation prompt templates
 Every delegation prompts MUST contain ONLY the verbatim block lines for that role;

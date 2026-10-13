@@ -8,8 +8,9 @@ disable-model-invocation: true
 # Agent Handoff
 
 Every delegated agent must end with one handoff using this exact JSON
-shape. The handoff MUST be saved in the run directory and summarized to
-the caller.
+shape, saved on disk; its final message to the caller contains only a short
+summary naming `status` and the path of the saved report. The full handoff
+JSON MUST NOT be pasted into that message.
 
 Use this skill whenever a delegated agent creates or validates a handoff.
 The handoff is JSON and is the sole communication contract between agents.
@@ -123,9 +124,11 @@ Rules:
 - When Git is unavailable, use `N/A` for `branch`, `last_commit`, and
   commits, and explain that limitation in `details` or `blockers`; do
   not invent a commit hash.
-- The caller must validate the schema and required fields before
+- The caller MUST validate the schema and required fields before
   consuming the handoff. An invalid or missing handoff is `BLOCKED`
   and must be persisted as such.
+- The returned summary points at the saved file: it names `status` and the
+  file path only; the caller validates that file, never the message text.
 - The handoff does not replace durable run status.
 
 ## Required delegated model assignment block

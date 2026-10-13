@@ -261,9 +261,11 @@ warnings are recorded.
 
 ## Inter-agent communication
 
-Every delegated agent returns exactly one `s2h-handoff/v1` report, as defined by the
-`s2h-handoff` format skill. The report is the sole communication contract between agents;
-role-specific results are carried in its requirement, validation, artifact, and blocker fields.
+Every delegated agent saves exactly one `s2h-handoff/v1` report to the run
+directory and returns only a summary naming the status and the saved file
+path. The saved report is the sole communication contract between agents;
+role-specific results are carried in its requirement, validation, artifact,
+and blocker fields.
 
 Required top-level fields are `schema`, `agent`, `task`, `status`, `summary`, `inputs`,
 `details`, `requirements`, `validation`, `artifacts`, `repository`, `blockers`, and
