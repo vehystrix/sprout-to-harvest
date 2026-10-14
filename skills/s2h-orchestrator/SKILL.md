@@ -246,6 +246,9 @@ procedure.
        within the retry limit.
      - `BLOCKED` stops
    - **Do not begin documentation until final verification is `VERIFIED`.**
+   - Final verification covers implementation only; pre-existing documentation
+     is out of scope for this check, and its absence or staleness MUST NOT count
+     against `VERIFIED`.
 
 10. **Document source files.** (delegation: s2h-DocumentationWriter per assignment)
    - Build documentation assignments only for changed source files that require

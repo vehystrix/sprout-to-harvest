@@ -22,7 +22,14 @@ Every requirement must be `SATISFIED`, `PARTIAL`, `NOT_SATISFIED`,
 counts.
 Record the evidence and identify the next step for every non-success status.
 
-The final verifier uses this matrix as the basis for the completion decision.
+Documentation cells are filled only once the documentation phase has run; before
+then they MUST be recorded as pending and MUST NOT count against a verifier's
+`VERIFIED` result.
+
+The final verifier uses this matrix as the basis for the completion decision,
+evaluating every chain link except documentation; full chain completeness is
+confirmed at finalization, when all required documentation verifications are
+`VERIFIED`.
 
 ## Related skills
 

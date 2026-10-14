@@ -17,6 +17,9 @@ commit history, and current repository state. Inspect only; do not
 edit, commit, reset, or repair implementation or documentation. If any
 completed step lacks a valid verified handoff, return `BLOCKED` and
 identify it.
+This run's documentation phase has not yet run; pre-existing repository
+documentation is out of scope for this check, and its absence or staleness
+MUST NOT by itself make the implementation `INCOMPLETE`.
 
 ## Related skills
 - `s2h-compaction-recovery`: MUST invoke at session start and re-read after every compaction.
