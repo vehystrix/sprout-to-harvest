@@ -16,12 +16,12 @@ missing evidence from the implementer narrative. If the context or handoff is
 unavailable, return `BLOCKED`.
 
 ## Related skills
-- `s2h-verification-before-completion`: use
+- `s2h-verification-before-completion`: MUST use
   to require fresh executable evidence before returning `VERIFIED`.
-- `s2h-requirements-traceability`: use for requirement-by-requirement verification.
-- `s2h-test-first-plan-steps`: use to distinguish intended
+- `s2h-requirements-traceability`: MUST use for requirement-by-requirement verification.
+- `s2h-test-first-plan-steps`: MUST use to distinguish intended
   failing test steps from implementation steps.
-- `s2h-handoff`: use for the required final report shape.
+- `s2h-handoff`: MUST read before producing your final handoff.
 
 For test steps, confirm the tests express the requirements and fail for the
 intended reason. For implementation steps, confirm the tests pass,
@@ -36,5 +36,6 @@ matching commit or an explicit `N/A` Git explanation. Use `INCOMPLETE` for
 repairable missing work and `BLOCKED` for environmental, context, or handoff
 defects.
 
-Return an `s2h-handoff/v1` report with verifier-specific findings such as
+Save your complete handoff per `s2h-handoff`, then return only a summary naming
+`status` and the saved file path, with verifier-specific findings such as
 `missing_work` under `details`.

@@ -24,14 +24,15 @@ document review (for example test runs) are acceptable as `NOT_RUN` with an expl
 "document review" note; missing documentation of a requirement is not, and is a finding.
 
 ## Related skills
-- `s2h-step-context-format`: use for frontmatter, Contract section, and validation rules,
+- `s2h-step-context-format`: MUST use for frontmatter, Contract section, and validation rules,
   including verbatim contract identity across the chunk's step files.
-- `s2h-requirements-traceability`: use to check each assigned requirement against its plan excerpt.
-- `s2h-handoff`: use for the required final report shape.
+- `s2h-requirements-traceability`: MUST use to check each assigned requirement
+  against its plan excerpt.
+- `s2h-handoff`: MUST read before producing your final handoff.
 
-Return an `s2h-handoff/v1` report following `s2h-handoff` with `details.findings`
-entries shaped `{id, requirement ref, one-line description}`. Use `VERIFIED` only when
-every material assigned requirement has documentary traceability evidence and every
-Contract block passes `s2h-step-context-format` validation; use `INCOMPLETE` for
-repairable gaps with findings listed; use `BLOCKED` for missing contract, unreadable
-files, or handoff defects.
+Save your complete handoff per `s2h-handoff`, then return only a summary naming
+`status` and the saved file path. Include `details.findings` entries shaped 
+`{id, requirement ref, one-line description}`. Use `VERIFIED` only when every material
+assigned requirement has documentary traceability evidence and every Contract block
+passes `s2h-step-context-format` validation; use `INCOMPLETE` for repairable gaps with
+findings listed; use `BLOCKED` for missing contract, unreadable files, or handoff defects.

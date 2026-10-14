@@ -31,24 +31,25 @@ merge applies when `Include global model repository` is `true`. Validate, canoni
 freeze, and fingerprint the merged result per that skill.
 
 ## Related skills
-- `s2h-persistent-state`: use for the run ledger, checkpoints, recovery
-  states, and resume decisions.
+- `s2h-persistent-state`: MUST use for the run ledger, checkpoints,
+  recovery states, and resume decisions.
 - `s2h-git-isolation`: use before starting a Git-tracked run and when
   enforcing branch/commit policy.
 - `s2h-subagent-recovery`: use whenever a delegated agent is interrupted or blocked.
-- `s2h-requirements-traceability`: use to coordinate requirement, step, commit,
-  validation, and documentation coverage.
-- `s2h-handoff`: use to validate every delegated agent's final handoff before consuming it.
-- `s2h-model-catalog-format` and `s2h-model-routing-adapter`: use to resolve model
-  sources, freeze the effective catalog and policy, and resolve portable IDs.
-- `s2h-model-probe`: use for the one-time per-run capability probe.
+- `s2h-requirements-traceability`: MUST use to coordinate requirement, step,
+  commit, validation, and documentation coverage.
+- `s2h-handoff`: MUST use to validate every delegated agent's final handoff before consuming it.
+- `s2h-model-catalog-format` and `s2h-model-routing-adapter`: MUST use to
+  resolve model sources, freeze the effective catalog and policy,
+  and resolve portable IDs.
+- `s2h-model-probe`: MUST use for the one-time per-run capability probe.
 - `s2h-run-ledger-format`, `s2h-plan-audit-format`, `s2h-chunk-index-format`,
   `s2h-requirements-format`, `s2h-step-context-format`,
   `s2h-step-status-format`, `s2h-checkpoint-format`,
   `s2h-doc-context-format`, `s2h-doc-assignment-format`, and
   `s2h-final-report-format`: use to create and validate the corresponding
   `.agent-work` artifacts.
-- `s2h-verification-before-completion`: use before reporting any phase or run as complete.
+- `s2h-verification-before-completion`: MUST use before reporting any phase or run as complete.
 
 ## Rules
 Keep the original plan immutable. Never load its body into orchestrator
@@ -263,8 +264,8 @@ persisted values), Skills and Instructions (both present only on generic
 subagent launches; named agents carry their skill bindings and task contract
 through their agent definitions), and Constraint. Never inline plan text, step
 contracts, inventory entries, prior narratives, or model reasoning; each agent
-reads its own files and returns exactly one `s2h-handoff/v1` report under
-`<run-dir>/reports/`.
+saves its complete handoff per `s2h-handoff` under `<run-dir>/reports/` and returns
+only a summary naming `status` and that path.
 
 Verbatim versus fill-in: the line labels (`Role:`, `Task ID and attempt:`,
 `Paths:`, `Skills:`, `Instructions:`, `Constraint:`), the bullet markers, and
@@ -301,10 +302,10 @@ Paths:
 Skills: s2h-doc-context-format, s2h-handoff
 Instructions: Read exactly the named documentation context file. Apply every
 s2h-doc-context-format validation rule that a single file can satisfy. Do not
-check any other file and do not edit anything. Return exactly one
-s2h-handoff/v1 report per s2h-handoff: VERIFIED if the file fully conforms,
-INCOMPLETE with details.findings naming each defect, BLOCKED if the file is
-missing or unreadable.
+check any other file and do not edit anything. Save your complete handoff per
+s2h-handoff, then return only a summary naming status and its path: VERIFIED if the
+file fully conforms, INCOMPLETE with details.findings naming each defect, BLOCKED if
+the file is missing or unreadable.
 Constraint: read-only
 ```
 
@@ -318,10 +319,10 @@ Paths:
 Skills: s2h-step-context-format, s2h-handoff
 Instructions: Read exactly the named step file. Apply every
 s2h-step-context-format validation rule that a single file can satisfy. Do not
-check any other file and do not edit anything. Return exactly one
-s2h-handoff/v1 report per s2h-handoff: VERIFIED if the file fully conforms,
-INCOMPLETE with details.findings naming each defect, BLOCKED if the file is
-missing or unreadable.
+check any other file and do not edit anything. Save your complete handoff per
+s2h-handoff, then return only a summary naming status and its path: VERIFIED if the
+file fully conforms, INCOMPLETE with details.findings naming each defect, BLOCKED if
+the file is missing or unreadable.
 Constraint: read-only
 ```
 
@@ -428,8 +429,8 @@ Maintain `run.json`, `s2h-plan-audit.json`, `requirements.json`,
 `chunk-index.json`, `steps/<step-id>.md`,
 `steps/<step-id>-status.json`, `checkpoints/<step-id>.json`, `reports/*.json`,
 documentation assignment Markdown files, commit hashes, and `final-report.json`.
-Report completed work, validation evidence, blockers, and resume instructions using
-`s2h-handoff/v1`.
+Report completed work, validation evidence, blockers, and resume instructions per
+`s2h-handoff`.
 
 ## Related agents
 

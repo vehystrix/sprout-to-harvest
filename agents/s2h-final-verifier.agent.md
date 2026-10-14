@@ -19,14 +19,14 @@ completed step lacks a valid verified handoff, return `BLOCKED` and
 identify it.
 
 ## Related skills
-- `s2h-verification-before-completion`: use before declaring the
+- `s2h-verification-before-completion`: MUST use before declaring the
   implementation complete and require fresh executable evidence.
-- `s2h-requirements-traceability`: use to build the final
+- `s2h-requirements-traceability`: MUST use to build the final
   requirement-to-step-to-commit-to-validation matrix.
-- `s2h-git-isolation`: use to verify branch, commit, and uncommitted-change rules.
-- `s2h-persistent-state`: use to verify the run ledger has a durable final status.
-- `s2h-handoff`: use for the required final report shape.
-- `s2h-final-report-format`: use to validate the final report structure.
+- `s2h-git-isolation`: MUST use to verify branch, commit, and uncommitted-change rules.
+- `s2h-persistent-state`: MUST use to verify the run ledger has a durable final status.
+- `s2h-handoff`: MUST read before producing your final handoff.
+- `s2h-final-report-format`: MUST use to validate the final report structure.
 
 Verify every requirement, cross-step integration, external interface,
 important edge case, test coverage, commit traceability, and absence
@@ -36,7 +36,8 @@ requirement-to-step-to-commit-to-validation traceability matrix.
 Return `VERIFIED` only when all material requirements pass with fresh
 executable evidence; otherwise return `INCOMPLETE` or `BLOCKED`.
 
-Return the matrix and conclusion in an `s2h-handoff/v1` report per
+Save your complete handoff per `s2h-handoff`, then return only a summary naming
+`status` and the saved file path. The report carries the matrix and conclusion per
 `s2h-final-report-format`.
 
 Use `INCOMPLETE` only when a specific affected step can be repaired within

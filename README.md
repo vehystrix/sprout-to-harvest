@@ -261,11 +261,10 @@ warnings are recorded.
 
 ## Inter-agent communication
 
-Every delegated agent saves exactly one `s2h-handoff/v1` report to the run
-directory and returns only a summary naming the status and the saved file
-path. The saved report is the sole communication contract between agents;
-role-specific results are carried in its requirement, validation, artifact,
-and blocker fields.
+Every delegated agent saves its complete handoff, per `s2h-handoff`, to the run
+directory and returns only a summary naming the status and the saved file path. The
+saved report is the sole communication contract between agents; role-specific results
+are carried in its requirement, validation, artifact, and blocker fields.
 
 Required top-level fields are `schema`, `agent`, `task`, `status`, `summary`, `inputs`,
 `details`, `requirements`, `validation`, `artifacts`, `repository`, `blockers`, and
@@ -441,7 +440,8 @@ or permissions, it persists a recoverable status and leaves the workspace intact
 
 After the implementation agent returns, the orchestrator starts `s2h-StepVerifier` with the step
 context, implementation report, and repository state. The verifier is read-only and uses
-`s2h-verification-before-completion`, `s2h-requirements-traceability`, and `s2h-test-first-plan-steps`.
+`s2h-verification-before-completion`, `s2h-requirements-traceability`, and
+`s2h-test-first-plan-steps`.
 
 For a primary-test step, it confirms that the tests express the required behavior and fail for
 the intended reason. For an implementation step, it confirms that:

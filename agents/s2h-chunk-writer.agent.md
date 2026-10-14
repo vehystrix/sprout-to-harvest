@@ -33,15 +33,15 @@ each of your chunk's `requirements_assigned` IDs resolves into `requirements.jso
 fix anything you find in place.
 
 ## Related skills
-- `s2h-step-context-format`: use for the required file shape, frontmatter, Contract section,
+- `s2h-step-context-format`: MUST use for the required file shape, frontmatter, Contract section,
   and validation rules.
-- `s2h-requirements-traceability`: use to map each assigned requirement to concrete step work.
+- `s2h-requirements-traceability`: MUST use to map each assigned requirement to concrete step work.
 - `s2h-test-first-plan-steps`: use to keep primary-test steps immediately before
   their implementation steps within the chunk.
-- `s2h-handoff`: use for the required final report shape.
+- `s2h-handoff`: MUST read before producing your final handoff.
 
-Return an `s2h-handoff/v1` report following `s2h-handoff` whose
-`changed_files` lists every created step file and whose details carry
-per-requirement coverage evidence. Use `BLOCKED` for contract defects,
-`RECOVERABLE` when the files are written but a known gap remains, and `PASS`
+Save your complete handoff per `s2h-handoff`, then return only a summary naming
+`status` and the saved file path. Its `changed_files` lists every created step file
+and its details carry per-requirement coverage evidence. Use `BLOCKED` for contract
+defects, `RECOVERABLE` when the files are written but a known gap remains, and `PASS`
 when the chunk's files are complete per their contract.

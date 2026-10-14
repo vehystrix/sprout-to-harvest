@@ -24,10 +24,11 @@ files. If the assignment or source interface is unavailable, return
 - `s2h-source-doc`: use for source-file documentation assignments.
 - `s2h-user-doc`: use for user-facing documentation assignments.
 - `s2h-atomic-step-commit`: use when committing documentation changes.
-- `s2h-handoff`: use for the required final report shape.
+- `s2h-handoff`: MUST read before producing your final handoff.
 
-Validate links and runnable examples in changed files, then commit and report
-the commit hash per `s2h-git-isolation` and `s2h-atomic-step-commit`.
+Validate links and runnable examples in changed files, then commit per
+`s2h-git-isolation` and `s2h-atomic-step-commit`. Save your complete handoff per
+`s2h-handoff`, then return only a summary naming `status` and the saved file path.
 
 If no material documentation change is needed, return `PASS` with
 `changed_files: []` and explain why in `details`; do not create a no-op commit.

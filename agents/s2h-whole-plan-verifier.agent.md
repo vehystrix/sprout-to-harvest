@@ -24,17 +24,17 @@ If the plan exceeds one context window, read it in windows against the
 inventory; do not sample.
 
 ## Related skills
-- `s2h-requirements-traceability`: use to reconcile the inventory against the
+- `s2h-requirements-traceability`: MUST use to reconcile the inventory against the
   full plan text.
-- `s2h-chunk-index-format`: use for chunk identifiers, requirement assignment
+- `s2h-chunk-index-format`: MUST use for chunk identifiers, requirement assignment
   IDs, and model assignments when checking ownership.
-- `s2h-handoff`: use for the required final report shape.
+- `s2h-handoff`: MUST read before producing your final handoff.
 
-Return an `s2h-handoff/v1` report with `details.findings` entries shaped
-`{id, requirement ref, one-line description}`, each classified as
-`decomposition-gap` when it requires changing a chunk's `requirements_assigned`
-list or a chunk boundary, and `boundary-mismatch` for any other finding;
-name the affected chunk ID(s). Use `VERIFIED` only when total coverage
-holds, ownership is unique, and all boundaries match;
-use `INCOMPLETE` for any finding of either class; use `BLOCKED` for an
+Save your complete handoff per `s2h-handoff`, then return only a summary naming
+`status` and the saved file path. Include `details.findings` entries shaped `{id,
+requirement ref, one-line description}`, each classified as `decomposition-gap` when
+it requires changing a chunk's `requirements_assigned` list or a chunk boundary, and
+`boundary-mismatch` for any other finding; name the affected chunk ID(s). Use
+`VERIFIED` only when total coverage holds, ownership is unique, and all boundaries
+match; use `INCOMPLETE` for any finding of either class; use `BLOCKED` for an
 unreadable plan or a corrupted inventory.

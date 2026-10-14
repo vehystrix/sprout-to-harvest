@@ -124,6 +124,8 @@ Rules:
 - When Git is unavailable, use `N/A` for `branch`, `last_commit`, and
   commits, and explain that limitation in `details` or `blockers`; do
   not invent a commit hash.
+- `s2h-handoff/v1` is the value of the `schema` field in the saved file; it names the
+  format version, not a path. Never write to a literal path with that name.
 - The caller MUST validate the schema and required fields before
   consuming the handoff. An invalid or missing handoff is `BLOCKED`
   and must be persisted as such.

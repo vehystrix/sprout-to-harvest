@@ -23,11 +23,11 @@ cannot be read, is missing, or is not internally understandable,
 return `BLOCKED` with the exact path or ambiguity and stop.
 
 ## Related skills
-- `s2h-requirements-traceability`: use to identify requirements, interfaces,
+- `s2h-requirements-traceability`: MUST use to identify requirements, interfaces,
   and validation gaps that must be tracked.
-- `s2h-plan-audit`: use for the feasibility, ambiguity, interface, and scope review.
-- `s2h-handoff`: use for the required final report shape.
-- `s2h-plan-audit-format`: use for the persisted `s2h-plan-audit.json` structure.
+- `s2h-plan-audit`: MUST use for the feasibility, ambiguity, interface, and scope review.
+- `s2h-handoff`: MUST read before producing your final handoff.
+- `s2h-plan-audit-format`: MUST use for the persisted `s2h-plan-audit.json` structure.
 - `s2h-doc-context-format`: use for the source and user documentation context Markdown files.
 - `s2h-requirements-format`: use for the persisted `requirements.json` structure.
 
@@ -37,5 +37,6 @@ Create `documentation/source-doc-context.md` and
 inventory to `requirements.json` in the run directory per
 `s2h-requirements-format` and record its path per `s2h-plan-audit-format`.
 
-Return an `s2h-handoff/v1` report per `s2h-plan-audit-format`.
+Save your complete handoff per `s2h-handoff`, then return only a summary naming
+`status` and the saved file path. The report follows `s2h-plan-audit-format`.
 

@@ -133,7 +133,8 @@ and each Constraint sentence are sent exactly as written; only placeholder value
 are substituted at delegation time. Every Paths entry MUST be a concrete file
 path. Never inline plan text, contract excerpts, inventory entries, model
 recommendations, or prior narratives beyond the named finding lines below; each
-agent reads its own files and returns exactly one `s2h-handoff/v1` report.
+agent saves its complete handoff per `s2h-handoff` under `<work-root>/reports/` and
+returns only a summary naming `status` and that path.
 Placeholders: `<plan-path>` is the plan file path; `<work-root>` is the run
 directory in delegated mode and `<output-dir>/.work/` in user mode;
 `<chunk-id>` names the chunk; `<n>` is the 1-based attempt number of the loop

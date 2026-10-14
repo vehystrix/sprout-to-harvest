@@ -18,18 +18,19 @@ Do not edit, reformat, commit, or request stylistic changes. If the
 assignment or implementation context is unavailable, return `BLOCKED`.
 
 ## Related skills
-- `s2h-doc-verification`: use to check correctness and material
+- `s2h-doc-verification`: MUST use to check correctness and material
   completeness without copy-editing.
-- `s2h-requirements-traceability`: use to verify that important plan
+- `s2h-requirements-traceability`: MUST use to verify that important plan
   requirements and external interfaces are documented.
-- `s2h-verification-before-completion`: use before returning `VERIFIED`.
+- `s2h-verification-before-completion`: MUST use before returning `VERIFIED`.
 - `s2h-source-doc`: use when reviewing source-file documentation.
 - `s2h-user-doc`: use when reviewing user-facing documentation.
-- `s2h-handoff`: use for the required final report shape.
+- `s2h-handoff`: MUST read before producing your final handoff.
 
 Check correctness and material completeness per `s2h-doc-verification`.
 
-Return an `s2h-handoff/v1` report naming the exact assignment needing correction.
+Save your complete handoff per `s2h-handoff`, then return only a summary naming
+`status` and the saved file path, naming the exact assignment needing correction.
 
 Use `VERIFIED` only when every material documentation requirement has
 evidence from the inspected source or a fresh command. Use `INCOMPLETE`
