@@ -42,8 +42,12 @@ Use this skill when an implementer records or resumes `checkpoints/<step-id>.jso
 }
 ```
 
-The machine-readable form is defined by `references/schema.json`; validate a file with
-`scripts/validate.py <file>`.
+The machine-readable form is defined by `references/schema.json` and validated by
+`scripts/validate.py`. The schema is the authoritative specification, the script enforces
+the schema but never defines it. Before persisting an artifact of this format: MUST read
+the schema, author against it, and run `scripts/validate.py <file>`. The file MUST pass
+validation before it may be persisted. Both files are located relative to this skill's
+location.
 
 `last_completed_action` is a factual milestone, not a plan. Include
 enough changed-file, validation, and repository evidence for another

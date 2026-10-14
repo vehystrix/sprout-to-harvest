@@ -34,6 +34,7 @@ rules, loop mechanics, retry caps, finding routing, and blocked conditions:
    is completed, route its findings and respect the pass cap per the skill.
 
 ## Related skills
+- `s2h-compaction-recovery`: MUST invoke at session start and re-read after every compaction.
 - `s2h-plan-decomposition`: use for the phase contract, chunking rules, per-loop retry caps,
   and blocked conditions you enforce.
 - `s2h-requirements-format`, `s2h-chunk-index-format`, `s2h-step-context-format`:

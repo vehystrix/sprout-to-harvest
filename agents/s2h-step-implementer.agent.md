@@ -18,6 +18,7 @@ perform unrelated cleanup. If the context is missing, contradictory, or names
 files outside the allowed scope, return `BLOCKED` before editing.
 
 ## Related skills
+- `s2h-compaction-recovery`: MUST invoke at session start and re-read after every compaction.
 - `s2h-test-first-plan-steps`: MUST use to preserve the failing-primary-test
   then implementation sequence.
 - `s2h-git-isolation`: MUST use for clean-branch checks, step

@@ -79,6 +79,10 @@ For each chunk in dependency order:
 
 A loop instance that exhausts its allowance is not retried again; its blocker
 becomes one of the blocked conditions below.
+A delegated handoff that deviates in any way from the exact `s2h-handoff` schema -
+including status vocabulary and field naming - MUST NOT be corrected, normalized, or
+edited; record it with the deviation described and the exact resume action, which
+re-delegates that one delegation.
 
 ## Model assignments
 
@@ -139,6 +143,9 @@ Placeholders: `<plan-path>` is the plan file path; `<work-root>` is the run
 directory in delegated mode and `<output-dir>/.work/` in user mode;
 `<chunk-id>` names the chunk; `<n>` is the 1-based attempt number of the loop
 instance.
+After any compaction or resume, MUST re-read this skill before delegating again;
+patterns remembered from earlier in the session do not supersede the verbatim
+templates above.
 
 **s2h-ChunkWriter** (one delegation per attempt)
 
@@ -212,3 +219,7 @@ complete.
 The chunk contents are not written or verified by the `s2h-PlanDecomposer` itself, and the whole
 plan is not verified by it either. All of this MUST be done by delegation, and the
 `s2h-PlanDecomposer` only orchestrates the process.
+
+## Related skills
+
+- `s2h-compaction-recovery`: MUST invoke at session start and re-read after every compaction.

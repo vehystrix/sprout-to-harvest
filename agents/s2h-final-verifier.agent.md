@@ -19,6 +19,7 @@ completed step lacks a valid verified handoff, return `BLOCKED` and
 identify it.
 
 ## Related skills
+- `s2h-compaction-recovery`: MUST invoke at session start and re-read after every compaction.
 - `s2h-verification-before-completion`: MUST use before declaring the
   implementation complete and require fresh executable evidence.
 - `s2h-requirements-traceability`: MUST use to build the final

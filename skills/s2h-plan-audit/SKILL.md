@@ -28,3 +28,7 @@ Return one result:
 - `PASS` when the plan is specific enough to decompose without inventing requirements.
   That does not mean feasible in the current repository: record repository-dependent
   risks under findings and validation gaps instead of guessing at feasibility.
+
+## Related skills
+
+- `s2h-compaction-recovery`: MUST invoke at session start and re-read after every compaction.

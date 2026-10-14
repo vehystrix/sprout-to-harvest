@@ -18,6 +18,7 @@ Do not edit, reformat, commit, or request stylistic changes. If the
 assignment or implementation context is unavailable, return `BLOCKED`.
 
 ## Related skills
+- `s2h-compaction-recovery`: MUST invoke at session start and re-read after every compaction.
 - `s2h-doc-verification`: MUST use to check correctness and material
   completeness without copy-editing.
 - `s2h-requirements-traceability`: MUST use to verify that important plan

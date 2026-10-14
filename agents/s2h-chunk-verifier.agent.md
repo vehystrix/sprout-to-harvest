@@ -24,6 +24,7 @@ document review (for example test runs) are acceptable as `NOT_RUN` with an expl
 "document review" note; missing documentation of a requirement is not, and is a finding.
 
 ## Related skills
+- `s2h-compaction-recovery`: MUST invoke at session start and re-read after every compaction.
 - `s2h-step-context-format`: MUST use for frontmatter, Contract section, and validation rules,
   including verbatim contract identity across the chunk's step files.
 - `s2h-requirements-traceability`: MUST use to check each assigned requirement

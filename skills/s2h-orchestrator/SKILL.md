@@ -31,6 +31,7 @@ merge applies when `Include global model repository` is `true`. Validate, canoni
 freeze, and fingerprint the merged result per that skill.
 
 ## Related skills
+- `s2h-compaction-recovery`: MUST invoke at session start and re-read after every compaction.
 - `s2h-persistent-state`: MUST use for the run ledger, checkpoints,
   recovery states, and resume decisions.
 - `s2h-git-isolation`: use before starting a Git-tracked run and when
@@ -51,6 +52,32 @@ freeze, and fingerprint the merged result per that skill.
   `.agent-work` artifacts.
 - `s2h-verification-before-completion`: MUST use before reporting any phase or run as complete.
 
+## Role boundaries
+
+The orchestrator only persists ledger state, delegates, and validates handoffs.
+It does none of the delegated work itself:
+
+- MUST NOT modify repository files or any `.agent-work` artifact beyond the durable
+  records this skill defines (ledger, step statuses, checkpoint copies, reports,
+  final report). File modification is delegated to `s2h-StepImplementer` and
+  `s2h-DocumentationWriter`.
+- MUST NOT run validation commands, tests, format checks, or any verification of its own.
+  Verification is delegated: the format checkers in steps 4 and 5, `s2h-StepVerifier`,
+  `s2h-FinalVerifier`, and `s2h-DocumentationVerifier`. The step 13 repository check
+  confirms ledger records against Git state only; it runs no tests.
+- MUST NOT repair a failed delegation's artifacts itself, and MUST NOT re-delegate
+  the same task automatically. A failed, missing, or malformed handoff is always
+  `blocked` per the Delegation contract, with its exact resume action recorded;
+  resumption happens on a later invocation, not mid-run.
+- MUST NOT edit any delegated agent's handoff or report file, and MUST NOT rewrite
+  ledger entries to conceal a protocol deviation. A delegation report is persisted
+  atomically when created and immutable afterward; ledger records change only through
+  the state transitions this skill defines.
+- After any compaction or resume, MUST re-read this skill and
+  `references/delegation-prompts.md`, located relative to this skill's location,
+  before delegating again. Patterns remembered from earlier in the session do not
+  supersede them; durable records are authoritative over narrative memory.
+
 ## Rules
 Keep the original plan immutable. Never load its body into orchestrator
 context; pass only its path in every delegation, and delegate plan reading
@@ -69,173 +96,203 @@ to the roles that need the content.
 - A missing or malformed model assignment in a handoff is `BLOCKED`. Silent
   parent-model substitution is forbidden; a fallback or default usage must be
   recorded as a warning with the exact reason.
+- Every delegation parameter resolved in step 7 MUST be applied as written; omitting or
+  degrading any parameter to continue is forbidden and makes that delegation `blocked`,
+  with the exact resume action recorded.
 
 ## Execution procedure
 
-Follow this procedure in order. Do not skip a phase, reorder steps, or launch
-a later phase because an earlier agent's narrative sounds complete.
+Follow these steps in order, letter for letter. Do not skip a phase, reorder
+steps, or begin a later phase because an earlier agent's narrative sounds
+complete. Each step states its state transition, its single action, and its
+branches; any behavior outside those statements is a deviation from this
+procedure.
 
-1. **Load or initialize the run.** If the run directory does not exist, create
-   it and atomically write `run.json` using `s2h-run-ledger-format` with the inputs,
-   `phase: initialization`, `status: pending`, `attempt: 0`, and the current
-   timestamp before delegating. If it exists, read `run.json` using
-   `s2h-run-ledger-format`, `chunk-index.json` using `s2h-chunk-index-format`, and the
-   latest `reports/*.json` using `s2h-handoff`; validate that the stored plan
-   path, run directory, retry limit, and audit setting match the invocation.
-   Resume the first non-completed phase or step selected by the
-   persistent-state rules. Never overwrite a completed result.
-2. **Confirm effective configuration and run the capability probe.** Resolve
-   each source per Model source resolution above, load the effective catalog
-   and policy (merged overrides confirmed as required), canonicalize both, copy
-   them under `.agent-work/<run-id>/`, and calculate `sha256:` fingerprints - for
-   a source with no file, freeze nothing and record it as `none`. Run the
-   capability probe exactly once per the `s2h-model-probe` skill; persist its
-   result in `run.json.model_routing`, whose block is defined by
-   `s2h-run-ledger-format`. If probe status is `routing-unavailable` and
-   `require_application` is true, persist `blocked` and stop; every later
-   delegation then follows the adapter's run-level routing-unavailable handling.
-3. **Prepare repository isolation.** Inspect Git before any file-modifying
-   delegation. If Git exists, apply `s2h-git-isolation`, record the
-   starting branch and commit, require clean tracked changes, and create or
-   reuse the recorded implementation branch. If Git is unavailable, record the
-   limitation and use `N/A` repository fields. If the required Git precondition
-   fails, persist `blocked` and stop.
-4. **Audit the plan.** Unless `Skip plan audit` is `true`, persist
-   `phase: s2h-plan-audit`, `status: running`, and `attempt: 1`; delegate exactly once
-   to `s2h-PlanAuditor` with only the plan path from `run.json` and the run
-   directory. Validate its handoff using `s2h-handoff` and
-   `s2h-plan-audit-format`, validate the `s2h-plan-audit.json` the auditor wrote in
-   the run directory, record in run state the path of the
-   `requirements.json` the auditor wrote. Then delegate one read-only
-   format check per documentation context file to a cheap subagent that applies
-   `s2h-doc-context-format`, resolving each model per step 7 as the cheapest
-   portable ID satisfying a read-only capability, and accept only verified
-   reports per `s2h-handoff`; send the format check template verbatim.
-   Explicitly tell it to use both skills. On any failed check, persist
-   `blocked` and stop. Then branch on its status:
-   `NEEDS_CLARIFICATION` reports the required questions to the user and stops as
-   `blocked`; `BLOCKED` reports the findings and stops as `blocked`. When
-   `Skip plan audit` is `true`, the orchestrator writes the `SKIPPED` record
-   defined by `s2h-plan-audit-format` in the run directory, with
-   `documentation_context.status: UNAVAILABLE`, and proceeds to decomposition;
-   later documentation assignments must then be built from verified
-   implementation evidence rather than a plan brief.
-5. **Decompose the plan.** Persist `phase: decomposition`, `status: running`.
-   Delegate exactly once to `s2h-PlanDecomposer` with only file paths - the plan
-   from `run.json`, the persisted `s2h-plan-audit.json`, and - when the audit ran -
-   `requirements.json`; when the audit was skipped, it derives the inventory
-   itself. You pass the run's per-loop retry cap in that delegation; it owns the whole
-   phase end to end. Accept only `PASS`. On return, validate using `s2h-chunk-index-format`:
-   every step file path exists, each inventory requirement is assigned to
-   exactly one chunk, dependencies form an acyclic graph, and every behavioral
-   unit keeps its primary-test step immediately before its implementation
-   step within its chunk, and every chunk's `doc_status` is `completed`. Then
-   delegate one read-only format check per step file to a cheap subagent that
-   applies `s2h-step-context-format`; resolve each model per step 7 as the cheapest
-   portable ID satisfying a read-only capability, and accept only verified
-   reports per `s2h-handoff`; send the format check template verbatim.
-   Explicitly tell it to use both skills.
-   On any failed check, persist `blocked` and stop.
-6. **Select the next step.** Load `chunk-index.json` using
-   `s2h-chunk-index-format` once when entering this phase; keep that copy in context
-   and reuse it for every later selection in a continuous session; reload only when resuming.
-   Choose the first step in dependency order that is not `completed`. Do
-   not select a step whose dependencies are not `completed`. If all steps
-   are completed, continue to final verification. For a selected step,
-   create or load `steps/<step-id>-status.json` using `s2h-step-status-format` and
-   preserve its attempt count.
-7. **Resolve the step assignment from the catalog.** Before each delegated call:
-   (1) use the catalog and policy loaded in step 2; only re-read them
-   if they are not in the current context; on resume, confirm their fingerprints are unchanged
-   before use.
-   (2) evaluate role requirements (`required_capabilities`, `minimum_tier`) for
-   the current delegation;
-   (3) select a portable ID - evaluate in order: the decomposer recommendation for this step/role
-   from `chunk-index.json` (when present and satisfying `required_capabilities`, `minimum_tier`,
-   and the tier rules, use it), else the role's policy default; recording the selection source;
-  (4) resolve the host selector and apply the single policy-fallback retry and
-  config-failure handling per `s2h-model-routing-adapter`'s catalog lookup and
-  fallback order;
-   (5) persist the pre-delegation assignment - requested portable ID, resolved model name,
-   selection source, fallback used if any;
-   (6) delegate - pass every delegation per `s2h-model-routing-adapter`;
-   (7) after delegation, persist the application result per
-   probed evidence channel - runtime model (tool-reported payload first,
-   self-ID otherwise), `evidence`, and any warnings. Never claim dynamic
-   selection when status is routing-unavailable. There is no preflight step and
-   no method-based resolve or apply lifecycle; the orchestrator reads JSON
-   directly, probes once, and delegates with a `model` field only when
-   confirmed.
-8. **Implement and verify the selected step.** For each implementation cycle:
-	- Persist the step as `running` before delegating `s2h-StepImplementer`.
-	- Pass only file paths: the step context, its latest checkpoint, and
-	  the latest relevant verifier report; the delegated agent reads them.
-	- Validate the implementer handoff. `PASS` may proceed to verification;
-	  `RECOVERABLE` persists the recovery state and stops; `BLOCKED` persists the
-	  blocker and stops. A missing or malformed handoff is `blocked` and does not
-	  consume a retry. This stop on `RECOVERABLE` is implementation-loop only;
-	  the decomposition loops proceed per `s2h-plan-decomposition`.
-	- Persist the step as `running` before delegating `s2h-StepVerifier`.
-	- Validate the verifier handoff. `VERIFIED` marks the step `completed` and
-	  records its evidence and commit. `INCOMPLETE` marks it
-	  `verification-failed`, increments the repair-attempt counter, and returns
-	  to the implementer if the counter is at most the configured retry limit.
-	  `BLOCKED` stops without consuming a retry. Never mark a step `completed`
-	  from an implementer `PASS`.
-	- After each handoff, copy status, requirement evidence, validation evidence,
-	  artifacts, repository state, blockers, and `resume_from` into the durable
-	  ledger before making the next delegation.
-9. **Verify the complete implementation.** After every step is `completed`,
-   persist `phase: final-verification`, `status: running`; delegate exactly
-   once to `s2h-FinalVerifier` with only file paths - the plan from `run.json`,
-   `chunk-index.json`, every persisted handoff report, and the ledger's commit
-   and repository state. `VERIFIED` continues; `INCOMPLETE` identifies the
-   affected steps, consumes one final-verification repair attempt recorded as
-   `final_verification_repairs` in `run.json`, and returns to step 8 within
-   the retry limit; `BLOCKED` stops. Do not begin documentation
-   until final verification is `VERIFIED`.
-10. **Document source files.** When implementation is verified, build
-    documentation assignments only for changed source files that require
-    maintainer-facing documentation. Pass each writer the path of
-    `documentation/source-doc-context.md` from the plan audit as
-    the initial brief; refine the assignment with the final
-    changed files, and relevant step reports; the implementation evidence is
-    authoritative if it differs from the plan brief. For independent
-    assignments, delegate `s2h-DocumentationWriter` instances in parallel only
-    when their files and ownership do not overlap; otherwise delegate
-    sequentially. Persist each assignment before and after delegation. Require
-    `PASS` plus a separate documentation commit, or `changed_files: []` with a
-    material no-op explanation, or an explicit `N/A` Git explanation. A
-    `RECOVERABLE` or `BLOCKED` result stops the documentation phase.
-    Documentation assignments are selected only after final verification; they
-    never inherit the decomposer step recommendations as final state.
-11. **Verify source documentation.** Delegate `s2h-DocumentationVerifier` for
-    every completed s2h-source-doc assignment. `VERIFIED` accepts the
-    assignment; `INCOMPLETE` returns only that assignment to the documentation
-    agent within the retry limit; `BLOCKED` stops. Do not request stylistic
-    changes that are not material findings.
-12. **Create and verify user documentation.** Create the s2h-user-doc
-    assignment, passing `documentation/user-doc-context.md`
-    referenced by `s2h-plan-audit.json`, adding the final
-    verified requirements, and repository-specific examples. Do not require the
-    Documentation Writer to reread the complete plan when the Markdown brief and
-    implementation context cover the assignment; the final implementation
-    remains authoritative. Delegate `s2h-DocumentationWriter`, then delegate
-    `s2h-DocumentationVerifier` with the paths of both files. Require
-    `VERIFIED` before finalization; apply the same bounded retry rule and stop
-    on `BLOCKED` or malformed handoffs.
-13. **Finalize.** Run the final repository and validation checks. Build
-    `final-report.json` using `s2h-final-report-format` from the ledger and all
-    verified handoffs, including audit status, completed steps, commands and
-    results, commits, traceability, branch/worktree state, documentation,
-    warnings, and resume instructions. Atomically persist the final report
-    before reporting completion. Completion is legal only when final
-    verification and all required documentation verification are `VERIFIED`
-    and the final repository check passes.
-14. **Report directly to the user.** After persisting and validating
-    `final-report.json`, report it using the user-facing response structure and
-    status rules in `s2h-final-report-format`. The response must agree with the
-    persisted report.
+1. **Load or initialize the run.** (bookkeeping)
+   - If the run directory does not exist: create it and atomically write `run.json`
+     using `s2h-run-ledger-format` with the inputs, `phase: initialization`,
+     `status: pending`, `attempt: 0`, and the current timestamp before delegating.
+   - If it exists: read `run.json` using `s2h-run-ledger-format`, `chunk-index.json`
+     using `s2h-chunk-index-format`, and the latest `reports/*.json` using
+     `s2h-handoff`; validate that the stored plan path, run directory, retry limit,
+     and audit setting match the invocation. Resume the first non-completed phase
+     or step selected by the persistent-state rules. Never overwrite a completed
+     result.
+
+2. **Freeze configuration and probe.** (bookkeeping)
+   - Resolve each source per Model source resolution above; load the effective
+     catalog and policy, canonicalize both, copy them under `.agent-work/<run-id>/`,
+     and calculate `sha256:` fingerprints - for a source with no file, freeze
+     nothing and record it as `none`.
+   - Run the capability probe exactly once per the `s2h-model-probe` skill; persist
+     its result in `run.json.model_routing`, whose block is defined by
+     `s2h-run-ledger-format`. If the probe status is `routing-unavailable` and
+     `require_application` is true, persist `blocked` and stop; every later
+     delegation then follows the adapter's run-level routing-unavailable handling.
+
+3. **Prepare repository isolation.** (bookkeeping)
+   - Inspect Git before any file-modifying delegation. If Git exists, apply
+     `s2h-git-isolation`, record the starting branch and commit, require clean tracked
+     changes, and create or reuse the recorded implementation branch. If Git is
+     unavailable, record the limitation and use `N/A` repository fields. If a required
+     Git precondition fails, persist `blocked` and stop.
+
+4. **Audit the plan.** (delegation: s2h-PlanAuditor, then one format checker per
+   documentation context file)
+   - Unless `Skip plan audit` is `true`: persist `phase: s2h-plan-audit`,
+     `status: running`, and `attempt: 1`; delegate exactly once to `s2h-PlanAuditor`
+     with only the plan path from `run.json` and the run directory. Validate its
+     handoff using `s2h-handoff` and `s2h-plan-audit-format`, validate the
+     `s2h-plan-audit.json` the auditor wrote in the run directory, and record in run
+     state the path of the `requirements.json` the auditor wrote.
+   - Then delegate one read-only format check per documentation context file to a
+     cheap subagent that applies `s2h-doc-context-format`. Resolve each model per step 7
+     as the cheapest portable ID satisfying a read-only capability. Send the format
+     check template verbatim and explicitly tell it to use both skills. Accept only
+     verified reports per `s2h-handoff`.
+   - Branches:
+     - Any failed check persists `blocked` and stops.
+     - A `NEEDS_CLARIFICATION` status reports the required questions to the user and
+       stops as `blocked`.
+     - A `BLOCKED` status reports the findings and stops as `blocked`.
+     - When `Skip plan audit` is `true`, write the `SKIPPED` record defined by
+       `s2h-plan-audit-format` in the run directory with
+       `documentation_context.status: UNAVAILABLE`, and proceed to decomposition.
+       Later documentation assignments must then be built from verified implementation evidence
+       rather than a plan brief.
+
+5. **Decompose the plan.** (delegation: s2h-PlanDecomposer, then one format checker per step file)
+   - Persist `phase: decomposition`, `status: running`. Delegate exactly once to
+     `s2h-PlanDecomposer` with the run's per-loop retry cap and the file paths:
+     - The plan from `run.json`.
+     - The persisted `s2h-plan-audit.json`.
+     - When the audit ran, `requirements.json`
+
+     It owns the whole phase end to end. Accept only `PASS`.
+
+   - Validate using `s2h-chunk-index-format`:
+     - Every step file path exists.
+     - Each inventory requirement is assigned to exactly one chunk.
+     - Dependencies form an acyclic graph
+     - Within its chunk every behavioral unit keeps its primary-test step immediately
+       before its implementation step
+     - Every chunk's `doc_status` is `completed`.
+   - Delegate one read-only format check per step file to a cheap subagent that
+     applies `s2h-step-context-format`. Resolve each model per step 7 as the cheapest
+     portable ID satisfying a read-only capability. Send the format check template
+     verbatim and explicitly tell it to use both skills. Accept only verified reports
+     per `s2h-handoff`. Any failed check persists `blocked` and stops.
+
+6. **Select the next step.** (bookkeeping)
+   - Load `chunk-index.json` once when entering this phase. Keep that copy in context
+     and reuse it for every later selection in a continuous session.
+     MUST reread when resuming or after compaction.
+   - Choose the first step in dependency order that is not `completed`, and whose
+     dependencies are all `completed`. If all steps are completed, continue to final
+     verification. For a selected step, create or load `steps/<step-id>-status.json`
+     using `s2h-step-status-format` and preserve its attempt count.
+
+7. **Resolve the step assignment before every delegated call.** (bookkeeping)
+   - Use the catalog and policy loaded in step 2. MUST reread when resuming or after compaction.
+     On resume, confirm their fingerprints are unchanged before use.
+   - Evaluate role requirements (`required_capabilities`, `minimum_tier`) for the
+     delegation.
+   - Select a portable ID:
+     - The decomposer recommendation for this step/role from `chunk-index.json` when present
+       and satisfying those constraints.
+     - Else the role's policy default.
+   - Record the selection source.
+   - Resolve the host selector and apply the single policy-fallback retry and
+     config-failure handling per `s2h-model-routing-adapter`'s catalog lookup and
+     fallback order.
+   - Persist the pre-delegation assignment - requested portable ID, resolved model name,
+     selection source, fallback used if any.
+   - Delegate passing every delegation parameter per `s2h-model-routing-adapter`, with
+     a `model` field only when confirmed.
+   - After delegation, persist the application result per the probed evidence channel:
+     runtime model (tool-reported payload first, self-ID otherwise), `evidence`, and any warnings.
+     Never claim dynamic selection when status is `routing-unavailable`.
+
+8. **Implement and verify the selected step.** (delegation: s2h-StepImplementer, then
+   s2h-StepVerifier, per cycle)
+   - Persist the step as `running` before delegating `s2h-StepImplementer`. Pass only
+     file paths: the step context, its latest checkpoint, and the latest relevant verifier
+     report.
+   - Validate the implementer handoff:
+     - `PASS` may proceed to verification.
+     - `RECOVERABLE` persists the recovery state and stops
+     - `BLOCKED` persists the blocker and stops.
+     - A missing or malformed handoff is `blocked` and does not consume a retry.
+   - Persist the step as `running` before delegating `s2h-StepVerifier`. Validate the
+     verifier handoff:
+     - `VERIFIED` marks the step `completed` and records its evidence and commit.
+     - `INCOMPLETE` marks it `verification-failed`, increments the repair-attempt counter,
+       and returns to the implementer if the counter is at most the configured retry limit.
+     - `BLOCKED` stops without consuming a retry.
+   - **Never mark a step `completed` from an implementer `PASS`.**
+   - After each handoff: copy status, requirement evidence, validation evidence,
+     artifacts, repository state, blockers, and `resume_from` into the durable ledger
+     before making the next delegation.
+
+9. **Verify the complete implementation.** (delegation: s2h-FinalVerifier)
+   - After every step is `completed`, persist `phase: final-verification`,
+     `status: running`. Delegate exactly once to `s2h-FinalVerifier` with only file paths:
+     the plan from `run.json`, `chunk-index.json`, every persisted handoff report, and
+     the ledger's commit and repository state.
+   - Branches:
+     - `VERIFIED` continues
+     - `INCOMPLETE` identifies the affected steps, consumes one final-verification repair
+       attempt recorded as `final_verification_repairs` in `run.json`, and returns to step 8
+       within the retry limit.
+     - `BLOCKED` stops
+   - **Do not begin documentation until final verification is `VERIFIED`.**
+
+10. **Document source files.** (delegation: s2h-DocumentationWriter per assignment)
+   - Build documentation assignments only for changed source files that require
+     maintainer-facing documentation, selected only after final verification; they never
+     inherit the decomposer step recommendations as final state. Pass each writer the path
+     of `documentation/source-doc-context.md` from the plan audit as the initial brief;
+     refine the assignment with the final changed files and relevant step reports; the
+     implementation evidence is authoritative if it differs from the plan brief.
+   - Delegate `s2h-DocumentationWriter` instances in parallel only when their files and
+     ownership do not overlap; otherwise delegate sequentially. Persist each assignment
+     before and after delegation. Require `PASS` plus a separate documentation commit, or
+     `changed_files: []` with a material no-op explanation, or an explicit `N/A` Git
+     explanation. A `RECOVERABLE` or `BLOCKED` result stops the documentation phase.
+
+11. **Verify source documentation.** (delegation: s2h-DocumentationVerifier per assignment)
+   - Delegate `s2h-DocumentationVerifier` for every completed s2h-source-doc assignment.
+     Branches:
+     - `VERIFIED` accepts the assignment.
+     - `INCOMPLETE` returns only that assignment to the documentation agent within the retry limit.
+     - `BLOCKED` stops.
+   - Do not request stylistic changes that are not material findings.
+
+12. **Create and verify user documentation.** (delegation: s2h-DocumentationWriter,
+    then s2h-DocumentationVerifier)
+   - Create the `s2h-user-doc` assignment, passing `documentation/user-doc-context.md`
+     referenced by `s2h-plan-audit.json`, adding the final verified requirements, and
+     repository-specific examples. Do not require the Documentation Writer to reread the
+     complete plan when the Markdown brief and implementation context cover the
+     assignment; the final implementation remains authoritative.
+   - Delegate `s2h-DocumentationWriter`, then delegate `s2h-DocumentationVerifier` with
+     the paths of both files. Require `VERIFIED` before finalization; apply the same bounded
+     retry rule and stop on `BLOCKED` or malformed handoffs.
+
+13. **Finalize.** (bookkeeping)
+   - Confirm the ledger's repository state against Git: recorded branch, existing commit
+     hashes, and clean tracked changes. Build `final-report.json` using
+     `s2h-final-report-format` from the ledger and all verified handoffs, including audit
+     status, completed steps, commands and results, commits, traceability,
+     branch/worktree state, documentation, warnings, and resume instructions. Atomically
+     persist the final report before reporting completion. Completion is legal only when
+     final verification and all required documentation verification are `VERIFIED` and the
+     repository check passes.
+
+14. **Report directly to the user.** (bookkeeping)
+   - After persisting and validating `final-report.json`, report it using the user-facing
+     response structure and status rules in `s2h-final-report-format`. The response must
+     agree with the persisted report.
 
 ## Delegation contract
 
@@ -254,169 +311,41 @@ If the agent's final message lacks a valid summary, points at a missing or
 unreadable saved report, or reports an unsupported status, missing evidence,
 or contradictory repository fields, record `blocked` with the raw failure
 description and exact resume action. Do not reinterpret the result as
-`INCOMPLETE`, retry it automatically, or continue to another phase.
+`INCOMPLETE`, retry it automatically, repair its artifacts, or continue to
+another phase.
+A handoff that deviates in any way from the exact `s2h-handoff` schema - including
+status vocabulary (eg. `COMPLETED` where `PASS` is required) and field naming - MUST NOT be
+corrected, normalized, or edited by the orchestrator. It is `blocked`, with the deviation
+described and the exact resume action recorded. Resumption re-delegates that one delegation
+on a later invocation, and persisted checkpoints mean no completed work is redone.
 
 ## Delegation prompt templates
-Every delegation prompts MUST contain ONLY the verbatim block lines for that role;
-they MUST NOT restate acceptance criteria, requirement IDs, or any status vocabulary.
-Every block follows the same line order: Role, Task ID and attempt, Paths (and any named
-persisted values), Skills and Instructions (both present only on generic
-subagent launches; named agents carry their skill bindings and task contract
-through their agent definitions), and Constraint. Never inline plan text, step
-contracts, inventory entries, prior narratives, or model reasoning; each agent
-saves its complete handoff per `s2h-handoff` under `<run-dir>/reports/` and returns
-only a summary naming `status` and that path.
 
-Verbatim versus fill-in: the line labels (`Role:`, `Task ID and attempt:`,
-`Paths:`, `Skills:`, `Instructions:`, `Constraint:`), the bullet markers, and
-each Constraint sentence are sent exactly as written. Only placeholder values
-are substituted at delegation time. Every Paths entry MUST be a concrete file
-or directory path: bounded sets enumerate each path on its own indented bullet
-line under the set header; whole-run collective inputs pass the containing
-directory with the completeness phrasing shown in the block.
+Before your first delegation in a session, MUST read `references/delegation-prompts.md`.
+Every delegation prompt MUST contain ONLY the verbatim block lines for that role from
+`references/delegation-prompts.md`. They MUST NOT restate acceptance criteria,
+requirement IDs, or any status vocabulary. Every block follows the same line order:
+Role, Task ID and attempt, Paths (and any named persisted values), Skills and
+Instructions (both present only on generic subagent launches; named agents carry their
+skill bindings and task contract through their agent definitions), and Constraint.
+Never inline plan text, step contracts, inventory entries, prior narratives, or model
+reasoning; each agent saves its complete handoff per `s2h-handoff` under
+`<run-dir>/reports/` and returns only a summary naming `status` and that path.
 
-Placeholders: `<plan-path>` is the immutable plan path from `run.json`;
-`<run-dir>` is the run directory; `<step-id>` is the selected step identity;
-`<L>` is the per-loop retry cap from `run.json`; `<n>` is the 1-based attempt
-number from persistent state.
+Verbatim versus fill-in: the line labels (`Role:`, `Task ID and attempt:`, `Paths:`,
+`Skills:`, `Instructions:`, `Constraint:`), the bullet markers, and each Constraint
+sentence are sent exactly as written. Only placeholder values are substituted at
+delegation time. Every Paths entry MUST be a concrete file or directory path: bounded
+sets enumerate each path on its own indented bullet line under the set header; whole-run
+collective inputs pass the containing directory with the completeness phrasing shown in
+the block.
 
-**s2h-PlanAuditor**
-
-```text
-Role: s2h-PlanAuditor
-Task ID and attempt: plan-audit, attempt 1
-Paths:
-  - Plan: <plan-path>
-  - Run directory: <run-dir>
-Constraint: read-only for repository files; writes only the audit report,
-requirements.json, and documentation context files under <run-dir>
-```
-
-**Documentation context format check** (one delegation per file)
-
-```text
-Role: read-only documentation-context format checker
-Task ID and attempt: doc-format-check/<file-name>, attempt 1
-Paths:
-  - Documentation context file: <doc-context-file>
-Skills: s2h-doc-context-format, s2h-handoff
-Instructions: Read exactly the named documentation context file. Apply every
-s2h-doc-context-format validation rule that a single file can satisfy. Do not
-check any other file and do not edit anything. Save your complete handoff per
-s2h-handoff, then return only a summary naming status and its path: VERIFIED if the
-file fully conforms, INCOMPLETE with details.findings naming each defect, BLOCKED if
-the file is missing or unreadable.
-Constraint: read-only
-```
-
-**Step context format check** (one delegation per step file)
-
-```text
-Role: read-only step-context format checker
-Task ID and attempt: step-format-check/<step-id>, attempt 1
-Paths:
-  - Step file: <run-dir>/steps/<step-id>.md
-Skills: s2h-step-context-format, s2h-handoff
-Instructions: Read exactly the named step file. Apply every
-s2h-step-context-format validation rule that a single file can satisfy. Do not
-check any other file and do not edit anything. Save your complete handoff per
-s2h-handoff, then return only a summary naming status and its path: VERIFIED if the
-file fully conforms, INCOMPLETE with details.findings naming each defect, BLOCKED if
-the file is missing or unreadable.
-Constraint: read-only
-```
-
-**s2h-PlanDecomposer**
-
-```text
-Role: s2h-PlanDecomposer
-Task ID and attempt: decomposition, attempt <n>
-Paths and values:
-  - Plan: <plan-path>
-  - Plan audit: <run-dir>/s2h-plan-audit.json
-  - Requirements: <run-dir>/requirements.json (only when the audit ran)
-  - Per-loop retry cap L: <L>
-Constraint: file-modifying for .agent-work files only, never committed; owns
-the decomposition phase end to end and delegates its own loops per
-s2h-plan-decomposition
-```
-
-**s2h-StepImplementer**
-
-```text
-Role: s2h-StepImplementer
-Task ID and attempt: <step-id>, attempt <n>
-Paths:
-  - Step context: <run-dir>/steps/<step-id>.md
-  - Latest checkpoint: <run-dir>/checkpoints/<step-id>.json (when one exists)
-  - Verifier report (repair rounds only): <verifier-report-path>
-Constraint: file-modifying; work only within the step's declared scope; run
-required validation and commit before returning; report the commit hash
-```
-
-**s2h-StepVerifier**
-
-```text
-Role: s2h-StepVerifier
-Task ID and attempt: <step-id>, attempt <n>
-Paths:
-  - Step context: <run-dir>/steps/<step-id>.md
-  - Implementer handoff: <implementer-handoff-path>
-  - Relevant checkpoint: <run-dir>/checkpoints/<step-id>.json (when one exists)
-Constraint: read-only
-```
-
-**s2h-FinalVerifier**
-
-```text
-Role: s2h-FinalVerifier
-Task ID and attempt: final-verification, attempt <n>
-Paths and values:
-  - Plan: <plan-path>
-  - Chunk index: <run-dir>/chunk-index.json
-  - Handoff reports: every persisted report under <run-dir>/reports/
-  - Commit and repository state: as recorded in <run-dir>/run.json
-Constraint: read-only
-```
-
-**s2h-DocumentationWriter, source-doc assignment** (one per changed file)
-
-```text
-Role: s2h-DocumentationWriter
-Task ID and attempt: source-doc/<changed-file>, attempt <n>
-Paths:
-  - Documentation context: <run-dir>/documentation/source-doc-context.md
-  - Final changed files (one bullet per file):
-    - <changed-file-path-1>
-    - <changed-file-path-2>
-  - Relevant step reports (one bullet per report):
-    - <step-report-path-1>
-    - <step-report-path-2>
-Constraint: file-modifying; edit only the assigned documentation set; make a
-separate documentation commit before returning
-```
-
-**s2h-DocumentationVerifier**
-
-```text
-Role: s2h-DocumentationVerifier
-Task ID and attempt: doc-verify/<assignment-id>, attempt <n>
-Paths:
-  - Assignment brief: the assignment's Markdown context file
-  - Written documentation: the documented file path(s)
-Constraint: read-only
-```
-
-**s2h-DocumentationWriter, user-doc assignment**
-
-```text
-Role: s2h-DocumentationWriter
-Task ID and attempt: user-doc, attempt <n>
-Paths:
-  - Documentation context: <run-dir>/documentation/user-doc-context.md
-  - Final verified requirements: <run-dir>/requirements.json
-Constraint: file-modifying; make a separate documentation commit before returning
-```
+Placeholders:
+- `<plan-path>` is the immutable plan path from `run.json`.
+- `<run-dir>` is the run directory.
+- `<step-id>` is the selected step identity.
+- `<L>` is the per-loop retry cap from `run.json`.
+- `<n>` is the 1-based attempt number from persistent state.
 
 ## State machine
 `pending -> running -> verification-failed -> running -> completed`, with

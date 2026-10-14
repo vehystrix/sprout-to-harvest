@@ -124,3 +124,7 @@ Every design document follows this section structure, in order, at its agreed sc
 - Writes: only the design document(s). No code edits, config changes, branches,
   commits, or other artifacts; nothing else in the repository may change while this
   skill runs.
+
+## Related skills
+
+- `s2h-compaction-recovery`: MUST invoke at session start and re-read after every compaction.

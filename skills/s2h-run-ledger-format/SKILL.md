@@ -72,8 +72,12 @@ Allowed `status` values are `pending`, `running`, `completed`,
 `preflight.status` is `passed` or `routing-unavailable`; `mechanism` is `model-parameter`
 or `none`; and `evidence_channel` is `tool-reported` or `self-reported`.
 
-The machine-readable form is defined by `references/schema.json`; validate a file with
-`scripts/validate.py <file>`.
+The machine-readable form is defined by `references/schema.json` and validated by
+`scripts/validate.py`. The schema is the authoritative specification, the script enforces
+the schema but never defines it. Before persisting an artifact of this format: MUST read
+the schema, author against it, and run `scripts/validate.py <file>`. The file MUST pass
+validation before it may be persisted. Both files are located relative to this skill's
+location.
 
 The `model_routing` block is required whenever dynamic routing is enabled. It records
 the effective catalog and policy sources, the active host identifier, and the

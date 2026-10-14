@@ -55,9 +55,14 @@ run.
 }
 ```
 
-This skill ships two schemas, `references/schema-catalog.json` and
-`references/schema-policy.json`. Validate a catalog with `scripts/validate.py catalog <file>`
-and a policy with `scripts/validate.py policy <file>`.
+The machine-readable forms are defined by `references/schema-catalog.json` and
+`references/schema-policy.json` and validated by `scripts/validate.py`. The schema files
+are the authoritative specification, the script enforces them but never defines them.
+Before persisting an artifact of this format: MUST read the matching schema, author
+against it, and run the corresponding validator: `scripts/validate.py catalog <file>`
+for a catalog, or `scripts/validate.py policy <file>` for a policy. The file MUST pass
+validation before it may be persisted. Both schemas and the script are located relative
+to this skill's location.
 
 Each catalog entry must satisfy these requirements:
 

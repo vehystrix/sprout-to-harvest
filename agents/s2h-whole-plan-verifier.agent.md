@@ -24,6 +24,7 @@ If the plan exceeds one context window, read it in windows against the
 inventory; do not sample.
 
 ## Related skills
+- `s2h-compaction-recovery`: MUST invoke at session start and re-read after every compaction.
 - `s2h-requirements-traceability`: MUST use to reconcile the inventory against the
   full plan text.
 - `s2h-chunk-index-format`: MUST use for chunk identifiers, requirement assignment

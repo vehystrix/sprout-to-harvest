@@ -96,8 +96,12 @@ under it. File paths are relative to the run directory.
 descriptions, or exclusion lists. Each ID must resolve into the run's
 `requirements.json`.
 
-The machine-readable form is defined by `references/schema.json`; validate a file with
-`scripts/validate.py <file>`.
+The machine-readable form is defined by `references/schema.json` and validated by
+`scripts/validate.py`. The schema is the authoritative specification, the script enforces
+the schema but never defines it. Before persisting an artifact of this format: MUST read
+the schema, author against it, and run `scripts/validate.py <file>`. The file MUST pass
+validation before it may be persisted. Both files are located relative to this skill's
+location.
 `doc_status` is a per-chunk value: `pending`, `running`, `verification-failed`, or `completed`.
 
 `model_recommendations` is optional and records the `s2h-PlanDecomposer`'s non-final guidance for

@@ -51,8 +51,12 @@ The single canonical list of requirements extracted from an implementation plan.
   from, or taken from when the plan lists it explicitly. It must support the requirement
   on its own.
 
-The machine-readable form is defined by `references/schema.json`; validate a file with
-`scripts/validate.py <file>`.
+The machine-readable form is defined by `references/schema.json` and validated by
+`scripts/validate.py`. The schema is the authoritative specification, the script enforces
+the schema but never defines it. Before persisting an artifact of this format: MUST read
+the schema, author against it, and run `scripts/validate.py <file>`. The file MUST pass
+validation before it may be persisted. Both files are located relative to this skill's
+location.
 ## Cross-cutting requirements
 
 A requirement that spans more than one chunk is split at inventory creation into
