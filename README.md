@@ -76,7 +76,7 @@ pi install git:github.com/vehystrix/sprout-to-harvest
 For oh-my-pi, use its package installer with the same repository source:
 
 ```bash
-omp install git:github.com/vehystrix/sprout-to-harvest
+omp install github:vehystrix/sprout-to-harvest
 ```
 
 Use the project-local form when the workflow should apply to one repository only:
