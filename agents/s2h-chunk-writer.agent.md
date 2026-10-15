@@ -33,7 +33,10 @@ each of your chunk's `requirements_assigned` IDs resolves into `requirements.jso
 fix anything you find in place.
 
 ## Related skills
-- `s2h-compaction-recovery`: MUST invoke at session start and re-read after every compaction.
+- `s2h-compaction-recovery`: MUST invoke at session start and re-read after
+  every compaction. On a rollover or compaction notice, state in your reply the
+  post-compaction recovery reminder defined by that skill; no reasoning away
+  from that re-read obligation is permitted after the compaction.
 - `s2h-step-context-format`: MUST use for the required file shape, frontmatter, Contract section,
   and validation rules.
 - `s2h-requirements-traceability`: MUST use to map each assigned requirement to concrete step work.

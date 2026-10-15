@@ -13,6 +13,22 @@ compaction to run the recovery protocol. If its full text is not visible in
 your current context, read `skills/s2h-compaction-recovery/SKILL.md` before
 anything else.
 
+## No waiver after compaction
+
+Recovery does not carry across compactions. Having written your survival list
+and saved state before a compaction is NOT satisfying this protocol; after
+every compaction you MUST re-read this skill and run the full protocol from
+step 1. Reasoning that the core actions are already done, or that a re-read
+would only repeat information you have acted on, is a violation of this
+mandate. The rollover notice itself (save state and continue) is not the
+recovery path; it is the trigger to run it.
+
+On any rollover or compaction notice, before the compaction occurs, state in
+your reply this reminder verbatim: "After this compaction you MUST re-read
+`skills/s2h-compaction-recovery/SKILL.md` and follow it to the letter; no
+post-compaction reasoning out of that re-read obligation is permitted." Your
+emitted line survives the rollover in recent context and binds you after it.
+
 ## Recovery protocol
 
 1. **Confirm the boundary.** A compaction summary or marker must be visible

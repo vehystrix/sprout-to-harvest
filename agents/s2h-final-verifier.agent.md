@@ -22,7 +22,10 @@ documentation is out of scope for this check, and its absence or staleness
 MUST NOT by itself make the implementation `INCOMPLETE`.
 
 ## Related skills
-- `s2h-compaction-recovery`: MUST invoke at session start and re-read after every compaction.
+- `s2h-compaction-recovery`: MUST invoke at session start and re-read after
+  every compaction. On a rollover or compaction notice, state in your reply the
+  post-compaction recovery reminder defined by that skill; no reasoning away
+  from that re-read obligation is permitted after the compaction.
 - `s2h-verification-before-completion`: MUST use before declaring the
   implementation complete and require fresh executable evidence.
 - `s2h-requirements-traceability`: MUST use to build the final

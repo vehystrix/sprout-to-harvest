@@ -16,7 +16,10 @@ missing evidence from the implementer narrative. If the context or handoff is
 unavailable, return `BLOCKED`.
 
 ## Related skills
-- `s2h-compaction-recovery`: MUST invoke at session start and re-read after every compaction.
+- `s2h-compaction-recovery`: MUST invoke at session start and re-read after
+  every compaction. On a rollover or compaction notice, state in your reply the
+  post-compaction recovery reminder defined by that skill; no reasoning away
+  from that re-read obligation is permitted after the compaction.
 - `s2h-verification-before-completion`: MUST use
   to require fresh executable evidence before returning `VERIFIED`.
 - `s2h-requirements-traceability`: MUST use for requirement-by-requirement verification.

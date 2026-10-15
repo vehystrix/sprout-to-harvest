@@ -23,7 +23,10 @@ cannot be read, is missing, or is not internally understandable,
 return `BLOCKED` with the exact path or ambiguity and stop.
 
 ## Related skills
-- `s2h-compaction-recovery`: MUST invoke at session start and re-read after every compaction.
+- `s2h-compaction-recovery`: MUST invoke at session start and re-read after
+  every compaction. On a rollover or compaction notice, state in your reply the
+  post-compaction recovery reminder defined by that skill; no reasoning away
+  from that re-read obligation is permitted after the compaction.
 - `s2h-requirements-traceability`: MUST use to identify requirements, interfaces,
   and validation gaps that must be tracked.
 - `s2h-plan-audit`: MUST use for the feasibility, ambiguity, interface, and scope review.
