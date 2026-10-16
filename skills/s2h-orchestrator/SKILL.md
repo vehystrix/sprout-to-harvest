@@ -162,9 +162,9 @@ procedure.
        rather than a plan brief.
 
 5. **Decompose the plan.** (delegation: s2h-PlanDecomposer, then one format checker per step file)
-   - Persist `phase: decomposition`, `status: running`. Delegate exactly once to
-     `s2h-PlanDecomposer` with the run's per-loop retry cap and the file paths:
-     - The plan from `run.json`.
+   - Persist `phase: decomposition`, `status: running`. Delegate to
+     `s2h-PlanDecomposer` for the initial decomposition exactly once, with the
+     run's per-loop retry cap and the file paths:
      - The persisted `s2h-plan-audit.json`.
      - When the audit ran, `requirements.json`
 
@@ -181,7 +181,14 @@ procedure.
      applies `s2h-step-context-format`. Resolve each model per step 7 as the cheapest
      portable ID satisfying a read-only capability. Send the format check template
      verbatim and explicitly tell it to use both skills. Accept only verified reports
-     per `s2h-handoff`. Any failed check persists `blocked` and stops.
+     per `s2h-handoff`. Branches:
+     - All pass: continue to step 6.
+     - Any fail: increment the decomposition attempt counter, re-delegate
+       `s2h-PlanDecomposer` with the targeted-repair block from
+       `references/delegation-prompts.md` listing each failing step file and its
+       findings one per line; accept only PASS, then rerun format checks on the
+       previously failing step files only.
+     - Any check still failing after L repair rounds: persist `blocked` and stop.
 
 6. **Select the next step.** (bookkeeping)
    - Load `chunk-index.json` once when entering this phase. Keep that copy in context

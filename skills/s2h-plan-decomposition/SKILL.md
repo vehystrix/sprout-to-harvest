@@ -13,6 +13,7 @@ decomposed, chunk-level work items. The `s2h-PlanDecomposer` owns the whole
 decomposition phase for one run: it consumes or derives the requirements
 inventory, writes `chunk-index.json`, runs each chunk's `s2h-ChunkWriter` and
 `s2h-ChunkVerifier` loop, and delegates the `s2h-WholePlanVerifier` pass.
+When redelegated in targeted-repair mode, follow only Targeted repair delegation below.
 
 ## Requirements inventory
 
@@ -127,6 +128,28 @@ decomposition-gap; any other finding is a boundary-mismatch.
   returns `BLOCKED`.
 - An infrastructure failure (unreadable files, missing handoff) escalates: the
   phase returns `BLOCKED`.
+
+## Targeted repair delegation
+
+When the orchestrator re-delegates you in targeted-repair mode - the task ID is
+`decomposition-repair` and its prompt names each failing step file with its
+findings - do not redo decomposition, inventory, chunking, or any unaffected
+chunk. Only:
+
+1. For each affected chunk named by the findings, persist `doc_status: running`
+   and re-delegate that chunk's writer loop with the delegation's finding lines
+   included as its prior-finding lines; each repair is a fresh loop instance
+   under the same `L` allowance.
+2. On writer `PASS` or `RECOVERABLE`, delegate that chunk's verifier per the
+   Per-chunk loop section; on `INCOMPLETE`, repeat while that loop instance has
+   repair attempts left and persist `doc_status: verification-failed`.
+3. When every affected chunk is back to `doc_status: completed`, delegate the
+   `s2h-WholePlanVerifier` once with only file paths, routing its findings per
+   Whole-plan pass including its `L + 1` cap.
+
+Completion in repair mode matches Completion above: `PASS` when every chunk has
+`doc_status: completed` and the whole-plan pass returns `PASS`; the BLOCKED
+conditions are unchanged.
 
 ## Delegation prompt templates
 

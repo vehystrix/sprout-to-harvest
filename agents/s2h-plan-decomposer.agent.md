@@ -32,6 +32,9 @@ rules, loop mechanics, retry caps, finding routing, and blocked conditions:
 4. Model assignments - persist loop assignments into the index per the skill.
 5. Whole-plan pass - delegate the `s2h-WholePlanVerifier` when every chunk
    is completed, route its findings and respect the pass cap per the skill.
+6. Targeted repair - when re-delegated with task ID `decomposition-repair`,
+   execute only the skill's Targeted repair delegation: rerun the affected
+   chunks' writer and verifier loops, then the whole-plan pass.
 
 ## Related skills
 - `s2h-compaction-recovery`: MUST invoke at session start and re-read after

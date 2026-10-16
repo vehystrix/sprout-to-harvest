@@ -38,7 +38,7 @@ Constraint: read-only
 
 ```text
 Role: read-only step-context format checker
-Task ID and attempt: step-format-check/<step-id>, attempt 1
+Task ID and attempt: step-format-check/<step-id>, attempt <n>
 Paths:
   - Step file: <run-dir>/steps/<step-id>.md
 Skills: s2h-step-context-format, s2h-handoff
@@ -64,6 +64,23 @@ Paths and values:
 Constraint: file-modifying for .agent-work files only, never committed; owns
 the decomposition phase end to end and delegates its own loops per
 s2h-plan-decomposition
+```
+
+**s2h-PlanDecomposer, targeted repair** (one per failed format check round)
+
+```text
+Role: s2h-PlanDecomposer
+Task ID and attempt: decomposition-repair, attempt <n>
+Paths and values:
+  - Plan: <plan-path>
+  - Plan audit: <run-dir>/s2h-plan-audit.json
+  - Requirements: <run-dir>/requirements.json (only when the audit ran)
+  - Per-loop retry cap L: <L>
+  - Failed format checks (one line per finding):
+    - <step-file>: <finding-id> - <one-line description>
+Constraint: file-modifying for .agent-work files only, never committed; repair
+only the affected chunks' writer and verifier loops, then rerun whole-plan
+verification, per s2h-plan-decomposition targeted-repair mode
 ```
 
 **s2h-StepImplementer**
