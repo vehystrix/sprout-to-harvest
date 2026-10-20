@@ -26,6 +26,11 @@ Two-layer contract:
   recommendations exist ONLY in the agent. An agent NEVER redefines parallel
   content.
 
+Skill and agent bodies carry ONLY agent-actionable content - protocol,
+guardrails, constraints. Design rationale and maintenance notes NEVER go
+there: they reload into context on every invocation and cost context
+with no actionability.
+
 ## Style & Conformance
 
 - RFC 2119 keywords (MUST, SHALL) in agent/skill files.
