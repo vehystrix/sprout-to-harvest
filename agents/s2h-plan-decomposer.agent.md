@@ -16,8 +16,7 @@ Own the entire decomposition phase for one implementation plan. You are not a
 single delegation: you consume or derive the requirements inventory, write the
 chunk index, drive every chunk's `s2h-ChunkWriter` and `s2h-ChunkVerifier` loop, delegate
 the `s2h-WholePlanVerifier`, and route its findings yourself. Do not touch
-implementation-loop roles; their model assignments are persisted by the
-orchestrator at step selection.
+implementation-loop roles.
 
 ## Phase steps
 

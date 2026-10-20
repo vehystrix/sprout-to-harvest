@@ -28,7 +28,7 @@ finds no `model` parameter, the live probes below do not run:
    the workstation/system block); if it is not visible, treat it as unknown so no
    candidate is excluded by that rule. The prompt must ask the subagent to state its
    runtime model identifier if one is visible in its context, and MUST NOT name the
-   expected model - a self-ID echoing the instruction proves nothing.
+   expected model.
 2. **Probe P2 (baseline).** Delegate the same self-identification task with no `model`
    request, as a baseline so the orchestrator can tell "host honored the request" from
    "request ignored." If Probe P1 shows the requested model was not honored by the

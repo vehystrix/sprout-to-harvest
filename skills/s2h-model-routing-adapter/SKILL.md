@@ -42,8 +42,8 @@ either source file separately.
 
 ## Static tool-surface check
 
-Every delegating agent applies this before any model-bearing delegation, and it is the
-only probe step that runs outside delegated mode. Does the active host's delegation tool
+Every delegating agent applies this before any model-bearing delegation. Does the
+active host's delegation tool
 expose a per-delegation `model` parameter? If not, record `status: routing-unavailable`,
 `mechanism: none`, and pin `evidence_channel` by inspecting the response payload of the
 first real delegation - record `self-reported` if that payload has no structured
@@ -142,7 +142,7 @@ backed by `applied: true`.
    its fallback either. After that one retry also lacks a mapping, stop as BLOCKED
    naming the missing entry when `require_application` is true; otherwise continue
    without a model field with `applied: false` and a warning naming the missing
-   ID/host mapping. This is a configuration gap, not a host limitation.
+   ID/host mapping.
 
 Fallback selection rule: when resolution of a role's policy `default` fails under
 config failure above, try the policy `fallback` portable ID exactly once; if that
@@ -156,13 +156,12 @@ Only explicit policy-authorized escalation may create a new attempt entry.
 When `host.require_application` is `true`, block rather than continue whenever the
 run cannot demonstrate applied state for an assignment. With no deterministic
 confirmation mechanism available - as in every host whose probe found no structured
-runtime-model confirmation - this blocks every routed attempt, because none of them
-can demonstrate `applied: true`.
+runtime-model confirmation - this blocks every routed attempt.
 
 ## Routing-unavailable host behavior
 
 This path applies to any host where the probe finds no honored per-delegation
-selector (for example Pi): record a routing-unavailable warning for every
+selector: record a routing-unavailable warning for every
 assignment with `applied: false`, make no dynamic-selection claim, never present
 it as dynamically routed, and let continuation be governed by `require_application`.
 

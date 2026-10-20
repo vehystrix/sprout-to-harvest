@@ -55,8 +55,8 @@ or modify are the design document(s) themselves.
      error and edge behavior per unit, ordering between units.
    - Narrow scope (file or group of functions): exact file paths, function and data
      shapes, ordered steps, acceptance criteria for each behavior.
-   It is always easier to add detail later than remove it: do not force low-level
-   detail into a broad design; deepen a section only when the user will implement from it.
+   Do not force low-level detail into a broad design; deepen a section only when the user
+   will implement from it.
    If investigation shows a chunk's content already meets the agreed level - existing code or
    settled prior work - refining it means verifying and recording that, not inventing
    lower-level detail to justify the run. A document whose sections are all confirmed
@@ -74,8 +74,7 @@ or modify are the design document(s) themselves.
    instead of being decided silently.
 6. **Finalize.** When every section is approved, delegate the consistency pass to a fresh
    subagent: hand it only the finished document - plus its immediate upper-level document when
-   this was a deeper-level run - and the defect classes defined by `s2h-plan-audit`. Its context
-   contains no drafting conversation, so its review is unbiased by how the document was written.
+   this was a deeper-level run - and the defect classes defined by `s2h-plan-audit`.
    Tell it that OPEN-flagged items are explicit user deferrals recorded under Open Items, not
    defects; it reports findings only and does not fix or redesign anything. Fix what it finds
    before declaring done, returning to the user any finding whose resolution is a decision. Every
@@ -112,8 +111,7 @@ Every design document follows this section structure, in order, at its agreed sc
 4. **Units** (include when the scope decomposes into chunks) - each chunk's name, a description
    sufficient to carry forward whatever follows from it alone; mark as **refined** or **to be
    refined**, unmarked meaning no refinement is necessary. All-or-nothing applies per document:
-   either every chunk is refined by a child document or none are - since only leaves feed the
-   implementation, unrefined chunks in a mixed document would never be implemented.
+   either every chunk is refined by a child document or none are.
 5. **Current state** - verified facts about what exists today.
 6. **Decisions** - each question asked, the options considered, and the choice made.
 7. **Design** - architecture and behavior at the agreed detail level.

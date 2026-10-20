@@ -34,8 +34,7 @@ one entry per requirement with an `id`, a short `name`, and a verbatim plan
 Coverage is a real check, not an assertion. When you write the chunk index,
 verify that every inventory requirement appears in exactly one chunk's
 `requirements_assigned` list and each assigned ID resolves into the file. The
-`s2h-WholePlanVerifier` repeats this check independently against the full plan; its
-second pass catches drift the first one missed.
+`s2h-WholePlanVerifier` repeats this check independently against the full plan.
 
 ## Chunking rules
 
@@ -49,9 +48,7 @@ Chunk the plan into independently implementable units of work:
 - Every step belongs to exactly one chunk; every inventory requirement is
   assigned to exactly one chunk.
 - Contracts never live in the index. They live verbatim only in each chunk's
-  step files per `s2h-step-context-format`, sourced from the inventory excerpts, so
-  a Chunk Writer receives its contract directly and a verifier can check it line
-  by line against the plan text.
+  step files per `s2h-step-context-format`, sourced from the inventory excerpts.
 
 `chunk-index.json`, shaped by `s2h-chunk-index-format`, is the machine state: one
 entry per chunk with its `requirements_assigned` IDs, `doc_status`, step list,

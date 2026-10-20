@@ -26,10 +26,9 @@ cannot be determined from the plan and excerpts - or an edge case changes or inv
 requirement or the contract, including references to dependencies that do not exist in
 the plan. Missing implementation details alone never block; you write them. On repair
 rounds, fix only the named findings and do not restructure unaffected steps.
-Do not self-check completeness or drift - same-context re-deriving cannot see
-missing requirements; the `s2h-ChunkVerifier` owns both. Do validate mechanically before
-returning `DONE`: each step file passes `s2h-step-context-format` validation and
-each of your chunk's `requirements_assigned` IDs resolves into `requirements.json`;
+Do not self-check completeness or drift; the `s2h-ChunkVerifier` owns both. Do validate
+mechanically before returning `DONE`: each step file passes `s2h-step-context-format` validation
+and each of your chunk's `requirements_assigned` IDs resolves into `requirements.json`;
 fix anything you find in place.
 
 ## Related skills

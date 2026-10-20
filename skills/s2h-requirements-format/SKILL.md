@@ -11,9 +11,7 @@ The single canonical list of requirements extracted from an implementation plan.
 ## Purpose
 
 - Persist every material requirement exactly once, with a stable ID and a verbatim
-  excerpt, so downstream roles resolve references instead of re-deriving content.
-- Provide the source that `requirements_assigned` values in `chunk-index.json` resolve against.
-- Give the `s2h-WholePlanVerifier` the exact plan text against which it checks fidelity.
+  excerpt.
 
 ## Schema (frontmatter-free JSON file)
 

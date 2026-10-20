@@ -74,8 +74,8 @@ Each catalog entry must satisfy these requirements:
 - `cost` is a policy-comparable classification such as `low`, `medium`, or `high`.
 - `context_window` is the maximum supported token window.
 - `hosts` is optional and maps supported hosts to host-specific selector strings.
-- `reasoning_effort` is optional and deliberately not pinned to a fixed
-  vocabulary. When present, it must be a non-empty string or integer - an
+- `reasoning_effort` is optional. When present, it must be a non-empty string
+  or integer - an
   effort level name such as `low` or `high`, or a numeric budget - chosen from
   the settings that model's host mechanism supports. It records how much
   reasoning effort to request for this model and never changes routing
@@ -108,7 +108,6 @@ The initial portable capability vocabulary is:
 ]
 ```
 
-The vocabulary is the contract used by policy matching and validation.
 Names are stored in normalized lowercase form and are not treated as
 free-form text. Catalog entries may extend the vocabulary only through
 an explicit namespace policy; otherwise the value is invalid.
@@ -173,9 +172,7 @@ an explicit namespace policy; otherwise the value is invalid.
 ```
 
 The policy defines the role defaults, suitability requirements, fallback
-behavior, retry semantics, and host application requirements. It is not a
-host registry, and it does not change runtime behavior without
-orchestration validation.
+behavior, retry semantics, and host application requirements.
 
 ## Required fields and semantic rules
 
@@ -222,8 +219,7 @@ Invalid overrides include:
 
 ## Legacy mode behavior
 
-Legacy mode remains a compatibility option and is treated as an explicit
-compatibility path, not as a dynamic routing strategy. In legacy mode, the
+In legacy mode, the
 orchestrator may preserve older selectors or compatibility rules when a
 host requires them, but the portable catalog and policy remain
 authoritative. A legacy configuration is invalid if it contradicts the
@@ -235,7 +231,6 @@ Validate each section above: every role definition carries `required_capabilitie
 every catalog entry is complete and well-formed, retry and host policy fields are
 present, and the fingerprint calculation is deterministic.
 
-`model_policy` is the authoritative policy contract. The catalog and
-policy schema remain stable across hosts; each host's entry in `hosts`
+`model_policy` is the authoritative policy contract. Each host's entry in `hosts`
 translates the selected portable ID to a host-specific model name without
 changing the routing policy itself.

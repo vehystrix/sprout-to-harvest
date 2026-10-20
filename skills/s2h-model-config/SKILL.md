@@ -20,9 +20,7 @@ The canonical files are repository configuration inputs:
 These are the workspace model repository. A user-level global model
 repository stores the same two file types at `~/.sprout-to-harvest/`.
 
-Only the orchestrator creates effective run copies under
-`.agent-work/<run-id>/`. This skill must never write a catalog, policy, or effective
-configuration under `.agent-work/`.
+This skill must never write a catalog, policy, or effective configuration under `.agent-work/`.
 
 ## Invocation inputs
 
@@ -192,12 +190,10 @@ Require an explicit confirmation such as `confirm` or `yes`. A missing, ambiguou
 negative response cancels the write and leaves both existing files unchanged. Write the
 validated catalog and policy to their repository paths only, using atomic replacement
 where supported. Never write `.agent-work/<run-id>/model-catalog.json` or
-`.agent-work/<run-id>/model-policy.json`; those are frozen by the orchestrator for a
-specific run.
+`.agent-work/<run-id>/model-policy.json`.
 
 After writing, report the paths, fingerprints, changed fields, and validation evidence.
-Do not report a runtime model, `applied: true`, or successful host application because
-this skill has not delegated work or collected runtime application evidence.
+Do not report a runtime model, `applied: true`, or successful host application.
 
 ## Failure output
 

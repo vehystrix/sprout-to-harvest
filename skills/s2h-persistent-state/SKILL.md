@@ -19,10 +19,6 @@ Keep a durable run ledger in an untracked `.agent-work/<run-id>/` directory.
 
 ## Artifact format index
 
-The dedicated format skills are the canonical schemas and templates.
-This skill only maps each runtime artifact to its format skill
-and persistence behavior.
-
 Every file persisted under `.agent-work/<run-id>/` must use one of
 these explicit formats and filename patterns:
 
@@ -50,10 +46,8 @@ written atomically through a temporary file followed by rename.
 Temporary files are implementation details and must not be reported
 as artifacts.
 
-The machine-readable artifact schemas are defined by the dedicated
-format skills above. Do not copy schemas from this index into other
-skills; read the named format skill before creating or validating
-that artifact.
+The machine-readable artifact schemas are defined by the dedicated format skills
+above. Read the named format skill before creating or validating that artifact.
 
 Record before and after every subagent:
 
