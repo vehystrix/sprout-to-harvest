@@ -42,6 +42,8 @@ implementation evidence is available and verified.
 documentation brief, scope, acceptance criteria,
 and instructions; it must not restate model
 evidence or runtime selection details.
+- Every requirement ID named under `Requirements` in the body MUST have its own
+  `Acceptance Criteria` entry that names the observable evidence satisfying it.
 
 ## Template
 

@@ -40,7 +40,7 @@ important edge case, test coverage, commit traceability, and absence
 of accidental orchestration artifacts in commits. Return a
 requirement-to-step-to-commit-to-validation traceability matrix.
 
-Return `VERIFIED` only when all material requirements pass with fresh
+Return `DONE` only when all material requirements pass with fresh
 executable evidence; otherwise return `INCOMPLETE` or `BLOCKED`.
 
 Save your complete handoff per `s2h-handoff`, then return only a summary naming

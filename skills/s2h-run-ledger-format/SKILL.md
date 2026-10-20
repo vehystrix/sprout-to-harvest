@@ -64,7 +64,7 @@ Required top-level fields:
 Allowed `phase` values are `initialization`, `s2h-plan-audit`, `decomposition`,
 `step-execution`, `final-verification`, `documentation`, and `finalization`.
 Allowed `status` values are `pending`, `running`, `completed`,
-`verification-failed`, `interrupted`, `recoverable`, `blocked`, and
+`verification-failed`, `interrupted`, `blocked`, and
 `abandoned`.
 
 `maximum_retries` is a non-negative integer. `skip_plan_audit` is a boolean.
@@ -100,3 +100,9 @@ confirmation; on confirmation, recopy the effective configuration, re-run the
 capability probe per `s2h-model-probe`, record a warning, then continue.
 `final_verification_repairs` counts final-verification repair attempts
 consumed against `maximum_retries`.
+
+The optional `delegations` block records one complete caller-owned assignment per
+delegated call - persisted by the orchestrator before delegation, updated with the
+application result after - keyed by a stable delegation identifier such as
+`step-002-implementer-1`. Subagents never author it. Resumed runs read it back to
+reconstruct per-delegation model state without trusting narrative.

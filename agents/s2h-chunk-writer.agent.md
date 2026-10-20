@@ -28,7 +28,7 @@ the plan. Missing implementation details alone never block; you write them. On r
 rounds, fix only the named findings and do not restructure unaffected steps.
 Do not self-check completeness or drift - same-context re-deriving cannot see
 missing requirements; the `s2h-ChunkVerifier` owns both. Do validate mechanically before
-returning `PASS`: each step file passes `s2h-step-context-format` validation and
+returning `DONE`: each step file passes `s2h-step-context-format` validation and
 each of your chunk's `requirements_assigned` IDs resolves into `requirements.json`;
 fix anything you find in place.
 
@@ -46,6 +46,6 @@ fix anything you find in place.
 
 Save your complete handoff per `s2h-handoff`, then return only a summary naming
 `status` and the saved file path. Its `changed_files` lists every created step file
-and its details carry per-requirement coverage evidence. Use `BLOCKED` for contract
-defects, `RECOVERABLE` when the files are written but a known gap remains, and `PASS`
-when the chunk's files are complete per their contract.
+and its details carry per-requirement coverage evidence. Use `DONE` when the chunk's files are
+complete per their contract; `INCOMPLETE` for repairable gaps with findings listed;
+`BLOCKED` for unreadable context, missing requirements, or a handoff defect that prevents any claim.

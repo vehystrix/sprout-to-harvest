@@ -9,7 +9,7 @@ disable-model-invocation: true
 ---
 # Subagent Recovery
 
-Record recovery through `s2h-handoff` with `status: RECOVERABLE`, and persist
+Record recovery through `s2h-handoff` with `status: BLOCKED`, and persist
 the durable checkpoint using `s2h-checkpoint-format` and step state using
 `s2h-step-status-format`. Include the last known artifacts and repository state, the
 blocker, and an exact `resume_from` action.
@@ -18,7 +18,7 @@ Distinguish interruption from implementation failure.
 
 On interruption or blockage:
 
-1. Persist `interrupted`, `recoverable`, or `blocked` status.
+1. Persist `interrupted` or `blocked` status.
 2. Record the error category, last checkpoint, branch, commit, changed files, and workspace safety.
 3. Preserve the workspace; never restart the whole run or discard edits.
 4. Report the blocker and required user action.

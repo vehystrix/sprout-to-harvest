@@ -16,7 +16,7 @@ Use this skill when an implementer records or resumes `checkpoints/<step-id>.jso
   "schema": "s2h-checkpoint/v1",
   "run_id": "run-001",
   "step_id": "step-001-implementation",
-  "status": "recoverable",
+  "status": "blocked",
   "last_completed_action": "Focused tests pass; commit is pending.",
   "changed_files": ["src/example.ts"],
   "validation": [
@@ -52,5 +52,5 @@ location.
 `last_completed_action` is a factual milestone, not a plan. Include
 enough changed-file, validation, and repository evidence for another
 agent to resume safely. Use `status: completed` only for a finished
-checkpoint; use `recoverable`, `interrupted`, or `blocked` when work
+checkpoint; use `interrupted` or `blocked` when work
 needs attention.

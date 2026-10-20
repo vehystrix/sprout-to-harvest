@@ -12,7 +12,8 @@ The machine-readable ownership map of a decomposed implementation plan.
 
 - Record one entry per chunk with its assigned requirement IDs,
   documentation-loop status, and step list.
-- Persist model recommendations and assignments for the four roles the pipeline delegates to.
+- Persist model recommendations for all four delegated roles and assignment
+  blocks for the two decomposer loop roles.
 - Keep contracts out of the index: they live verbatim in each chunk's step
   files, shaped by `s2h-step-context-format`.
 
@@ -107,10 +108,8 @@ location.
 `model_recommendations` is optional and records the `s2h-PlanDecomposer`'s non-final guidance for
 all four roles - `chunk-writer`, `chunk-verifier`, `implementer`, `verifier`; each role entry
 carries `portable_id`, `rationale`, `required_capabilities`, and `complexity`, or an
-explicit `null`. `model_assignments` is required with one block per the four roles in the
-shape shown above. The `s2h-WholePlanVerifier`'s assignment is recorded only in that delegation's
-handoff details; it never appears in the index.
-
+explicit `null`. `model_assignments` is required with one block per delegated loop role -
+`chunk-writer`, `chunk-verifier` - in the shape shown above.
 ## Validation
 
 Validate structure: every chunk carries an `id`, a `kind`, exactly one allowed
@@ -118,5 +117,6 @@ Validate structure: every chunk carries an `id`, a `kind`, exactly one allowed
 behavioral chunks with exactly two steps in test-to-implementation order carrying the
 dependency edge, non-behavioral chunks with exactly one step. Validate that step IDs are
 unique file-wide, dependencies form an acyclic graph naming only existing steps, and
-every model block is complete for all four roles.
+every `model_recommendations` entry covers all four roles and every
+`model_assignments` block carries its three fields.
 

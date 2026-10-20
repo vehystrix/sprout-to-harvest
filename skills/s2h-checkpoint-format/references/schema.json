@@ -23,7 +23,7 @@
     "run_id": {"type": "string"},
     "step_id": {"type": "string"},
     "status": {
-      "enum": ["running", "completed", "recoverable", "interrupted", "blocked"]
+      "enum": ["running", "completed", "interrupted", "blocked"]
     },
     "last_completed_action": {"type": "string"},
     "changed_files": {"type": "array", "items": {"type": "string"}},

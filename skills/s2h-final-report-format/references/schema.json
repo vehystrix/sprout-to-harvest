@@ -27,12 +27,9 @@
     "summary": {"type": "string", "minLength": 1},
     "status": {
       "enum": [
-        "PASS",
-        "VERIFIED",
+        "DONE",
         "INCOMPLETE",
-        "NEEDS_CLARIFICATION",
-        "BLOCKED",
-        "RECOVERABLE"
+        "BLOCKED"
       ]
     },
     "inputs": {
@@ -58,7 +55,7 @@
       "additionalProperties": false,
       "properties": {
         "audit_status": {
-          "enum": ["PASS", "SKIPPED", "NEEDS_CLARIFICATION", "BLOCKED"]
+          "enum": ["DONE", "SKIPPED", "BLOCKED"]
         },
         "completed_steps": {"type": "array", "items": {"type": "string"}},
         "traceability": {"type": "array"},
@@ -116,6 +113,7 @@
                 "policy",
                 "decomposer",
                 "orchestrator",
+                "inherited",
                 "fallback"
               ]
             },

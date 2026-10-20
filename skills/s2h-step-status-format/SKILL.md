@@ -27,7 +27,7 @@ Use this skill when the orchestrator creates `steps/<step-id>-status.json`.
   },
   "changed_files": [],
   "validation": [],
-  "model_assignment": "<fields per s2h-handoff's Required delegated model assignment block>",
+  "model_assignment": "<complete caller-owned fields per s2h-handoff>",
   "attempt_history": [
     {
       "attempt": 0,
@@ -42,7 +42,7 @@ Use this skill when the orchestrator creates `steps/<step-id>-status.json`.
         "runtime_model": "Code Model (copilot)",
         "warning": null
       },
-      "outcome": "verified",
+      "outcome": "done",
       "escalation": {
         "triggered": false,
         "prior_model": null,
@@ -68,9 +68,9 @@ validation before it may be persisted. Both files are located relative to this s
 location.
 
 Allowed statuses are `pending`, `running`, `completed`,
-`verification-failed`, `interrupted`, `recoverable`, `blocked`,
+`verification-failed`, `interrupted`, `blocked`,
 and `abandoned`.
-`completed` is legal only after a verifier returns `VERIFIED`.
+`completed` is legal only after a verifier returns `DONE`.
 
 `attempt_history` is append-only, in chronological order; each entry records
 the attempt number, the prior assignment snapshot, the documented outcome,
@@ -82,7 +82,7 @@ Write this file atomically before and after each delegated call.
 Preserve attempt counts and evidence across retries.
 `changed_files` contains repository-relative paths.
 `validation` contains exact commands, results, and evidence. A
-blocked or recoverable status must provide `resume_from`. The step
+`blocked` status must provide `resume_from`. The step
 status must never silently replace a prior assignment with a new
 model when a retry is a preservation move; any policy-authorized
 escalation must be explicit and persisted under

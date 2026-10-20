@@ -17,7 +17,7 @@ Review the supplied plan without changing repository files.
 Input is the immutable plan path and the run directory. Read the plan and
 any referenced interface material needed to assess feasibility; do not
 inspect or modify implementation files. You may create or update only the
-s2h-plan-audit report, the requirements inventory file on a `PASS` audit, and the
+s2h-plan-audit report, the requirements inventory file on a `DONE` audit, and the
 two documentation context files under the run directory. If the plan
 cannot be read, is missing, or is not internally understandable,
 return `BLOCKED` with the exact path or ambiguity and stop.
@@ -37,7 +37,7 @@ return `BLOCKED` with the exact path or ambiguity and stop.
 
 Create `documentation/source-doc-context.md` and
 `documentation/user-doc-context.md` under the run directory per
-`s2h-doc-context-format`. On a `PASS` audit, write the requirements
+`s2h-doc-context-format`. On a `DONE` audit, write the requirements
 inventory to `requirements.json` in the run directory per
 `s2h-requirements-format` and record its path per `s2h-plan-audit-format`.
 

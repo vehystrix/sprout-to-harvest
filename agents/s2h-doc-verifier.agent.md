@@ -26,7 +26,7 @@ assignment or implementation context is unavailable, return `BLOCKED`.
   completeness without copy-editing.
 - `s2h-requirements-traceability`: MUST use to verify that important plan
   requirements and external interfaces are documented.
-- `s2h-verification-before-completion`: MUST use before returning `VERIFIED`.
+- `s2h-verification-before-completion`: MUST use before returning `DONE`.
 - `s2h-source-doc`: use when reviewing source-file documentation.
 - `s2h-user-doc`: use when reviewing user-facing documentation.
 - `s2h-handoff`: MUST read before producing your final handoff.
@@ -36,7 +36,7 @@ Check correctness and material completeness per `s2h-doc-verification`.
 Save your complete handoff per `s2h-handoff`, then return only a summary naming
 `status` and the saved file path, naming the exact assignment needing correction.
 
-Use `VERIFIED` only when every material documentation requirement has
+Use `DONE` only when every material documentation requirement has
 evidence from the inspected source or a fresh command. Use `INCOMPLETE`
 only for a concrete documentation correction within the assignment; use
 `BLOCKED` for missing context, contradictory source behavior, or a

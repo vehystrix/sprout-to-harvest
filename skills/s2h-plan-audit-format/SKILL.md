@@ -19,7 +19,7 @@ The file is a complete `s2h-handoff/v1` JSON report. Its role-specific
   "schema": "s2h-handoff/v1",
   "agent": "s2h-PlanAuditor",
   "task": "run-001 s2h-plan-audit",
-  "status": "PASS",
+  "status": "DONE",
   "summary": "The plan is specific enough to decompose.",
   "inputs": {
     "context_files": [
@@ -28,7 +28,7 @@ The file is a complete `s2h-handoff/v1` JSON report. Its role-specific
     "prior_reports": []
   },
   "details": {
-    "status": "PASS",
+    "status": "DONE",
     "findings": [],
     "external_interfaces": [],
     "required_questions": [],
@@ -39,7 +39,7 @@ The file is a complete `s2h-handoff/v1` JSON report. Its role-specific
       "source_file": "documentation/source-doc-context.md",
       "user_file": "documentation/user-doc-context.md"
     },
-    "model_assignment": "<fields per s2h-handoff's Required delegated model assignment block>"
+    "model_assignment": "<the delegate's observation fields per s2h-handoff>"
   },
   "requirements": [
     {
@@ -79,10 +79,9 @@ the schema, author against it, and run `scripts/validate.py <file>`. The file MU
 validation before it may be persisted. Both files are located relative to this skill's
 location.
 
-`details.status` must match the top-level `status`. Use `PASS` only when no
-clarification is required. Use `NEEDS_CLARIFICATION` only when
-`required_questions` is non-empty. Use `BLOCKED` for missing or unreadable
-inputs.
+`details.status` must match the top-level `status`. Use `DONE` only when no
+clarification is required; use `BLOCKED` for findings that require user answers -
+those questions go in `required_questions` - and for missing or unreadable inputs.
 
 The orchestrator is the sole writer of a `SKIPPED` record, created when plan
 auditing is skipped. It is a minimal `s2h-handoff/v1` file with
@@ -94,7 +93,7 @@ documentation assignments. `status` is `PROVIDED` when both context files exist,
 `EMPTY` when the audit found no documentation obligation, and `UNAVAILABLE` when
 the audit was skipped.
 `requirements_path` points to the run's `requirements.json`.
-It is present on a `PASS` audit and absent otherwise; a non-PASS audit records no path.
+It is present on a `DONE` audit and absent otherwise; a non-DONE audit records no path.
 
 ## Validation
 

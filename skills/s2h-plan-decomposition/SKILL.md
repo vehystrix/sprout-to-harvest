@@ -22,7 +22,7 @@ one entry per requirement with an `id`, a short `name`, and a verbatim plan
 `excerpt`. The `s2h-PlanDecomposer` consumes it or derives it:
 
 - Delegated mode - consume: the `s2h-PlanAuditor` has already written
-  `.agent-work/<run-id>/requirements.json` itself on a `PASS` audit,
+  `.agent-work/<run-id>/requirements.json` itself on a `DONE` audit,
   recorded in its handoff as `details.requirements_path`. Read it; never re-derive.
 - User mode, or any run where auditing is absent or skipped - derive: extract
   every material requirement from the plan (explicit and implied), split
@@ -68,7 +68,7 @@ For each chunk in dependency order:
    and `requirements.json`, from which the chunk's contract resolves; on
    repair rounds include the prior findings - using the persisted
    loop model assignments.
-3. On a writer `PASS` or `RECOVERABLE`, delegate to a s2h-ChunkVerifier with the
+3. On a writer `DONE` or `INCOMPLETE`, delegate to a s2h-ChunkVerifier with the
    same template minus findings; on a writer `BLOCKED`, record the blocker and
    move on to the next chunk.
 4. On an `INCOMPLETE` verdict, persist `doc_status: verification-failed`,
@@ -76,7 +76,7 @@ For each chunk in dependency order:
    instance has repair attempts left - at most `L` after its first attempt, where
    `L` is the run's configured retry limit passed by the orchestrator; counters
    are fresh for every new loop instance.
-5. Only on a `VERIFIED` verdict, persist `doc_status: completed`.
+5. Only on a `DONE` verdict, persist `doc_status: completed`.
 
 A loop instance that exhausts its allowance is not retried again; its blocker
 becomes one of the blocked conditions below.
@@ -98,9 +98,7 @@ apply the fallback and config-failure order per the adapter's catalog lookup and
 fallback rules. When the status is `routing-unavailable`, every delegation
 follows the adapter's run-level routing-unavailable handling.
 Persist each assignment into the index with its timestamp and `source: decomposer`;
-a null recommendation stays explicit in `model_recommendations` even when an assignment
-is persisted. The `s2h-WholePlanVerifier`'s model assignment goes only in that delegation's
-handoff details, never in the index.
+a null recommendation stays explicit in `model_recommendations` even when an assignment is persisted.
 The decomposer SHOULD consult `models[].selection_advice` as advice when forming
 `model_recommendations`; it does not override `required_capabilities`, `minimum_tier`,
 or a policy `default`.
@@ -140,15 +138,15 @@ chunk. Only:
    and re-delegate that chunk's writer loop with the delegation's finding lines
    included as its prior-finding lines; each repair is a fresh loop instance
    under the same `L` allowance.
-2. On writer `PASS` or `RECOVERABLE`, delegate that chunk's verifier per the
+2. On writer `DONE` or `INCOMPLETE`, delegate that chunk's verifier per the
    Per-chunk loop section; on `INCOMPLETE`, repeat while that loop instance has
    repair attempts left and persist `doc_status: verification-failed`.
 3. When every affected chunk is back to `doc_status: completed`, delegate the
    `s2h-WholePlanVerifier` once with only file paths, routing its findings per
    Whole-plan pass including its `L + 1` cap.
 
-Completion in repair mode matches Completion above: `PASS` when every chunk has
-`doc_status: completed` and the whole-plan pass returns `PASS`; the BLOCKED
+Completion in repair mode matches Completion above: `DONE` when every chunk has
+`doc_status: completed` and the whole-plan pass returns `DONE`; the BLOCKED
 conditions are unchanged.
 
 ## Delegation prompt templates
@@ -232,8 +230,8 @@ Every other failure mode is repairable inside the loops above; do not escalate i
 
 ## Completion
 
-The `s2h-PlanDecomposer` returns `PASS` when every chunk has `doc_status: completed`
-and the whole-plan pass returns `PASS`. The final handoff includes the
+The `s2h-PlanDecomposer` returns `DONE` when every chunk has `doc_status: completed`
+and the whole-plan pass returns `DONE`. The final handoff includes the
 `chunk-index.json` path, the `requirements.json` path, and the `doc_status` of every chunk.
 
 **IMPORTANT:** each chunk MUST be delegated to a `s2h-ChunkWriter` and `s2h-ChunkVerifier` loop,

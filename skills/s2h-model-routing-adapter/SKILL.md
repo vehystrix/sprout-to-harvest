@@ -60,7 +60,9 @@ To resolve a selected portable ID for delegation, read the run copy of
 `models[].id == selected_portable_id`, and extract its `hosts.<active_host>` value
 as the resolved model name. Host names appear only as data values in catalog keys
 and in the `adapter:` field, which means "active host identifier." The extracted
-value is a selector string, not an executable command.
+value is a selector string, not an executable command. It is complete: apply it
+verbatim; never append suffixes or values derived from other catalog fields such as
+`reasoning_effort`.
 
 Example lookup:
 
@@ -100,15 +102,16 @@ field entirely:
 
 ## Evidence recording after delegation
 
-Record `details.model_assignment` for each delegation, keyed on the probed
-`evidence_channel`:
-
-- **tool-reported**: prefer structured runtime-model fields from the delegation
-  response payload; record them as `runtime_model`. Tool-reported values support
-  applied claims up to `host-reported`.
-- **self-reported**: use the subagent's stated runtime model when no tool field
-  exists. A self-ID matching the requested model records `runtime_model` from
-  self-report with `applied: false` - lower-confidence evidence, kept in the audit trail.
+The subagent reports exactly one field in its handoff - `details.model_assignment`, the model
+identity the host tool says it is using, or null when no channel exists. It carries no claim that
+any requested, policy-selected, catalog-mapped, or fallback identity was applied.
+The caller owns every other model field. Per probed evidence_channel
+(`self-reported`, `host-reported`, `tool-reported`), the orchestrator
+derives `applied`, `evidence`, and `warning`: it compares the handoff's
+`model_assignment` value with the resolved identity, persists the complete
+record in the delegation's run-ledger entry, and never copies a subagent
+self-report as adapter confirmation. When channels disagree or no host
+channel exists, `applied` is false and `warning` names the gap.
 
 Evidence levels follow `s2h-handoff` and are constrained as follows:
 
@@ -144,8 +147,9 @@ backed by `applied: true`.
 Fallback selection rule: when resolution of a role's policy `default` fails under
 config failure above, try the policy `fallback` portable ID exactly once; if that
 also has no active-host mapping, stop per case 2 (do not silently substitute the
-parent model). A retry inherits the prior assignment by default; only explicit
-policy-authorized escalation may create a new attempt entry.
+parent model). A retry inherits the prior assignment by default; the orchestrator
+records that inheritance in the persisted delegations entry with source `inherited`.
+Only explicit policy-authorized escalation may create a new attempt entry.
 
 ## require_application semantics
 

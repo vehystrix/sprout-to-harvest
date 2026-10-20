@@ -39,6 +39,6 @@ Save your complete handoff per `s2h-handoff`, then return only a summary naming
 requirement ref, one-line description}`, each classified as `decomposition-gap` when
 it requires changing a chunk's `requirements_assigned` list or a chunk boundary, and
 `boundary-mismatch` for any other finding; name the affected chunk ID(s). Use
-`VERIFIED` only when total coverage holds, ownership is unique, and all boundaries
+`DONE` only when total coverage holds, ownership is unique, and all boundaries
 match; use `INCOMPLETE` for any finding of either class; use `BLOCKED` for an
 unreadable plan or a corrupted inventory.

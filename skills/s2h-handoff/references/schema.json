@@ -38,12 +38,9 @@
     },
     "status": {
       "enum": [
-        "PASS",
-        "VERIFIED",
+        "DONE",
         "INCOMPLETE",
-        "NEEDS_CLARIFICATION",
-        "BLOCKED",
-        "RECOVERABLE"
+        "BLOCKED"
       ]
     },
     "inputs": {
@@ -65,54 +62,7 @@
       "type": "object",
       "required": ["model_assignment"],
       "properties": {
-        "model_assignment": {
-          "type": "object",
-          "required": [
-            "requested",
-            "resolved",
-            "portable_id",
-            "role",
-            "source",
-            "fallback",
-            "applied",
-            "adapter",
-            "evidence",
-            "runtime_model",
-            "rationale",
-            "warning"
-          ],
-          "additionalProperties": false,
-          "properties": {
-            "requested": {"type": "string"},
-            "resolved": {"type": "string"},
-            "portable_id": {"type": "string"},
-            "role": {"type": "string"},
-            "source": {
-              "enum": [
-                "user",
-                "policy",
-                "decomposer",
-                "orchestrator",
-                "fallback"
-              ]
-            },
-            "fallback": {"type": ["string", "null"]},
-            "applied": {"type": "boolean"},
-            "adapter": {"type": "string"},
-            "evidence": {
-              "enum": [
-                "adapter-confirmed",
-                "host-reported",
-                "self-reported",
-                "tool-reported",
-                "unknown"
-              ]
-            },
-            "runtime_model": {"type": ["string", "null"]},
-            "rationale": {"type": "string"},
-            "warning": {"type": ["string", "null"]}
-          }
-        }
+        "model_assignment": {"type": ["string", "null"]}
       }
     },
     "requirements": {

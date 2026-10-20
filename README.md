@@ -275,14 +275,14 @@ requirement and validation result includes evidence.
 The orchestrator validates the schema, role-allowed status, status-specific fields, and
 evidence before consuming a result. A missing or malformed handoff is persisted as `BLOCKED`;
 success is never inferred from an agent narrative, changed files, or an absent validation
-result. `VERIFIED` is reserved for verifier roles with executable evidence for every material
-requirement.
+result. `DONE` is the success status; it requires fresh executable evidence
+from a verifier role covering every material requirement.
 
 The retry limit counts repair attempts after the initial attempt. For example, a limit of `2`
 permits at most three implementer attempts for one verification loop. `INCOMPLETE` consumes one
-repair attempt; `BLOCKED`, malformed handoffs, and `NEEDS_CLARIFICATION` stop the workflow
+repair attempt; `BLOCKED` and malformed handoffs stop the workflow
 without consuming a repair attempt. A step is `completed` only after its verifier returns
-`VERIFIED`.
+`DONE`.
 
 ## Details: full workflow
 
@@ -353,15 +353,16 @@ plan. The agent uses `s2h-plan-audit` and `s2h-requirements-traceability` to che
 - Hidden dependencies and unnecessary complexity.
 - Missing acceptance criteria or validation commands.
 
-The auditor writes `s2h-plan-audit.json` using `s2h-plan-audit-format`, with `PASS`,
-`NEEDS_CLARIFICATION`, or `BLOCKED`, plus findings, required questions, external interfaces,
+The auditor writes `s2h-plan-audit.json` using `s2h-plan-audit-format`, with `DONE`
+or `BLOCKED`, plus findings, required questions, external interfaces,
 and validation gaps.
 
 It also extracts the complete requirements list, including implied-only
-requirements; on a PASS it writes `requirements.json` and records
+requirements; on a `DONE` audit it writes `requirements.json` and records
 the path in its handoff. The orchestrator records that path for decomposition.
-If the result is `NEEDS_CLARIFICATION` or `BLOCKED`, the orchestrator reports the findings to
-the user and stops. No implementation work begins. A `PASS` permits decomposition.
+If the result is `BLOCKED`, the orchestrator reports the findings (including any
+required questions) to the user and stops. No implementation work begins; a
+`DONE` audit permits decomposition.
 
 The audit also creates separate Markdown briefs for source and user documentation under
 `documentation/`, using `s2h-doc-context-format`. `s2h-plan-audit.json` records their paths and
@@ -434,7 +435,7 @@ run focused validation -> create step commit -> persist commit hash -> report
 ```
 
 If the agent is interrupted or blocked by connection loss, cancellation, unavailable resources,
-or permissions, it persists a recoverable status and leaves the workspace intact.
+or permissions, it persists a `blocked` status and leaves the workspace intact.
 
 #### 5b. Verify the step: `s2h-StepVerifier`
 
@@ -452,7 +453,7 @@ the intended reason. For an implementation step, it confirms that:
 - Scope has not expanded unexpectedly.
 - External interfaces remain compatible.
 
-The verifier writes `VERIFIED`, `INCOMPLETE`, or `BLOCKED`, with requirement results,
+The verifier writes `DONE`, `INCOMPLETE`, or `BLOCKED`, with requirement results,
 validation evidence, missing work, blockers, and a resume point.
 
 #### 5c. Repair an incomplete step
@@ -484,7 +485,7 @@ The final verifier checks:
 - The final branch and worktree obey the Git policy.
 
 It writes a requirement-to-test-step-to-implementation-step-to-commit-to-validation matrix and
-returns `VERIFIED`, `INCOMPLETE`, or `BLOCKED`.
+returns `DONE`, `INCOMPLETE`, or `BLOCKED`.
 
 If final verification fails, the orchestrator starts `s2h-StepImplementer` with the final report
 and affected step contexts, then reruns `s2h-FinalVerifier` within the retry limit.

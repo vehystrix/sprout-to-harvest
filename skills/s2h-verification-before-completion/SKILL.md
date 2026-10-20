@@ -12,9 +12,12 @@ reports. Delegated mode: persist per this skill and its format skills.
 Verify only the assigned work; report defects without repairing them during verification.
 
 Return verification results through `s2h-handoff`; persisted reports
-must use its JSON schema. `VERIFIED` requires executable evidence in the
-handoff; missing or malformed handoff fields require `BLOCKED`. The final
-plan-level result must additionally follow `s2h-final-report-format`.
+must use its JSON schema. A `DONE` status requires fresh executable
+evidence for every material requirement in the handoff; missing,
+contradictory, or unverifiable evidence - including a deviation no
+ground-truth record can settle - is `BLOCKED` naming the exact gap.
+Never reinterpret a value or retry automatically. The final plan-level
+result must additionally follow `s2h-final-report-format`.
 
 Require evidence before a success status. Prefer focused executable tests,
 then relevant typecheck/build/lint commands, then broader validation.

@@ -27,12 +27,9 @@
     "summary": {"type": "string", "minLength": 1},
     "status": {
       "enum": [
-        "PASS",
-        "VERIFIED",
+        "DONE",
         "INCOMPLETE",
-        "NEEDS_CLARIFICATION",
-        "BLOCKED",
-        "RECOVERABLE"
+        "BLOCKED"
       ]
     },
     "inputs": {
@@ -57,7 +54,7 @@
       ],
       "additionalProperties": false,
       "properties": {
-        "status": {"enum": ["PASS", "NEEDS_CLARIFICATION", "BLOCKED", "SKIPPED"]},
+        "status": {"enum": ["DONE", "BLOCKED", "SKIPPED"]},
         "findings": {"type": "array"},
         "external_interfaces": {"type": "array"},
         "required_questions": {
@@ -76,54 +73,7 @@
             "user_file": {"type": "string"}
           }
         },
-        "model_assignment": {
-          "type": "object",
-          "required": [
-            "requested",
-            "resolved",
-            "portable_id",
-            "role",
-            "source",
-            "fallback",
-            "applied",
-            "adapter",
-            "evidence",
-            "runtime_model",
-            "rationale",
-            "warning"
-          ],
-          "additionalProperties": false,
-          "properties": {
-            "requested": {"type": "string"},
-            "resolved": {"type": "string"},
-            "portable_id": {"type": "string"},
-            "role": {"type": "string"},
-            "source": {
-              "enum": [
-                "user",
-                "policy",
-                "decomposer",
-                "orchestrator",
-                "fallback"
-              ]
-            },
-            "fallback": {"type": ["string", "null"]},
-            "applied": {"type": "boolean"},
-            "adapter": {"type": "string"},
-            "evidence": {
-              "enum": [
-                "adapter-confirmed",
-                "host-reported",
-                "self-reported",
-                "tool-reported",
-                "unknown"
-              ]
-            },
-            "runtime_model": {"type": ["string", "null"]},
-            "rationale": {"type": "string"},
-            "warning": {"type": ["string", "null"]}
-          }
-        }
+        "model_assignment": {"type": ["string", "null"]}
       }
     },
     "requirements": {

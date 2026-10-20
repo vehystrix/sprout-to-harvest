@@ -36,7 +36,7 @@ document review (for example test runs) are acceptable as `NOT_RUN` with an expl
 
 Save your complete handoff per `s2h-handoff`, then return only a summary naming
 `status` and the saved file path. Include `details.findings` entries shaped 
-`{id, requirement ref, one-line description}`. Use `VERIFIED` only when every material
+`{id, requirement ref, one-line description}`. Use `DONE` only when every material
 assigned requirement has documentary traceability evidence and every Contract block
 passes `s2h-step-context-format` validation; use `INCOMPLETE` for repairable gaps with
 findings listed; use `BLOCKED` for missing contract, unreadable files, or handoff defects.

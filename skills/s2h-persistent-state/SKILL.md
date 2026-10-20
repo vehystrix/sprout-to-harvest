@@ -63,9 +63,10 @@ Record before and after every subagent:
 - timestamps, blockers, and resume instructions
 
 Use explicit states: `pending`, `running`, `completed`,
-`verification-failed`, `interrupted`, `recoverable`, `blocked`,
+`verification-failed`, `interrupted`, `blocked`,
 and `abandoned`. `completed` is legal only after a verifier returns
-`VERIFIED`; an agent's `PASS` does not complete a behavioral step.
+`DONE`; only a verifier with fresh executable evidence completes a
+behavioral step, never an implementer outcome.
 `abandoned` marks a user-directed termination set only by the orchestrator;
 resuming an `abandoned` run requires an explicit user instruction.
 The step-status file is the authoritative record of step progress:
@@ -74,7 +75,7 @@ on divergence the step-status file wins with a recorded warning.
 
 Write status atomically through a temporary file followed by rename.
 On restart, inspect the ledger and the step-status files, and resume the first
-`running`, `recoverable`, or `verification-failed` step; otherwise start the
+`running`, `verification-failed`, or `blocked` step; otherwise start the
 first `pending` step whose dependencies are completed. Never repeat
 a verified step unless the user explicitly requests it. Preserve
 recoverable workspace changes and report blockers to the user.

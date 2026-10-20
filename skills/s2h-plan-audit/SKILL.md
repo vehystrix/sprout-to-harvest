@@ -22,12 +22,14 @@ smallest clarification or correction needed; do not silently redesign the plan.
 
 Return one result:
 
-- `BLOCKED` when the plan is impossible, unsafe as written, or unreadable enough to audit.
-- `NEEDS_CLARIFICATION` when implementation could proceed only after a user decision;
-  name each question and what it would unblock.
-- `PASS` when the plan is specific enough to decompose without inventing requirements.
-  That does not mean feasible in the current repository: record repository-dependent
-  risks under findings and validation gaps instead of guessing at feasibility.
+- `BLOCKED` when the plan is impossible, unsafe as written, unreadable enough to
+audit, or requires a user decision before decomposition; name each question in
+`details.required_questions` and what it would unblock. No implementation work
+starts on assumption.
+- `DONE` when the plan is specific enough to decompose without inventing
+requirements. That does not mean feasible in the current repository: record
+repository-dependent risks under findings and validation gaps instead of
+guessing at feasibility.
 
 ## Related skills
 

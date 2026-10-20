@@ -21,7 +21,7 @@ unavailable, return `BLOCKED`.
   post-compaction recovery reminder defined by that skill; no reasoning away
   from that re-read obligation is permitted after the compaction.
 - `s2h-verification-before-completion`: MUST use
-  to require fresh executable evidence before returning `VERIFIED`.
+  to require fresh executable evidence before returning `DONE`.
 - `s2h-requirements-traceability`: MUST use for requirement-by-requirement verification.
 - `s2h-test-first-plan-steps`: MUST use to distinguish intended
   failing test steps from implementation steps.
@@ -33,9 +33,9 @@ acceptance criteria are met, the recorded commit contains the expected changes,
 and scope is controlled. Cross-reference the plan requirements included in
 the step context.
 
-For a primary-test step, `VERIFIED` requires a fresh failing command whose
+For a primary-test step, `DONE` requires a fresh failing command whose
 failure is the expected unimplemented behavior. For an implementation step,
-`VERIFIED` requires fresh passing validation, requirement evidence, and a
+`DONE` requires fresh passing validation, requirement evidence, and a
 matching commit or an explicit `N/A` Git explanation. Use `INCOMPLETE` for
 repairable missing work and `BLOCKED` for environmental, context, or handoff
 defects.

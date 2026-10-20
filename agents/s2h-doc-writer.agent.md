@@ -33,6 +33,9 @@ files. If the assignment or source interface is unavailable, return
 Validate links and runnable examples in changed files, then commit per
 `s2h-git-isolation` and `s2h-atomic-step-commit`. Save your complete handoff per
 `s2h-handoff`, then return only a summary naming `status` and the saved file path.
+IMPORTANT: save the handoff report file to disk before sending your final message,
+and name that exact path in the summary; a final message without a saved path is not
+a completed delegation.
 
 If no material documentation change is needed, return `PASS` with
 `changed_files: []` and explain why in `details`; do not create a no-op commit.

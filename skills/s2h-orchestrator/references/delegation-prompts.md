@@ -28,7 +28,7 @@ Skills: s2h-doc-context-format, s2h-handoff
 Instructions: Read exactly the named documentation context file. Apply every
 s2h-doc-context-format validation rule that a single file can satisfy. Do not
 check any other file and do not edit anything. Save your complete handoff per
-s2h-handoff, then return only a summary naming status and its path: VERIFIED if the
+s2h-handoff, then return only a summary naming status and its path: `DONE` if the
 file fully conforms, INCOMPLETE with details.findings naming each defect, BLOCKED if
 the file is missing or unreadable.
 Constraint: read-only
@@ -45,7 +45,7 @@ Skills: s2h-step-context-format, s2h-handoff
 Instructions: Read exactly the named step file. Apply every
 s2h-step-context-format validation rule that a single file can satisfy. Do not
 check any other file and do not edit anything. Save your complete handoff per
-s2h-handoff, then return only a summary naming status and its path: VERIFIED if the
+s2h-handoff, then return only a summary naming status and its path: `DONE` if the
 file fully conforms, INCOMPLETE with details.findings naming each defect, BLOCKED if
 the file is missing or unreadable.
 Constraint: read-only

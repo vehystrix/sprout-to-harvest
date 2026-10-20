@@ -41,9 +41,13 @@ Follow `s2h-test-first-plan-steps` for both step types. If the required
 validation cannot run, record `NOT_RUN` with the concrete blocker; do not
 claim `PASS`.
 
-Persist a recoverable status per `s2h-subagent-recovery` when blocked.
+Persist a `BLOCKED` status with an exact resume action per `s2h-subagent-recovery`.
 Finish file-modifying work per `s2h-atomic-step-commit`.
 
 Save your complete handoff per `s2h-handoff`, then return only a summary naming
-`status` and the saved file path. A primary-test step may use `PASS` with the
-intentional failing validation recorded; an interrupted step uses `RECOVERABLE`.
+`status` and the saved file path. A primary-test step reports `DONE` with the
+intentional failing validation recorded as evidence; an interrupted
+or blocked step uses `BLOCKED` naming its exact resume action.
+IMPORTANT: save the handoff report file to disk before sending your final message,
+and name that exact path in the summary; a final message without a saved path is not
+a completed delegation.

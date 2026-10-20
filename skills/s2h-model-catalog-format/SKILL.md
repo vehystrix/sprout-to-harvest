@@ -69,6 +69,8 @@ Each catalog entry must satisfy these requirements:
 - `id` is a unique portable model identifier.
 - `capabilities` is a normalized list of names from the capability vocabulary.
 - `tier` is a positive integer; larger values indicate stronger default suitability.
+  Tier expresses suitability only, not cost: cost comparisons use the `cost` field
+  alone, and no resolution rule may read tier as cheaper or more expensive.
 - `cost` is a policy-comparable classification such as `low`, `medium`, or `high`.
 - `context_window` is the maximum supported token window.
 - `hosts` is optional and maps supported hosts to host-specific selector strings.

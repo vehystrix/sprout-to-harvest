@@ -18,7 +18,7 @@ result under `details` using these required fields:
 ```json
 {
   "details": {
-    "audit_status": "PASS",
+    "audit_status": "DONE",
     "completed_steps": [],
     "traceability": [],
     "documentation": {
@@ -31,7 +31,7 @@ result under `details` using these required fields:
       "result": "PASS",
       "evidence": "Working tree is clean except for ignored .agent-work/."
     },
-    "model_assignment": "<fields per s2h-handoff's Required delegated model assignment block>"
+    "model_assignment": "<complete caller-owned fields per s2h-handoff>"
   }
 }
 ```
@@ -44,8 +44,8 @@ location.
 
 `traceability` entries follow the chain defined by `s2h-requirements-traceability`.
 `completed_steps` must name only steps with a verified handoff. `final_repository_check`
-must include an exact command and fresh result. The top-level `status` is `VERIFIED`
-only when all required verification and documentation checks are verified.
+must include an exact command and fresh result. The top-level `status` is `DONE`
+only when all required verification and documentation checks pass.
 
 ## User-facing response
 
@@ -55,7 +55,7 @@ not need to open `final-report.json` to understand the outcome. Use this
 structure, preserving the report's exact status and evidence:
 
 ```text
-Status: <VERIFIED | INCOMPLETE | BLOCKED | other persisted status>
+Status: <DONE | INCOMPLETE | BLOCKED>
 
 Completed:
 - <verified step or concise statement that no work was completed>
@@ -77,10 +77,10 @@ Resume:
 - <exact resume_from action, or "No further action required.">
 ```
 
-For `VERIFIED`, include the final repository check. For `INCOMPLETE` or `BLOCKED`, put
+For `DONE`, include the final repository check. For `INCOMPLETE` or `BLOCKED`, put
 the status first, name the failed evidence or blocker, and provide the exact
 `resume_from` action. Do not claim completion when the persisted status is not
-`VERIFIED`; do not omit warnings or blockers.
+`DONE`; do not omit warnings or blockers.
 The response must be derived from the persisted report rather than from
 an earlier agent narrative.
 

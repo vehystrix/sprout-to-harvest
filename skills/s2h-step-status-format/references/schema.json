@@ -50,7 +50,6 @@
         "completed",
         "verification-failed",
         "interrupted",
-        "recoverable",
         "blocked",
         "abandoned"
       ]
@@ -116,7 +115,7 @@
         "portable_id": {"type": "string"},
         "role": {"type": "string"},
         "source": {
-          "enum": ["user", "policy", "decomposer", "orchestrator", "fallback"]
+          "enum": ["user", "policy", "decomposer", "orchestrator", "inherited", "fallback"]
         },
         "fallback": {"type": ["string", "null"]},
         "applied": {"type": "boolean"},
@@ -162,7 +161,7 @@
               "requested": {"type": "string"},
               "resolved": {"type": "string"},
               "source": {
-                "enum": ["user", "policy", "decomposer", "orchestrator", "fallback"]
+                "enum": ["user", "policy", "decomposer", "orchestrator", "inherited", "fallback"]
               },
               "fallback": {"type": ["string", "null"]},
               "applied": {"type": "boolean"},
