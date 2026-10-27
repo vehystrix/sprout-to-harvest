@@ -15,10 +15,10 @@ JSON MUST NOT be pasted into that message.
 Use this skill whenever a delegated agent creates or validates a handoff.
 The handoff is JSON and is the sole communication contract between agents.
 
-Save the complete handoff as JSON under `reports/<phase>-<subject>-<attempt>.json` in
-the run directory; `s2h-plan-audit.json` is the named exception for the s2h-plan-audit
-handoff and `final-report.json` is the named exception for the final handoff. Do not
-save handoffs as Markdown or extensionless files.
+Save the complete handoff as JSON at
+`.agent-work/<run-id>/reports/<phase>-<subject>-<attempt>.json`, where `<run-id>`, `<phase>`,
+`<subject>`, and `<attempt>` are values supplied by your delegation prompt and persistent
+state. Do not save handoffs as Markdown or extensionless files.
 
 ```json
 {

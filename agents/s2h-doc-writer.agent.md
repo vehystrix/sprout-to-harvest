@@ -37,5 +37,5 @@ IMPORTANT: save the handoff report file to disk before sending your final messag
 and name that exact path in the summary; a final message without a saved path is not
 a completed delegation.
 
-If no material documentation change is needed, return `PASS` with
+If no material documentation change is needed, return `DONE` with
 `changed_files: []` and explain why in `details`; do not create a no-op commit.

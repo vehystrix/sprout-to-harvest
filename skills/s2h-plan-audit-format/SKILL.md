@@ -8,6 +8,8 @@ disable-model-invocation: true
 # Plan Audit Format
 
 Use this skill when the `s2h-PlanAuditor` writes `.agent-work/<run-id>/s2h-plan-audit.json`.
+The `s2h-PlanAuditor`'s complete handoff is this file; persist it at that path, never under
+`reports/`.
 
 ## Structure
 

@@ -315,16 +315,17 @@ persist phase/step as running
 -> apply the phase-specific branch above
 ```
 
-If the agent's final message lacks a valid summary, points at a missing or
-unreadable saved report, or reports an unsupported status, missing evidence,
-or contradictory repository fields, record `blocked` with the raw failure
-description and exact resume action. Do not reinterpret the result as
-`INCOMPLETE`, retry it automatically, repair its artifacts, or continue to
-another phase.
+A final message that lacks a valid summary or points at a missing or unreadable saved report
+is `blocked`, with the raw failure description and exact resume action. Do not reinterpret the
+result as `INCOMPLETE`, retry it automatically, repair its artifacts, or continue to another
+phase. A final message that reports an unsupported status is handled by the deviation rule
+below; the saved report file, never the message text, decides classification.
 A handoff that deviates from the exact `s2h-handoff` schema - including status
 vocabulary (for example, `COMPLETED` where `DONE` is required) and field naming -
 MUST be classified before use: when the outcome is derivable from ground truth
-(repository state, step status, run ledger), derive the delegation's ledger entry with
+(repository state, step status, run ledger), or when the saved handoff's own details and
+evidence substantiate the outcome without contradicting its repository fields,
+derive the delegation's ledger entry with
 `derived_fields` plus a warning naming each derived field, leaving the handoff untouched;
 otherwise it is `blocked`, with the deviation described and the exact resume action
 recorded. The orchestrator MUST NOT normalize, edit, reinterpret, or

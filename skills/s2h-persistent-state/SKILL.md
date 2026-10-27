@@ -39,6 +39,7 @@ these explicit formats and filename patterns:
 | Session survival list | `sessions/<role>-<id>-survivable.md` | `s2h-compaction-recovery` |
 
 No extensionless, YAML, or ad hoc text artifacts are permitted.
+`final-report.json` is written only by the orchestrator; no delegated agent writes it.
 Markdown frontmatter must identify the artifact kind,
 schema version, ID, and run ID; the body headings must match the
 required content for that artifact. JSON state and reports must be

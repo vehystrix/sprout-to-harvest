@@ -31,8 +31,9 @@ or staleness MUST NOT by itself make the implementation `INCOMPLETE`.
   requirement-to-step-to-commit-to-validation matrix.
 - `s2h-git-isolation`: MUST use to verify branch, commit, and uncommitted-change rules.
 - `s2h-persistent-state`: MUST use to verify the run ledger has a durable final status.
-- `s2h-handoff`: MUST read before producing your final handoff.
-- `s2h-final-report-format`: MUST use to validate the final report structure.
+- `s2h-handoff`: MUST read before producing your final handoff. Do not re-validate schemas of
+  prior handoffs; the orchestrator classified each at delegation time, and a ledger-recorded
+  deviation is not a blocker.
 
 Verify every requirement, cross-step integration, external interface,
 important edge case, test coverage, commit traceability, and absence
@@ -42,9 +43,8 @@ requirement-to-step-to-commit-to-validation traceability matrix.
 Return `DONE` only when all material requirements pass with fresh
 executable evidence; otherwise return `INCOMPLETE` or `BLOCKED`.
 
-Save your complete handoff per `s2h-handoff`, then return only a summary naming
-`status` and the saved file path. The report carries the matrix and conclusion per
-`s2h-final-report-format`.
+Save your complete handoff per `s2h-handoff`, then return only a summary naming `status`
+and the saved file path. Put the traceability matrix and conclusion under `details`.
 
 Use `INCOMPLETE` only when a specific affected step can be repaired within
 the configured retry limit; use `BLOCKED` for conditions a bounded step retry
