@@ -27,6 +27,7 @@ files. If the assignment or source interface is unavailable, return
 - `s2h-persistent-state`: use to record documentation progress and interruptions.
 - `s2h-source-doc`: use for source-file documentation assignments.
 - `s2h-user-doc`: use for user-facing documentation assignments.
+- `s2h-transient-reference-prohibition`: MUST use when editing documentation.
 - `s2h-atomic-step-commit`: use when committing documentation changes.
 - `s2h-handoff`: MUST read before producing your final handoff.
 

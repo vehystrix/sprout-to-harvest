@@ -31,6 +31,7 @@ files outside the allowed scope, return `BLOCKED` before editing.
 - `s2h-requirements-traceability`: MUST use to report requirement coverage and validation evidence.
 - `s2h-implementation`: MUST use to keep the change focused and validated.
 - `s2h-tdd`: use for behavioral implementation steps after the primary tests exist.
+- `s2h-transient-reference-prohibition`: MUST use when writing source, tests, or documentation.
 - `s2h-systematic-debugging`: use when tests or validation expose a failure.
 - `s2h-atomic-step-commit`: use for the final validate, commit, and status sequence.
 - `s2h-handoff`: MUST read before producing your final handoff.

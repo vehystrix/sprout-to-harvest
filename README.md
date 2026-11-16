@@ -415,6 +415,8 @@ any prior verifier report using `s2h-step-context-format` and `s2h-checkpoint-fo
 
 - `s2h-implementation` for bounded repository changes.
 - `s2h-tdd` for behavioral work.
+- `s2h-transient-reference-prohibition` to keep persistent files free of run-scoped
+  identifiers and transient document references.
 - `s2h-test-first-plan-steps` to preserve the primary-test/implementation boundary.
 - `s2h-git-isolation` for branch and commit rules.
 - `s2h-persistent-state` and `s2h-subagent-recovery` for checkpoints and interruption
@@ -441,8 +443,8 @@ or permissions, it persists a `blocked` status and leaves the workspace intact.
 
 After the implementation agent returns, the orchestrator starts `s2h-StepVerifier` with the step
 context, implementation report, and repository state. The verifier is read-only and uses
-`s2h-verification-before-completion`, `s2h-requirements-traceability`, and
-`s2h-test-first-plan-steps`.
+`s2h-verification-before-completion`, `s2h-requirements-traceability`,
+`s2h-test-first-plan-steps`, and `s2h-transient-reference-prohibition`.
 
 For a primary-test step, it confirms that the tests express the required behavior and fail for
 the intended reason. For an implementation step, it confirms that:
@@ -471,7 +473,7 @@ instructions. Completed and verified steps are not restarted.
 After every step is verified, the orchestrator starts `s2h-FinalVerifier` with the plan, step
 index, all reports, commit history, and repository state. It uses
 `s2h-verification-before-completion`, `s2h-requirements-traceability`, `s2h-git-isolation`,
-and `s2h-persistent-state`.
+`s2h-persistent-state`, and `s2h-transient-reference-prohibition`.
 
 The final verifier checks:
 
@@ -499,8 +501,9 @@ may run in parallel when they do not share ownership or create conflicting edits
 For each assignment, `s2h-DocumentationWriter` reads the relevant Markdown documentation context,
 implementation context, and interfaces. It uses `s2h-source-doc`,
 `s2h-doc-verification`, `s2h-requirements-traceability`, `s2h-git-isolation`,
-`s2h-persistent-state`, and `s2h-atomic-step-commit`. The assignment should contain the
-relevant requirements and context; the verified implementation is authoritative.
+`s2h-persistent-state`, `s2h-transient-reference-prohibition`, and
+`s2h-atomic-step-commit`. The assignment should contain the relevant requirements
+and context; the verified implementation is authoritative.
 
 It documents public interfaces, invariants, side effects, error contracts, lifecycle
 constraints, and non-obvious behavior. It does not narrate obvious code or change
@@ -509,8 +512,8 @@ implementation behavior. Documentation changes are validated and committed separ
 ### 8. Verify source documentation: `s2h-DocumentationVerifier`
 
 The orchestrator starts `s2h-DocumentationVerifier` for each `s2h-source-doc` assignment. It
-uses `s2h-doc-verification`, `s2h-source-doc`, `s2h-requirements-traceability`, and
-`s2h-verification-before-completion`.
+uses `s2h-doc-verification`, `s2h-source-doc`, `s2h-requirements-traceability`,
+`s2h-transient-reference-prohibition`, and `s2h-verification-before-completion`.
 
 The verifier checks only material issues:
 
@@ -526,8 +529,8 @@ It does not request stylistic rewrites. Failed documentation verification return
 
 After source documentation is stable, the orchestrator starts `s2h-DocumentationWriter` for the
 user-facing documentation set using `documentation/user-doc-context.md` plus verified
-implementation evidence. The agent uses `s2h-user-doc`, `s2h-doc-verification`, and
-`s2h-requirements-traceability` to document supported workflows, prerequisites, configuration,
+implementation evidence. The agent uses `s2h-user-doc`, `s2h-doc-verification`,
+`s2h-transient-reference-prohibition`, and `s2h-requirements-traceability` to document supported
 commands, expected results, examples, limitations, and recovery guidance without rereading the
 complete plan.
 

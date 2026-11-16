@@ -25,6 +25,7 @@ unavailable, return `BLOCKED`.
 - `s2h-requirements-traceability`: MUST use for requirement-by-requirement verification.
 - `s2h-test-first-plan-steps`: MUST use to distinguish intended
   failing test steps from implementation steps.
+- `s2h-transient-reference-prohibition`: MUST use to scan a step's changed files for transient references.
 - `s2h-handoff`: MUST read before producing your final handoff.
 
 For test steps, confirm the tests express the requirements and fail for the

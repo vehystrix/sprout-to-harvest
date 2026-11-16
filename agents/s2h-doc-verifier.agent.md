@@ -27,6 +27,8 @@ assignment or implementation context is unavailable, return `BLOCKED`.
 - `s2h-requirements-traceability`: MUST use to verify that important plan
   requirements and external interfaces are documented.
 - `s2h-verification-before-completion`: MUST use before returning `DONE`.
+- `s2h-transient-reference-prohibition`: MUST use to scan assigned documentation for
+  transient workflow references.
 - `s2h-source-doc`: use when reviewing source-file documentation.
 - `s2h-user-doc`: use when reviewing user-facing documentation.
 - `s2h-handoff`: MUST read before producing your final handoff.

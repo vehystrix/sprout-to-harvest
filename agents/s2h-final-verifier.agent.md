@@ -29,6 +29,8 @@ or staleness MUST NOT by itself make the implementation `INCOMPLETE`.
   implementation complete and require fresh executable evidence.
 - `s2h-requirements-traceability`: MUST use to build the final
   requirement-to-step-to-commit-to-validation matrix.
+- `s2h-transient-reference-prohibition`: MUST use when checking the run's commits
+  and changed files for transient workflow references.
 - `s2h-git-isolation`: MUST use to verify branch, commit, and uncommitted-change rules.
 - `s2h-persistent-state`: MUST use to verify the run ledger has a durable final status.
 - `s2h-handoff`: MUST read before producing your final handoff. Do not re-validate schemas of
