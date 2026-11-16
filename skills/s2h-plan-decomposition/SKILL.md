@@ -228,6 +228,8 @@ Return `BLOCKED` when:
   `BLOCKED`, or repeated `INCOMPLETE`;
 - Whole-plan findings reveal a contract-level defect that re-delegation within
   the per-loop allowances cannot fix, including findings on the `(L+2)`nd pass.
+- Step files fail the internal step-context validation past that chunk's `L`
+  allowance;
 
 Every other failure mode is repairable inside the loops above; do not escalate it.
 
