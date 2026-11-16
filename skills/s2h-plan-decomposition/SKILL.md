@@ -13,7 +13,7 @@ decomposed, chunk-level work items. The `s2h-PlanDecomposer` owns the whole
 decomposition phase for one run: it consumes or derives the requirements
 inventory, writes `chunk-index.json`, runs each chunk's `s2h-ChunkWriter` and
 `s2h-ChunkVerifier` loop, and delegates the `s2h-WholePlanVerifier` pass.
-When redelegated in targeted-repair mode, follow only Targeted repair delegation below.
+When your own step-context validation fails, follow only Targeted repair delegation below.
 
 ## Requirements inventory
 
@@ -74,6 +74,13 @@ For each chunk in dependency order:
    `L` is the run's configured retry limit passed by the orchestrator; counters
    are fresh for every new loop instance.
 5. Only on a `DONE` verdict, persist `doc_status: completed`.
+6. Before completing the chunk, run `s2h-step-context-format/scripts/validate.py`
+   on every one of this chunk's step files in a single invocation so the shared-
+   `chunk_id` contract check spans them; on any finding, execute Targeted repair
+   delegation below internally as fresh loop instances under the same `L`
+   allowance, re-running the validator until clean. If findings remain after that
+   allowance is exhausted, return `BLOCKED` naming each failing file and finding
+   per Blocked conditions.
 
 A loop instance that exhausts its allowance is not retried again; its blocker
 becomes one of the blocked conditions below.
@@ -126,10 +133,9 @@ decomposition-gap; any other finding is a boundary-mismatch.
 
 ## Targeted repair delegation
 
-When the orchestrator re-delegates you in targeted-repair mode - the task ID is
-`decomposition-repair` and its prompt names each failing step file with its
-findings - do not redo decomposition, inventory, chunking, or any unaffected
-chunk. Only:
+When your own step-context validation fails - the validator names each failing
+step file with its findings - do not redo decomposition, inventory, chunking,
+or any unaffected chunk. Only:
 
 1. For each affected chunk named by the findings, persist `doc_status: running`
    and re-delegate that chunk's writer loop with the delegation's finding lines
