@@ -101,12 +101,23 @@ a claim without such a trace is drift and fails validation.
 
 ## Validation
 
-Require the frontmatter fields (`kind`, `schema`, `run_id`, `step_id`,
-`chunk_id`, `type`) and every template heading, including `Contract`. Every
-`Requirements Covered` entry names only requirement IDs from its own Contract.
-Contract sections must be verbatim-identical across all steps sharing a `chunk_id`.
-The rules are enforced by `scripts/validate.py <file> [files...]`, which exits
-0 only on pass; the script enforces these rules but never defines them.
+The frontmatter MUST be flat scalar key-value lines; quoted values are
+supported, and folded or multi-line values, list items, flow collections,
+and comments produce a named FAIL naming the offending key. Require non-empty
+`kind`, `schema`, `run_id`, `step_id`, `chunk_id`, `type`; `kind` is
+"step-context" and `schema` is "step-context/v1".
+
+Every template heading MUST be present, including `Contract`. Every bullet in
+`Contract` and `Requirements Covered` MUST take the form `<id>: <excerpt>`
+with a non-empty id. Each `Requirements Covered` bullet's id MUST be a member
+of that file's own Contract bullet ids; an empty `Requirements Covered`
+bullet list is a FAIL. Ids are arbitrary non-empty strings - no shape rule.
+
+Contract sections MUST be verbatim-identical across all steps sharing one
+`chunk_id`.
+
+The rules above are enforced by `scripts/validate.py <file> [files...]`, which
+exits 0 only on pass; the script enforces these rules but never defines them.
 Before persisting a step context file: MUST run the validator on it together
 with every other step file of its chunk in one invocation so the cross-file
 Contract check applies, and the files MUST pass validation before persistence.
