@@ -43,6 +43,19 @@ in your reply:
 > After this compaction I WILL reload the `s2h-compaction-recovery` skill
 > and MUST run its recovery protocol.
 
+## Embedding in summaries and handoffs
+
+Whenever you produce a summary, compaction report, handoff, rollover note, or
+continuation record for this session - including when a harness asks you to
+summarize the conversation - include verbatim both this skill's full text and
+the complete current survival list.
+
+Embedded copies are discovery hints, not authorities: recovery MUST still read
+the authoritative files on disk - this skill at its recorded path and every
+listed skill file; an embedded copy NEVER substitutes for that read, even when
+verbatim. If a listed skill file cannot be located from the embedded list,
+apply recovery protocol step 6 as written.
+
 ## Session-start protocol
 
 1. Determine the current run, role, task, and session identifiers from
@@ -50,8 +63,9 @@ in your reply:
    one already exists; if you generate one, record it in both the survival
    list and the main run or task state.
 2. Compute the session-scoped governing skill set: skills explicitly loaded
-   or required for the current role and task. Do not include operation-
-   scoped reference material needed only by a single immediate action.
+   or required for the current role and task. This set always includes this
+   recovery skill. Do not include operation-scoped reference material needed
+   only by a single immediate action.
 3. Write the complete survival list atomically using the format below.
 4. Update the same list whenever a skill becomes, or ceases to be,
    session-scoped.
@@ -103,11 +117,14 @@ run_dir: <run-directory, or none>
 
 Skills to re-read after compaction:
 
-- `skills/s2h-tdd/SKILL.md` - required by s2h-step-implementer
+- <resolved path to s2h-compaction-recovery/SKILL.md> - session bootstrap
+- <resolved path to s2h-tdd/SKILL.md> - required by s2h-step-implementer
 ```
 
-Use canonical repository-relative paths where possible. Write the complete
-current list by atomic replacement; never append entries. Preserve the same
-file path and session ID for the lifetime of the session. If no durable
+Record each skill at the location you actually read it from; prefer absolute
+paths over repository-relative ones. Write the complete current list by atomic
+replacement; never append entries. Preserve the same file path and session ID
+for the lifetime of the session. If no durable
 location is writable, state that compaction-safe recovery cannot be
-guaranteed and continue with the best available non-durable mechanism.
+guaranteed; from then on the embedded copies in every summary and handoff are
+the best available non-durable mechanism.
