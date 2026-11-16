@@ -105,3 +105,8 @@ Require the frontmatter fields (`kind`, `schema`, `run_id`, `step_id`,
 `chunk_id`, `type`) and every template heading, including `Contract`. Every
 `Requirements Covered` entry names only requirement IDs from its own Contract.
 Contract sections must be verbatim-identical across all steps sharing a `chunk_id`.
+The rules are enforced by `scripts/validate.py <file> [files...]`, which exits
+0 only on pass; the script enforces these rules but never defines them.
+Before persisting a step context file: MUST run the validator on it together
+with every other step file of its chunk in one invocation so the cross-file
+Contract check applies, and the files MUST pass validation before persistence.

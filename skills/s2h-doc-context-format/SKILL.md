@@ -104,3 +104,9 @@ correct `context_type`. Require every template heading, at least one
 requirement or an explicit statement that no documentation obligation
 was identified, and no claim that is supported only by the plan when
 implementation evidence is available.
+The statically checkable rules are enforced by `scripts/validate.py <file>
+[files...]`, which exits 0 only on pass; the script enforces these rules but
+never defines them. The content rule about claims supported only by the plan
+is checked by s2h-DocumentationVerifier, not this script. Before persisting a
+documentation context file: MUST run the validator and the file MUST pass
+validation before persistence.

@@ -2,7 +2,7 @@
 description: "Owns the decomposition phase of one run: requirements
   inventory, chunk index, per-chunk writer and verifier loops, and the whole-plan pass."
 name: "s2h-PlanDecomposer"
-#tools: [read, search, write, edit]
+#tools: [read, search, write, edit, execute]
 #allowed_subagents: subagent roles this agent may delegate to; read by pi; ignored elsewhere.
 allowed_subagents: >-
   s2h-ChunkWriter, s2h-ChunkVerifier, s2h-WholePlanVerifier,
@@ -42,8 +42,11 @@ rules, loop mechanics, retry caps, finding routing, and blocked conditions:
   from that re-read obligation is permitted after the compaction.
 - `s2h-plan-decomposition`: use for the phase contract, chunking rules, per-loop retry caps,
   and blocked conditions you enforce.
-- `s2h-requirements-format`, `s2h-chunk-index-format`, `s2h-step-context-format`:
-  use for the file schemas you author or validate.
+- `s2h-requirements-format`, `s2h-chunk-index-format`: use for the file
+  schemas you author or validate.
+- `s2h-step-context-format`: MUST use for step context files; MUST run its
+  `scripts/validate.py` on every step file before persistence and fix
+  findings internally.
 - `s2h-model-routing-adapter`: use to resolve each loop role's model assignment at
   delegation time, including host mapping lookup and fallback order.
 - `s2h-handoff`: use for delegation templates and the required final report.

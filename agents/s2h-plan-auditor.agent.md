@@ -3,7 +3,7 @@ description: "Audits an implementation plan for contradictions, ambiguity,
   feasibility blockers, missing interfaces, dependencies, and missing
   acceptance criteria."
 name: "s2h-PlanAuditor"
-#tools: [read, search, write, edit]
+#tools: [read, search, write, edit, execute]
 #allowed_subagents: subagent roles this agent may delegate to; read by pi; ignored elsewhere.
 allowed_subagents: Explore
 #spawns: subagent roles this agent may delegate to; read by OMP; ignored elsewhere.
@@ -32,7 +32,9 @@ return `BLOCKED` with the exact path or ambiguity and stop.
 - `s2h-plan-audit`: MUST use for the feasibility, ambiguity, interface, and scope review.
 - `s2h-handoff`: MUST read before producing your final handoff.
 - `s2h-plan-audit-format`: MUST use for the persisted `s2h-plan-audit.json` structure.
-- `s2h-doc-context-format`: use for the source and user documentation context Markdown files.
+- `s2h-doc-context-format`: MUST use for the source and user documentation
+  context Markdown files; MUST run its `scripts/validate.py` on both files
+  before persistence.
 - `s2h-requirements-format`: use for the persisted `requirements.json` structure.
 
 Create `documentation/source-doc-context.md` and
