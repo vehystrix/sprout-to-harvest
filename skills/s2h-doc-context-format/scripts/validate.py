@@ -260,7 +260,7 @@ def main(argv):
     for name in argv:
         findings = check_file(Path(name))
         if findings:
-            for line in findings[:20]:
+            for line in findings:
                 print(f"FAIL {name}: {line}")
             failures += 1
         else:

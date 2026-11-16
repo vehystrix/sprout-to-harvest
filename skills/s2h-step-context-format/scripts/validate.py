@@ -271,7 +271,7 @@ def main(argv):
     failures = 0
     for name, findings, _info in results:
         if findings:
-            for line in findings[:20]:
+            for line in findings:
                 print(f"FAIL {name}: {line}")
             failures += 1
         else:

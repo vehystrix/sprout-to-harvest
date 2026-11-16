@@ -106,7 +106,8 @@ List implementation files, tests, commands, or examples that should establish th
 The frontmatter MUST be flat scalar key-value lines; quoted values are
 supported, and folded or multi-line values, list items, flow collections,
 and comments produce a named FAIL naming the offending key. Require `kind`,
-`schema`, `run_id`, and a `context_type` of source or user.
+`schema`, `run_id`, and a `context_type` of source or user; `kind` is
+"documentation-context" and `schema` is "documentation-context/v1".
 
 The H1 title MUST equal the fixed title for that type, and every template
 heading for that type MUST be present. The `## Requirements` section MUST
