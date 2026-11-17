@@ -1,7 +1,7 @@
 ---
 name: s2h-final-verification-phase
 description: Only use when explicitly invoked
-# description: "Final verification phase contract for the s2h-FinalVerificationOwner tier."
+# description: "Final verification phase contract for the s2h-FinalVerificationPhase tier."
 user-invocable: false
 disable-model-invocation: true
 ---

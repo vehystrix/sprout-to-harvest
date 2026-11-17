@@ -1,7 +1,7 @@
 ---
 name: s2h-documentation-phase
 description: Only use when explicitly invoked
-# description: "Documentation phase contract for the s2h-DocumentationPhaseOwner tier."
+# description: "Documentation phase contract for the s2h-DocumentationPhase tier."
 user-invocable: false
 disable-model-invocation: true
 ---

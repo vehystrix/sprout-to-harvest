@@ -169,9 +169,9 @@ procedure.
        before its implementation step
      - Every chunk's `doc_status` is `completed`.
 
-6. **Run the implementation phase.** (delegation: s2h-ImplementationPhaseOwner)
-   - Persist `phase: step-execution`, `status: running`. Delegate exactly once to
-     `s2h-ImplementationPhaseOwner` with only paths and cap L: the run directory,
+6. **Run the implementation phase.** (delegation: s2h-ImplementationPhase)
+   - Persist `phase: implementation`, `status: running`. Delegate exactly once to
+     `s2h-ImplementationPhase` with only paths and cap L: the run directory,
      the path of `chunk-index.json`, and the per-loop retry cap. You do no selection
      or step work yourself; it reports only its bounded summary.
    - Validate its bounded summary using `s2h-handoff`: a summary pointing at a missing
@@ -184,9 +184,9 @@ procedure.
      - `BLOCKED` persists the blocker and stops, naming the blocked step and its recorded
        resume action.
 
-7. **Run final verification.** (delegation: s2h-FinalVerificationOwner)
+7. **Run final verification.** (delegation: s2h-FinalVerificationPhase)
    - Persist `phase: final-verification`, `status: running`. Delegate exactly once to
-     `s2h-FinalVerificationOwner` with only paths and cap L: the run directory, the plan
+     `s2h-FinalVerificationPhase` with only paths and cap L: the run directory, the plan
      path from `run.json`, and the per-loop retry cap. You do no verification yourself;
      it reports only its bounded summary. Final verification covers implementation
      only; pre-existing documentation is out of scope for this check, and its absence or
@@ -200,9 +200,9 @@ procedure.
        verification is `DONE`; tier ordering enforces that; no separate check lives here.
      - `BLOCKED` persists the blocker and stops with its recorded resume action.
 
-8. **Run the documentation phase.** (delegation: s2h-DocumentationPhaseOwner)
+8. **Run the documentation phase.** (delegation: s2h-DocumentationPhase)
    - Persist `phase: documentation`, `status: running`. Delegate exactly once to
-     `s2h-DocumentationPhaseOwner` with only paths and cap L: the run directory, the final
+     `s2h-DocumentationPhase` with only paths and cap L: the run directory, the final
      changed files from the ledger, the path of `documentation/source-doc-context.md`, the
      path of `documentation/user-doc-context.md`, and the per-loop retry cap. You do no
      documentation work yourself; it reports only its bounded summary.
@@ -313,6 +313,6 @@ Report completed work, validation evidence, blockers, and resume instructions pe
 - s2h-OrchestratorAgent
 - s2h-PlanAuditor
 - s2h-PlanDecomposer
-- s2h-ImplementationPhaseOwner
-- s2h-FinalVerificationOwner
-- s2h-DocumentationPhaseOwner
+- s2h-ImplementationPhase
+- s2h-FinalVerificationPhase
+- s2h-DocumentationPhase

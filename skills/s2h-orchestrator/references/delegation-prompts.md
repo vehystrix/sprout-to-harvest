@@ -18,16 +18,16 @@ Constraint: read-only for repository files; writes only the audit report,
 requirements.json, and documentation context files under <run-dir>
 ```
 
-**s2h-ImplementationPhaseOwner**
+**s2h-ImplementationPhase**
 
 ```text
-Role: s2h-ImplementationPhaseOwner
-Task ID and attempt: step-execution, attempt <n>
+Role: s2h-ImplementationPhase
+Task ID and attempt: implementation, attempt <n>
 Paths and values:
   - Run directory: <run-dir>
   - Chunk index: <run-dir>/chunk-index.json
   - Per-loop retry cap L: <L>
-Constraint: owns the step-execution phase; delegates one s2h-StepLoop per
+Constraint: owns the implementation phase; delegates one s2h-StepLoop per
 step in dependency order; reports only its bounded summary
 ```
 
@@ -47,10 +47,10 @@ the decomposition phase end to end and delegates its own loops per
 s2h-plan-decomposition
 ```
 
-**s2h-FinalVerificationOwner**
+**s2h-FinalVerificationPhase**
 
 ```text
-Role: s2h-FinalVerificationOwner
+Role: s2h-FinalVerificationPhase
 Task ID and attempt: final-verification, attempt <n>
 Paths and values:
   - Plan: <plan-path>
@@ -60,10 +60,10 @@ Constraint: owns the final-verification loop; delegates s2h-FinalVerifier and
 re-invokes one s2h-StepLoop per affected step within cap L; reports only its bounded summary
 ```
 
-**s2h-DocumentationPhaseOwner**
+**s2h-DocumentationPhase**
 
 ```text
-Role: s2h-DocumentationPhaseOwner
+Role: s2h-DocumentationPhase
 Task ID and attempt: documentation, attempt <n>
 Paths and values:
   - Run directory: <run-dir>

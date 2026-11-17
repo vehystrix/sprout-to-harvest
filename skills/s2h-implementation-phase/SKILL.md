@@ -1,13 +1,13 @@
 ---
 name: s2h-implementation-phase
 description: Only use when explicitly invoked
-# description: "Implementation phase contract for the s2h-ImplementationPhaseOwner tier."
+# description: "Implementation phase contract for the s2h-ImplementationPhase tier."
 user-invocable: false
 disable-model-invocation: true
 ---
 # Implementation Phase
 
-The implementation phase owns the whole step-execution phase of one
+The implementation phase owns the `implementation` phase of one
 run: it loads the chunk index, selects steps in dependency order, delegates
 exactly one `s2h-StepLoop` per selected step, and tracks every step to
 `completed`. It performs no implementation or verification itself.
@@ -33,7 +33,7 @@ it together with every step status file on resume or after compaction.
 
 ## Per-step delegation
 
-- Persist `phase: step-execution` in `run.json` on entry; touch no other field.
+- Persist `phase: implementation` in `run.json` on entry; touch no other field.
 - Delegate exactly one `s2h-StepLoop` for the selected step with only file
   paths and cap L, using the verbatim block below.
 - Validate every StepLoop handoff against `s2h-handoff` before consuming it: a

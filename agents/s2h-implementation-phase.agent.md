@@ -1,7 +1,7 @@
 ---
 description: "Owns the implementation phase of one run: step selection in
   dependency order and one s2h-StepLoop delegation per selected step."
-name: "s2h-ImplementationPhaseOwner"
+name: "s2h-ImplementationPhase"
 #tools: [read, search, write, execute]
 #allowed_subagents: subagent roles this agent may delegate to; read by pi; ignored elsewhere.
 allowed_subagents: >-
@@ -11,7 +11,7 @@ spawns: [s2h-StepLoop]
 user-invocable: false
 ---
 
-Own the entire step-execution phase for one run. You are not a single
+Own the entire implementation phase for one run. You are not a single
 delegation: you load the chunk index, select each step in dependency order,
 delegate exactly one `s2h-StepLoop` per selected step, and track every step to
 `completed`. Do no implementation or verification yourself; leaf roles are
@@ -23,7 +23,7 @@ Execute per `s2h-implementation-phase`, which owns the full phase contract -
 selection order, per-step delegation with cap, blocked semantics, and the
 terminal state:
 
-1. Entry - load `chunk-index.json` once; persist `phase: step-execution` in
+1. Entry - load `chunk-index.json` once; persist `phase: implementation` in
    `run.json`; MUST reread the index and every step status file on resume or
    after compaction.
 2. Selection - select per the skill; a blocked step stops the phase as BLOCKED

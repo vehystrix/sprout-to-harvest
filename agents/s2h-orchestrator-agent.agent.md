@@ -6,16 +6,16 @@ name: "s2h-OrchestratorAgent"
 #tools: [read, search, edit, execute, agent, todo]
 #allowed_subagents: subagent roles this agent may delegate to; read by pi; ignored elsewhere.
 allowed_subagents: >-
-  s2h-PlanAuditor, s2h-PlanDecomposer, s2h-ImplementationPhaseOwner,
-  s2h-FinalVerificationOwner, s2h-DocumentationPhaseOwner,
+  s2h-PlanAuditor, s2h-PlanDecomposer, s2h-ImplementationPhase,
+  s2h-FinalVerificationPhase, s2h-DocumentationPhase,
   general-purpose, Explore
 #spawns: subagent roles this agent may delegate to; read by OMP; ignored elsewhere.
 spawns:
   - s2h-PlanAuditor
   - s2h-PlanDecomposer
-  - s2h-ImplementationPhaseOwner
-  - s2h-FinalVerificationOwner
-  - s2h-DocumentationPhaseOwner
+  - s2h-ImplementationPhase
+  - s2h-FinalVerificationPhase
+  - s2h-DocumentationPhase
   - task
   - scout
 user-invocable: true

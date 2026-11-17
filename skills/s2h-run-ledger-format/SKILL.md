@@ -62,7 +62,7 @@ Required top-level fields:
 ```
 
 Allowed `phase` values are `initialization`, `s2h-plan-audit`, `decomposition`,
-`step-execution`, `final-verification`, `documentation`, and `finalization`.
+`implementation`, `final-verification`, `documentation`, and `finalization`.
 Allowed `status` values are `pending`, `running`, `completed`,
 `verification-failed`, `interrupted`, `blocked`, and
 `abandoned`.

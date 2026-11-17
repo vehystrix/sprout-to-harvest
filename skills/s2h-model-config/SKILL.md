@@ -88,6 +88,11 @@ For each supported role, ask for required capabilities and an optional minimum t
 - `whole-plan-verifier`
 - `doc-writer`
 - `doc-verifier`
+- `implementation-phase`
+- `final-verification-phase`
+- `documentation-phase`
+- `step-loop`
+- `final-verifier`
 
 Also ask for the ordered fallback chain, whether retries preserve the current assignment,
 whether policy-authorized escalation is allowed, and whether the active host requires

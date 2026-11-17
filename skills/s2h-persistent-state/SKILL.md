@@ -73,6 +73,8 @@ On restart, inspect the ledger and the step-status files, and resume the first
 `running`, `verification-failed`, or `blocked` step; otherwise start the
 first `pending` step whose dependencies are completed. Never repeat
 a verified step unless the user explicitly requests it. Preserve
-recoverable workspace changes and report blockers to the user.
+recoverable workspace changes and report blockers to the user. Runs that
+persisted `phase: step-execution` before the rename are read back as
+`implementation`.
 
 Never commit the run directory. Add it to `.git/info/exclude` when appropriate.

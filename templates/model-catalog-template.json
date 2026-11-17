@@ -2,7 +2,7 @@
   "models": [
     {
       "id": "reasoning-pro",
-      "capabilities": ["reasoning", "planning", "verification"],
+      "capabilities": ["orchestration", "reasoning", "planning", "verification"],
       "tier": 3,
       "cost": "high",
       "reasoning_effort": "high",

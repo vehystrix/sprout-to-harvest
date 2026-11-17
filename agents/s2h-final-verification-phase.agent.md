@@ -1,7 +1,7 @@
 ---
 description: "Owns the final-verification loop of one run: one-shot FinalVerifier
   pass, affected-step repair within cap L, and bounded reporting."
-name: "s2h-FinalVerificationOwner"
+name: "s2h-FinalVerificationPhase"
 #tools: [read, search, write, execute]
 #allowed_subagents: subagent roles this agent may delegate to; read by pi; ignored elsewhere.
 allowed_subagents: >-

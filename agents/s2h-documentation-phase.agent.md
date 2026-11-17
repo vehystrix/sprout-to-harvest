@@ -2,7 +2,7 @@
 description: "Owns the documentation phase of one run: source-doc assignments
   per changed file, bounded writer-verifier cycles, and the user-doc
   assignment last."
-name: "s2h-DocumentationPhaseOwner"
+name: "s2h-DocumentationPhase"
 #tools: [read, search, write, execute]
 #allowed_subagents: subagent roles this agent may delegate to; read by pi; ignored elsewhere.
 allowed_subagents: >-
