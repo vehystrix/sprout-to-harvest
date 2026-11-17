@@ -84,10 +84,8 @@ For each chunk in dependency order:
 
 A loop instance that exhausts its allowance is not retried again; its blocker
 becomes one of the blocked conditions below.
-A delegated handoff that deviates in any way from the exact `s2h-handoff` schema -
-including status vocabulary and field naming - MUST NOT be corrected, normalized, or
-edited; record it with the deviation described and the exact resume action, which
-re-delegates that one delegation.
+A delegated handoff that deviates in any way from the exact `s2h-handoff` schema is
+classified per `s2h-deviation-classification`.
 
 ## Model assignments
 

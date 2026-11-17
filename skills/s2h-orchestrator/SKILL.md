@@ -174,9 +174,8 @@ procedure.
      `s2h-ImplementationPhase` with only paths and cap L: the run directory,
      the path of `chunk-index.json`, and the per-loop retry cap. You do no selection
      or step work yourself; it reports only its bounded summary.
-   - Validate its bounded summary using `s2h-handoff`: a summary pointing at a missing
-     or unreadable report is `blocked`, with the raw failure description as its exact
-     resume action; never normalize, edit, reinterpret, or auto-retry it.
+   - Validate its bounded summary using `s2h-handoff`, classifying any deviation per
+     `s2h-deviation-classification`.
    - Branches:
      - `DONE` continues to final verification after you confirm every step status file
        reports `completed`. A step is completed only by a verifier `DONE`, never by an
@@ -191,7 +190,8 @@ procedure.
      it reports only its bounded summary. Final verification covers implementation
      only; pre-existing documentation is out of scope for this check, and its absence or
      staleness MUST NOT count against `DONE`.
-   - Validate its bounded summary using `s2h-handoff`; when a `DONE` follows an
+   - Validate its bounded summary using `s2h-handoff`, classifying any deviation per
+     `s2h-deviation-classification`; when a `DONE` follows an
      `INCOMPLETE` verdict, record the consumed repair attempts as the integer
      `final_verification_repairs`. The affected step ids stay in the tier's saved
      report.
@@ -206,9 +206,8 @@ procedure.
      changed files from the ledger, the path of `documentation/source-doc-context.md`, the
      path of `documentation/user-doc-context.md`, and the per-loop retry cap. You do no
      documentation work yourself; it reports only its bounded summary.
-   - Validate its bounded summary using `s2h-handoff`: a summary pointing at a missing
-     or unreadable report is `blocked`, with the raw failure description as its exact
-     resume action; never normalize, edit, reinterpret, or auto-retry it.
+   - Validate its bounded summary using `s2h-handoff`, classifying any deviation per
+     `s2h-deviation-classification`.
    - Branches:
      - `DONE` continues to finalize.
      - `BLOCKED` persists the blocker and stops, naming the assignment and its recorded
@@ -248,19 +247,8 @@ persist phase/step as running
 A final message that lacks a valid summary or points at a missing or unreadable saved report
 is `blocked`, with the raw failure description and exact resume action. Do not reinterpret the
 result as `INCOMPLETE`, retry it automatically, repair its artifacts, or continue to another
-phase. A final message that reports an unsupported status is handled by the deviation rule
-below; the saved report file, never the message text, decides classification.
-A handoff that deviates from the exact `s2h-handoff` schema - including status
-vocabulary (for example, `COMPLETED` where `DONE` is required) and field naming -
-MUST be classified before use: when the outcome is derivable from ground truth
-(repository state, step status, run ledger), or when the saved handoff's own details and
-evidence substantiate the outcome without contradicting its repository fields,
-derive the delegation's ledger entry with
-`derived_fields` plus a warning naming each derived field, leaving the handoff untouched;
-otherwise it is `blocked`, with the deviation described and the exact resume action
-recorded. The orchestrator MUST NOT normalize, edit, reinterpret, or
-automatically retry a deviating handoff. Resumption re-delegates that one delegation on
-a later invocation, and persisted checkpoints mean no completed work is redone.
+phase. A final message that reports an unsupported status is classified per
+`s2h-deviation-classification`.
 Model records are owned by the spawner that appends them. You and each tier append
 your own delegation line to `delegations.jsonl` before spawning, then compare each
 handoff's `model_assignment` value with the resolved identity per

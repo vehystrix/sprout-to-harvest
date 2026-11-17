@@ -25,11 +25,9 @@ one exists), and the per-loop retry cap `L`.
    delegation line to `delegations.jsonl` before spawning. Persist the step
    as `running`, then delegate `s2h-StepImplementer` with only file paths,
    using the verbatim block below.
-3. Validate the implementer handoff against `s2h-handoff` before consuming it;
-   apply its deviation rule: never normalize, edit, or reinterpret - derive
-   the outcome from ground truth when that supports it, else stop as BLOCKED.
-   A missing or malformed handoff is classified per that rule and does not
-   consume a repair attempt.
+3. Validate the implementer handoff against `s2h-handoff` before consuming it,
+   classifying any deviation per `s2h-deviation-classification`. A missing or malformed
+   handoff is classified per that rule and does not consume a repair attempt.
 4. Implementer branches:
    - `DONE`: proceed to verification.
    - `BLOCKED`: persist the blocker in the step status file and report BLOCKED
