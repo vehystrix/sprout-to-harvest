@@ -101,8 +101,23 @@ capability probe per `s2h-model-probe`, record a warning, then continue.
 `final_verification_repairs` counts final-verification repair attempts
 consumed against `maximum_retries`.
 
-The optional `delegations` block records one complete caller-owned assignment per
-delegated call - persisted by the orchestrator before delegation, updated with the
-application result after - keyed by a stable delegation identifier such as
-`step-002-implementer-1`. Subagents never author it. Resumed runs read it back to
-reconstruct per-delegation model state without trusting narrative.
+`delegations.jsonl` is an append-only record of delegation assignments, one JSON
+line per delegated call, at `.agent-work/<run-id>/delegations.jsonl`. The tier
+that spawns a subagent appends its line before the spawn; no earlier line is
+ever rewritten. Each line is a flat object with exactly these fields:
+
+- `id`: stable delegation identifier, such as `step-002-implementer-1`.
+- `role`: role of the delegated agent, such as `s2h-StepImplementer`.
+- `requested_portable_id`: requested portable model ID, or null when no model
+  was specifically requested.
+- `resolved_model`: resolved model name applied for the delegation.
+- `selection_source`: short token naming where the assignment came from, such
+  as `policy`, `user-override`, or `fallback`.
+- `fallback`: fallback model name used, or null when none was used.
+
+Each appended line MUST be valid JSON carrying exactly those fields with the
+stated types, where `id`, `role`, `resolved_model`, and `selection_source` are
+non-empty; the tier runs `scripts/validate_delegations.py <file>` after appending
+and repairs the named line in place until it passes. Resumed runs
+and phase-acceptance audits read the file back line by line instead of
+trusting narrative.
