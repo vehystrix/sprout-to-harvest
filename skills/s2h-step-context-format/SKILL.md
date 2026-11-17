@@ -121,3 +121,4 @@ exits 0 only on pass; the script enforces these rules but never defines them.
 Before persisting a step context file: MUST run the validator on it together
 with every other step file of its chunk in one invocation so the cross-file
 Contract check applies, and the files MUST pass validation before persistence.
+The script is located relative to this skill's directory.

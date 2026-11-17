@@ -119,4 +119,5 @@ no bullets still fails.
 The rules above are enforced by `scripts/validate.py <file> [files...]`, which
 exits 0 only on pass; the script enforces these rules but never defines them.
 Before persisting a documentation context file: MUST run the validator and the
-file MUST pass validation before persistence.
+file MUST pass validation before persistence. The script is located relative to
+this skill's directory.

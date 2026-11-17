@@ -61,9 +61,10 @@ It does none of the delegated work itself:
   spawners per their skills; file modification reaches leaf roles `s2h-StepImplementer`
   and `s2h-DocumentationWriter` only through them.
 - MUST NOT run validation commands, tests, format checks, or any verification of its own.
-  Running `scripts/validate_delegations.py` on a line you just appended, or
-  `scripts/validate.py` on an artifact you authored, is ledger bookkeeping, not
-  delegated work; everything else is delegated to the owner tiers -
+  Running `scripts/validate_delegations.py` (relative to `s2h-run-ledger-format`)
+  on a line you just appended, or the owning format skill's validator
+  (`scripts/validate.py`, relative to that skill) on an artifact you authored, is
+  ledger bookkeeping, not delegated work; everything else is delegated to the owner tiers -
   `s2h-ImplementationPhaseOwner`, `s2h-FinalVerificationOwner`, and
   `s2h-DocumentationPhaseOwner` - and their leaf verifiers `s2h-StepVerifier`,
   `s2h-FinalVerifier`, and `s2h-DocumentationVerifier`. The step 9 repository check
@@ -144,8 +145,8 @@ procedure.
      `s2h-plan-audit.json` the auditor wrote in the run directory, and record in run
      state the path of the `requirements.json` the auditor wrote. The auditor
      self-validates its two documentation context files with
-     `scripts/validate.py` per `s2h-doc-context-format` before handoff; you do not
-     re-check them.
+     `scripts/validate.py` per `s2h-doc-context-format`, located relative to that
+     skill's directory, before handoff; you do not re-check them.
    - Branches:
      - A `DONE` audit extracts requirements per `s2h-requirements-traceability`, records
        the path of `requirements.json` in run state, and continues to decomposition; no
@@ -284,9 +285,9 @@ with a resume action naming the offending line id.
 
 ## Delegation prompt templates
 
-Before your first delegation in a session, MUST read `references/delegation-prompts.md`.
-Every delegation prompt MUST contain ONLY the verbatim block lines for that role from
-`references/delegation-prompts.md`. They MUST NOT restate acceptance criteria,
+Before your first delegation in a session, MUST read `references/delegation-prompts.md`,
+located relative to this skill's directory. Every delegation prompt MUST contain ONLY
+the verbatim block lines for that role from that file. They MUST NOT restate acceptance criteria,
 requirement IDs, or any status vocabulary. Every block follows the same line order:
 Role, Task ID and attempt, Paths (and any named persisted values), and Constraint.
 Never inline plan text, step contracts, inventory entries, prior narratives, or model
