@@ -61,11 +61,11 @@ as the loops run.
 For each chunk in dependency order:
 
 1. Persist `doc_status: running`.
-2. Delegate to a Chunk Writer with only file paths - the plan, `chunk-index.json`,
+2. Delegate to an `s2h-ChunkWriter` with only file paths - the plan, `chunk-index.json`,
    and `requirements.json`, from which the chunk's contract resolves; on
    repair rounds include the prior findings - using the persisted
    loop model assignments.
-3. On a writer `DONE` or `INCOMPLETE`, delegate to a s2h-ChunkVerifier with the
+3. On a writer `DONE` or `INCOMPLETE`, delegate to an `s2h-ChunkVerifier` with the
    same template minus findings; on a writer `BLOCKED`, record the blocker and
    move on to the next chunk.
 4. On an `INCOMPLETE` verdict, persist `doc_status: verification-failed`,
@@ -102,7 +102,8 @@ apply the fallback and config-failure order per the adapter's catalog lookup and
 fallback rules. When the status is `routing-unavailable`, every delegation
 follows the adapter's run-level routing-unavailable handling.
 Persist each assignment into the index with its timestamp and `source: decomposer`;
-a null recommendation stays explicit in `model_recommendations` even when an assignment is persisted.
+a null recommendation stays explicit in `model_recommendations` even when an
+assignment is persisted.
 The decomposer SHOULD consult `models[].selection_advice` as advice when forming
 `model_recommendations`; it does not override `required_capabilities`, `minimum_tier`,
 or a policy `default`.
