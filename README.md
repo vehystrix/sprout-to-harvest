@@ -260,6 +260,15 @@ the evidence channel for the run.
 if any - is set on each delegation; otherwise no model field is set and
 warnings are recorded.
 
+The tiered delegation graph nests four levels: the orchestrator delegates to
+owner-tier agents; each owner delegates a loop tier such as `s2h-StepLoop` or
+leaf roles directly, and each loop tier delegates its own leaf roles, which
+never spawn further sessions. Hosts must expose a subagent spawn tool to
+sessions at nesting depths one through three when `s2h-OrchestratorAgent` is
+invoked as an agent; on hosts capped shallower, invoke the `s2h-orchestrator`
+skill directly from the root session so every delegating tier stays within
+reach.
+
 ## Inter-agent communication
 
 Every delegated agent saves its complete handoff, per `s2h-handoff`, to the run
