@@ -2,7 +2,7 @@
 
 ## Layout
 
-- `agents/*.agent.md` - 11 role definitions; the orchestrator is a thin wrapper.
+- `agents/*.agent.md` - 15 role definitions; the orchestrator is a thin wrapper.
 - `skills/<name>/SKILL.md` - feature contract directories; every entry MUST
   contain a SKILL.md. Manifests reference `skills/` as a discovery directory,
   so removing an item auto-excludes it (no manifest edit needed).
