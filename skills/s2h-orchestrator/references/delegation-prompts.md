@@ -1,9 +1,9 @@
 # Delegation prompt blocks
 
-Verbatim delegation prompt blocks for `s2h-orchestrator`. Send exactly the block
-for the role being delegated, with only placeholder values substituted and nothing
-else added. Placeholder definitions live in `SKILL.md` under "Delegation prompt
-templates".
+Verbatim delegation prompt blocks used by `s2h-orchestrator` and its owner-tier
+agents. Send exactly the block for the role being delegated, with only placeholder
+values substituted and nothing else added. Placeholder definitions live in `SKILL.md`
+under "Delegation prompt templates".
 
 **s2h-PlanAuditor**
 
@@ -17,38 +17,17 @@ Constraint: read-only for repository files; writes only the audit report,
 requirements.json, and documentation context files under <run-dir>
 ```
 
-**Documentation context format check** (one delegation per file)
+**s2h-ImplementationPhaseOwner**
 
 ```text
-Role: read-only documentation-context format checker
-Task ID and attempt: doc-format-check/<file-name>, attempt 1
-Paths:
-  - Documentation context file: <doc-context-file>
-Skills: s2h-doc-context-format, s2h-handoff
-Instructions: Read exactly the named documentation context file. Apply every
-s2h-doc-context-format validation rule that a single file can satisfy. Do not
-check any other file and do not edit anything. Save your complete handoff per
-s2h-handoff, then return only a summary naming status and its path: `DONE` if the
-file fully conforms, INCOMPLETE with details.findings naming each defect, BLOCKED if
-the file is missing or unreadable.
-Constraint: read-only
-```
-
-**Step context format check** (one delegation per step file)
-
-```text
-Role: read-only step-context format checker
-Task ID and attempt: step-format-check/<step-id>, attempt <n>
-Paths:
-  - Step file: <run-dir>/steps/<step-id>.md
-Skills: s2h-step-context-format, s2h-handoff
-Instructions: Read exactly the named step file. Apply every
-s2h-step-context-format validation rule that a single file can satisfy. Do not
-check any other file and do not edit anything. Save your complete handoff per
-s2h-handoff, then return only a summary naming status and its path: `DONE` if the
-file fully conforms, INCOMPLETE with details.findings naming each defect, BLOCKED if
-the file is missing or unreadable.
-Constraint: read-only
+Role: s2h-ImplementationPhaseOwner
+Task ID and attempt: step-execution, attempt <n>
+Paths and values:
+  - Run directory: <run-dir>
+  - Chunk index: <run-dir>/chunk-index.json
+  - Per-loop retry cap L: <L>
+Constraint: owns the step-execution phase; delegates one s2h-StepLoop per
+step in dependency order; reports only its bounded summary
 ```
 
 **s2h-PlanDecomposer**
@@ -66,21 +45,17 @@ the decomposition phase end to end and delegates its own loops per
 s2h-plan-decomposition
 ```
 
-**s2h-PlanDecomposer, targeted repair** (one per failed format check round)
+**s2h-FinalVerificationOwner**
 
 ```text
-Role: s2h-PlanDecomposer
-Task ID and attempt: decomposition-repair, attempt <n>
+Role: s2h-FinalVerificationOwner
+Task ID and attempt: final-verification, attempt <n>
 Paths and values:
   - Plan: <plan-path>
-  - Plan audit: <run-dir>/s2h-plan-audit.json
-  - Requirements: <run-dir>/requirements.json (only when the audit ran)
+  - Run directory: <run-dir>
   - Per-loop retry cap L: <L>
-  - Failed format checks (one line per finding):
-    - <step-file>: <finding-id> - <one-line description>
-Constraint: file-modifying for .agent-work files only, never committed; repair
-only the affected chunks' writer and verifier loops, then rerun whole-plan
-verification, per s2h-plan-decomposition targeted-repair mode
+Constraint: owns the final-verification loop; delegates s2h-FinalVerifier and
+re-invokes one s2h-StepLoop per affected step within cap L; reports only its bounded summary
 ```
 
 **s2h-StepImplementer**
@@ -119,6 +94,24 @@ Paths and values:
   - Handoff reports: every persisted report under <run-dir>/reports/
   - Commit and repository state: as recorded in <run-dir>/run.json
 Constraint: read-only
+```
+
+**s2h-DocumentationPhaseOwner**
+
+```text
+Role: s2h-DocumentationPhaseOwner
+Task ID and attempt: documentation, attempt <n>
+Paths and values:
+  - Run directory: <run-dir>
+  - Final changed files (one bullet per file):
+    - <changed-file-path-1>
+    - <changed-file-path-2>
+  - Source-doc context: <run-dir>/documentation/source-doc-context.md
+  - User-doc context: <run-dir>/documentation/user-doc-context.md
+  - Per-loop retry cap L: <L>
+Constraint: owns the documentation phase; builds source-doc assignments for the
+listed changed files, runs one bounded writer-verifier cycle per assignment, creates
+and verifies the user-doc assignment last; reports only its bounded summary
 ```
 
 **s2h-DocumentationWriter, source-doc assignment** (one per changed file)
