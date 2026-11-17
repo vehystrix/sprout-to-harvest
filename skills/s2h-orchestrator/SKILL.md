@@ -41,15 +41,12 @@ freeze, and fingerprint the merged result per that skill.
   commit, validation, and documentation coverage.
 - `s2h-handoff`: MUST use to validate every delegated agent's final handoff before consuming it.
 - `s2h-model-catalog-format` and `s2h-model-routing-adapter`: MUST use to
-  resolve model sources, freeze the effective catalog and policy,
-  and resolve portable IDs.
+  resolve model sources and freeze the effective catalog and policy; portable ID
+  resolution is per-delegation by the delegating tier.
 - `s2h-model-probe`: MUST use for the one-time per-run capability probe.
 - `s2h-run-ledger-format`, `s2h-plan-audit-format`, `s2h-chunk-index-format`,
-  `s2h-requirements-format`, `s2h-step-context-format`,
-  `s2h-step-status-format`, `s2h-checkpoint-format`,
-  `s2h-doc-context-format`, `s2h-doc-assignment-format`, and
-  `s2h-final-report-format`: use to create and validate the corresponding
-  `.agent-work` artifacts.
+  `s2h-requirements-format`, and `s2h-final-report-format`: use to read run state,
+  validate delegated format artifacts, and build the final report.
 - `s2h-verification-before-completion`: MUST use before reporting any phase or run as complete.
 
 ## Role boundaries
@@ -58,10 +55,11 @@ The orchestrator only persists ledger state, delegates, and validates handoffs.
 It does none of the delegated work itself:
 
 - MUST NOT modify repository files or any `.agent-work` artifact beyond `run.json`,
-  `final-report.json`, and the SKIPPED audit record when plan audit is skipped.
-  Step status files, checkpoints, delegation records, and tier reports are owned by
-  the tiers per their skills; file modification reaches leaf roles
-  `s2h-StepImplementer` and `s2h-DocumentationWriter` only through them.
+  `delegations.jsonl`, `final-report.json`, the frozen catalog and policy copies
+  written in step 2, and the SKIPPED audit record when plan audit is skipped. Step
+  status files, checkpoints, delegation records, and tier reports are owned by their
+  spawners per their skills; file modification reaches leaf roles `s2h-StepImplementer`
+  and `s2h-DocumentationWriter` only through them.
 - MUST NOT run validation commands, tests, format checks, or any verification of its own.
   Verification is delegated to the owner tiers - `s2h-ImplementationPhaseOwner`,
   `s2h-FinalVerificationOwner`, and `s2h-DocumentationPhaseOwner` - and their leaf
@@ -204,8 +202,9 @@ procedure.
      only; pre-existing documentation is out of scope for this check, and its absence or
      staleness MUST NOT count against `DONE`.
    - Validate its bounded summary using `s2h-handoff`; when a `DONE` follows an
-     `INCOMPLETE` verdict, record the named affected step ids and consumed repair attempts
-     as `final_verification_repairs`.
+     `INCOMPLETE` verdict, record the consumed repair attempts as the integer
+     `final_verification_repairs`, citing the affected step ids from the tier's saved
+     report in `final-report.json`.
    - Branches:
      - `DONE` continues to documentation. Documentation begins only after final
        verification is `DONE`; tier ordering enforces that; no separate check lives here.
@@ -228,9 +227,11 @@ procedure.
        resume action.
 
 9. **Finalize.** (bookkeeping)
-   - Persist `phase: finalization`, `status: completed` in `run.json`. Confirm the
+   - Persist `phase: finalization`, `status: running` in `run.json`. Confirm the
      ledger's repository state against Git: recorded branch, existing commit
-     hashes, and clean tracked changes. Build `final-report.json` using
+     hashes, and clean tracked changes. If the check fails, persist `blocked` and stop;
+     its exact resume action names the divergence from the ledger's expected state. Only
+     when it passes, persist `status: completed`, then build `final-report.json` using
      `s2h-final-report-format` from the ledger and all verified handoffs, including audit
      status, completed steps, commands and results, commits, traceability,
      branch/worktree state, documentation, warnings, and resume instructions. Atomically
@@ -272,8 +273,8 @@ otherwise it is `blocked`, with the deviation described and the exact resume act
 recorded. The orchestrator MUST NOT normalize, edit, reinterpret, or
 automatically retry a deviating handoff. Resumption re-delegates that one delegation on
 a later invocation, and persisted checkpoints mean no completed work is redone.
-Model records are owned by the tiers that append them: each tier appends its
-delegation line to `delegations.jsonl` before spawning, then compares each
+Model records are owned by the spawner that appends them. You and each tier append
+your own delegation line to `delegations.jsonl` before spawning, then compare each
 handoff's `model_assignment` value with the resolved identity per
 `s2h-model-routing-adapter`. At each phase acceptance you audit only new lines of
 that log - tail-read O(new), never a full-file reread - using the line check
