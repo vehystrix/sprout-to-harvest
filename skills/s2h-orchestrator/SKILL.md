@@ -44,9 +44,9 @@ freeze, and fingerprint the merged result per that skill.
   resolve model sources and freeze the effective catalog and policy; portable ID
   resolution is per-delegation by the delegating tier.
 - `s2h-model-probe`: MUST use for the one-time per-run capability probe.
-- `s2h-run-ledger-format`, `s2h-plan-audit-format`, `s2h-chunk-index-format`,
-  `s2h-requirements-format`, and `s2h-final-report-format`: use to read run state,
-  validate delegated format artifacts, and build the final report.
+- `s2h-run-ledger-format`, `s2h-plan-audit-format`, `s2h-chunk-index-format`, and
+  `s2h-final-report-format`: use to read run state, validate delegated format
+  artifacts, and build the final report.
 - `s2h-verification-before-completion`: MUST use before reporting any phase or run as complete.
 
 ## Role boundaries
@@ -61,11 +61,12 @@ It does none of the delegated work itself:
   spawners per their skills; file modification reaches leaf roles `s2h-StepImplementer`
   and `s2h-DocumentationWriter` only through them.
 - MUST NOT run validation commands, tests, format checks, or any verification of its own.
-  Verification is delegated to the owner tiers - `s2h-ImplementationPhaseOwner`,
-  `s2h-FinalVerificationOwner`, and `s2h-DocumentationPhaseOwner` - and their leaf
-  verifiers `s2h-StepVerifier`, `s2h-FinalVerifier`, and
-  `s2h-DocumentationVerifier`. The step 9 repository check confirms ledger records
-  against Git state only; it runs no tests.
+  Running `scripts/validate_delegations.py` on a line you just appended is ledger
+  bookkeeping, not delegated work; everything else is delegated to the owner tiers -
+  `s2h-ImplementationPhaseOwner`, `s2h-FinalVerificationOwner`, and
+  `s2h-DocumentationPhaseOwner` - and their leaf verifiers `s2h-StepVerifier`,
+  `s2h-FinalVerifier`, and `s2h-DocumentationVerifier`. The step 9 repository check
+  confirms ledger records against Git state only; it runs no tests.
 - MUST NOT repair a failed delegation's artifacts itself, and MUST NOT re-delegate
   the same task automatically. A failed, missing, or malformed handoff is always
   `blocked` per the Delegation contract, with its exact resume action recorded;
@@ -203,8 +204,8 @@ procedure.
      staleness MUST NOT count against `DONE`.
    - Validate its bounded summary using `s2h-handoff`; when a `DONE` follows an
      `INCOMPLETE` verdict, record the consumed repair attempts as the integer
-     `final_verification_repairs`, citing the affected step ids from the tier's saved
-     report in `final-report.json`.
+     `final_verification_repairs`. The affected step ids stay in the tier's saved
+     report.
    - Branches:
      - `DONE` continues to documentation. Documentation begins only after final
        verification is `DONE`; tier ordering enforces that; no separate check lives here.
@@ -278,7 +279,8 @@ your own delegation line to `delegations.jsonl` before spawning, then compare ea
 handoff's `model_assignment` value with the resolved identity per
 `s2h-model-routing-adapter`. At each phase acceptance you audit only new lines of
 that log - tail-read O(new), never a full-file reread - using the line check
-defined by `s2h-run-ledger-format`.
+defined by `s2h-run-ledger-format`; a new line that fails the check is `blocked`,
+with a resume action naming the offending line id.
 
 ## Delegation prompt templates
 

@@ -102,9 +102,9 @@ capability probe per `s2h-model-probe`, record a warning, then continue.
 consumed against `maximum_retries`.
 
 `delegations.jsonl` is an append-only record of delegation assignments, one JSON
-line per delegated call, at `.agent-work/<run-id>/delegations.jsonl`. The tier
-that spawns a subagent appends its line before the spawn; no earlier line is
-ever rewritten. Each line is a flat object with exactly these fields:
+line per delegated call, at `.agent-work/<run-id>/delegations.jsonl`. The spawner
+- orchestrator or owner tier - appends its delegation line before the spawn; no
+earlier line is ever rewritten. Each line is a flat object with exactly these fields:
 
 - `id`: stable delegation identifier, such as `step-002-implementer-1`.
 - `role`: role of the delegated agent, such as `s2h-StepImplementer`.
@@ -117,7 +117,7 @@ ever rewritten. Each line is a flat object with exactly these fields:
 
 Each appended line MUST be valid JSON carrying exactly those fields with the
 stated types, where `id`, `role`, `resolved_model`, and `selection_source` are
-non-empty; the tier runs `scripts/validate_delegations.py <file>` after appending
+non-empty; the spawner runs `scripts/validate_delegations.py <file>` after appending
 and repairs the named line in place until it passes. Resumed runs
 and phase-acceptance audits read the file back line by line instead of
 trusting narrative.
