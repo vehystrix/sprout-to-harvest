@@ -13,8 +13,7 @@ FinalVerifier until clean or exhausted. It performs no verification itself.
 
 Final verification covers implementation only; pre-existing documentation is
 out of scope for this check, and its absence or staleness MUST NOT count
-against DONE. Documentation begins only after final verification is DONE - tier
-ordering guarantees that; no separate check lives here.
+against DONE. No documentation check lives in this loop.
 
 ## Input
 

@@ -7,7 +7,7 @@ disable-model-invocation: true
 # Documentation Phase
 
 The `s2h-DocumentationPhaseOwner` owns the documentation phase of one run, which
-begins only after final verification is DONE; tier ordering guarantees that. It
+begins only after final verification is DONE. It
 builds source-doc assignments for changed files requiring maintainer-facing
 documentation, runs a bounded writer-verifier cycle per assignment, and creates
 and verifies the user-doc assignment last.

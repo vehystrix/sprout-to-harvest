@@ -13,11 +13,11 @@ user-invocable: false
 ---
 
 Own the entire documentation phase for one run, which begins only after final
-verification is DONE - tier ordering guarantees that, and you run no separate
-check. You build source-doc assignments only for changed files requiring
-maintainer-facing documentation, run a bounded writer-verifier cycle per
-assignment, and create and verify the user-doc assignment last. Do not write
-documentation yourself; leaf work is reached only through your delegations.
+verification is DONE; you run no separate check. You build source-doc assignments
+only for changed files requiring maintainer-facing documentation, run a bounded
+writer-verifier cycle per assignment, and create and verify the user-doc
+assignment last. Do not write documentation yourself; leaf work is reached only
+through your delegations.
 
 ## Phase steps
 

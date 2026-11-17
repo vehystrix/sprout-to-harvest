@@ -79,25 +79,15 @@ the schema, author against it, and run `scripts/validate.py <file>`. The file MU
 validation before it may be persisted. Both files are located relative to this skill's
 location.
 
-The `model_routing` block is required whenever dynamic routing is enabled. It records
-the effective catalog and policy sources, the active host identifier, and the
-one-time capability probe result: `catalog_source` and `policy_source` record the
-resolved source of each file - a workspace path, a global repository path, a
-merged descriptor (`merged: <workspace> + <global>`), or `none`; 
-`adapter` is the active host identifier - the value
-appearing under `hosts.*` in the catalog - not a compiled module; and the `preflight`
-block records the capability probe result (`status`, `mechanism`, `evidence_channel`). It
-also holds the canonicalized fingerprints of the confirmed configuration, whether an
-invocation override was explicitly confirmed, and any persisted warning values.
-
-A missing or malformed `model_routing` block is `BLOCKED` before delegated
-implementation work. Fingerprints are canonical SHA-256 values per
-`s2h-model-catalog-format`; they serve as resume, override-review, and audit evidence.
-Resumed runs reuse the copied run-level files when present and compare their
-fingerprints against the current resolved sources before continuing.
-On a fingerprint mismatch, persist `blocked` and request explicit user
-confirmation; on confirmation, recopy the effective configuration, re-run the
-capability probe per `s2h-model-probe`, record a warning, then continue.
+The `model_routing` block is required whenever dynamic routing is enabled; it records
+the effective catalog and policy sources, the active host identifier, the capability
+probe result, the canonicalized configuration fingerprints per `s2h-model-catalog-format`,
+override confirmation, and any persisted warnings. A missing or malformed block is
+`BLOCKED` before delegated implementation work. Resumed runs reuse the copied run-level
+files when present and compare their fingerprints against the current resolved sources;
+on a mismatch, persist `blocked` and request explicit user confirmation - on
+confirmation, recopy the effective configuration, re-run the capability probe per
+`s2h-model-probe`, record a warning, then continue.
 `final_verification_repairs` counts final-verification repair attempts
 consumed against `maximum_retries`.
 

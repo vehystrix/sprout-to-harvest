@@ -71,9 +71,7 @@ It does none of the delegated work itself:
 - MUST NOT repair a failed delegation's artifacts itself, and MUST NOT re-delegate
   the same task automatically. A failed, missing, or malformed handoff is always
   `blocked` per the Delegation contract, with its exact resume action recorded;
-  resumption happens on a later invocation, not mid-run. Repair loops live inside the
-  owner tiers; each absorbs an `INCOMPLETE` internally up to its cap and reports only
-  DONE or BLOCKED, so no `INCOMPLETE` reaches you at phase level.
+  resumption happens on a later invocation, not mid-run.
 - MUST NOT edit any delegated agent's handoff or report file, and MUST NOT rewrite
   ledger entries to conceal a protocol deviation. A delegation report is persisted
   atomically when created and immutable afterward; ledger records change only through
@@ -92,7 +90,7 @@ to the roles that need the content.
   agents may recommend models, but only the delegating tier finalizes them.
   The orchestrator holds no catalog or policy in context; at each phase
   acceptance it audits recorded assignments by tail-reading only new lines of
-  `delegations.jsonl` (O(new), never a full-file reread) per the line check
+  `delegations.jsonl`, never a full-file reread, per the line check
   defined by `s2h-run-ledger-format`.
 - Treat the configured retry limit as repair attempts after the initial
   implementation attempt; a verification loop that exhausts its allowance
@@ -279,8 +277,9 @@ Model records are owned by the spawner that appends them. You and each tier appe
 your own delegation line to `delegations.jsonl` before spawning, then compare each
 handoff's `model_assignment` value with the resolved identity per
 `s2h-model-routing-adapter`. At each phase acceptance you audit only new lines of
-that log - tail-read O(new), never a full-file reread - using the line check
-defined by `s2h-run-ledger-format`; a new line that fails the check is `blocked`,
+that log, tail-reading only new lines and never a full file - using the line
+check defined by `s2h-run-ledger-format`; a new line that fails the check is
+`blocked`,
 with a resume action naming the offending line id.
 
 ## Delegation prompt templates
