@@ -35,9 +35,7 @@ guessing at feasibility.
 
 On a `DONE` audit you have written both documentation context files under
 `.agent-work/<run-id>/documentation/` per `s2h-doc-context-format`. Before the
-DONE handoff, MUST run that skill's validator on both files:
-
-    python3 skills/s2h-doc-context-format/scripts/validate.py <file> [files...]
+DONE handoff, MUST run that skill's validator on both files.
 
 Fix every named finding internally and re-run until both pass; you wrote both
 files, so repair belongs to you. If a finding is unresolvable, return `BLOCKED`
@@ -46,3 +44,4 @@ naming the file.
 ## Related skills
 
 - `s2h-compaction-recovery`: MUST invoke at session start and re-read after every compaction.
+- `s2h-doc-context-format`: MUST use to write and validate the documentation context files.

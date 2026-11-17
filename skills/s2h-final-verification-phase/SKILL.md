@@ -1,12 +1,13 @@
 ---
 name: s2h-final-verification-phase
-description: "Final verification phase contract for the s2h-FinalVerificationOwner tier."
+description: Only use when explicitly invoked
+# description: "Final verification phase contract for the s2h-FinalVerificationOwner tier."
 user-invocable: false
 disable-model-invocation: true
 ---
 # Final Verification Phase
 
-The `s2h-FinalVerificationOwner` owns the final-verification loop of one run:
+The final verification phase owns the final-verification loop of one run:
 it delegates `s2h-FinalVerifier`, identifies affected steps on an INCOMPLETE
 verdict, re-invokes `s2h-StepLoop` per affected step within cap L, and reruns
 FinalVerifier until clean or exhausted. It performs no verification itself.
@@ -79,6 +80,7 @@ placeholder values substituted and nothing else added:
 Role: s2h-FinalVerifier
 Task ID and attempt: final-verification, attempt <n>
 Paths and values:
+  - Run directory: <run-dir>
   - Plan: <plan-path>
   - Chunk index: <run-dir>/chunk-index.json
   - Handoff reports: every persisted report under <run-dir>/reports/
@@ -92,6 +94,7 @@ Constraint: read-only
 Role: s2h-StepLoop
 Task ID and attempt: <step-id>, attempt <n>
 Paths and values:
+  - Run directory: <run-dir>
   - Step context: <run-dir>/steps/<step-id>.md
   - Latest checkpoint: <run-dir>/checkpoints/<step-id>.json (when one exists)
   - Per-loop retry cap L: <L>
@@ -117,13 +120,9 @@ BLOCKED task; no BLOCKED consumes a repair attempt.
 
 ## Related skills
 
-- `s2h-compaction-recovery`: MUST invoke at session start and re-read after
-  every compaction.
-- `s2h-persistent-state`: MUST use for resume decisions and the atomic write
-  rule.
+- `s2h-compaction-recovery`: MUST invoke at session start and re-read after every compaction.
+- `s2h-persistent-state`: MUST use for resume decisions and the atomic write rule.
 - `s2h-model-routing-adapter`: MUST use to resolve each delegated role's model
   at delegation time, including host mapping lookup and fallback order.
-- `s2h-run-ledger-format`: MUST use for the `delegations.jsonl` line format and
-  its validator.
-- `s2h-handoff`: MUST use to validate every delegated handoff before consuming
-  it.
+- `s2h-run-ledger-format`: MUST use for the `delegations.jsonl` line format and its validator.
+- `s2h-handoff`: MUST use to validate every delegated handoff before consuming it.

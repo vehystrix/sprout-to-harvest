@@ -58,7 +58,8 @@ location.
 ## Cross-cutting requirements
 
 A requirement that spans more than one chunk is split at inventory creation into
-sub-requirements, each with its own ID in the `REQ-[0-9]{3}` form and its own excerpt.
+sub-requirements, each with its own ID in the `REQ-[0-9]{3}` form plus a single
+lowercase suffix letter (for example `REQ-001a`) and its own excerpt.
 
 ## Validation
 

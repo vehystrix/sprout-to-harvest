@@ -1,12 +1,13 @@
 ---
 name: s2h-step-loop
-description: "Step loop contract for the s2h-StepLoop tier: one step's implementer-verifier cycle."
+description: Only use when explicitly invoked
+# description: "Step loop contract for the s2h-StepLoop tier: one step's implementer-verifier cycle."
 user-invocable: false
 disable-model-invocation: true
 ---
 # Step Loop
 
-The `s2h-StepLoop` owns exactly one step per invocation: its implementer and
+The step loop owns exactly one step per invocation: its implementer and
 verifier delegations, model resolution for each, handoff validation, counter
 increments, and the bounded summary. It never spans steps and never modifies
 repository files; file modification belongs to the delegated implementer.
@@ -14,7 +15,7 @@ repository files; file modification belongs to the delegated implementer.
 ## Input
 
 Input is the selected step's context path, its latest checkpoint path (when
-one exists), and the per-loop retry cap L.
+one exists), and the per-loop retry cap `L`.
 
 ## Cycle
 
@@ -43,7 +44,7 @@ one exists), and the per-loop retry cap L.
      Only a verifier `DONE` completes the step; never an implementer `DONE`.
      Report DONE.
    - `INCOMPLETE`: persist `verification-failed` and increment the attempt
-     counter in the status file. While repair attempts remain - at most L after
+     counter in the status file. While repair attempts remain - at most `L` after
      the initial attempt, with counters fresh per loop instance - re-delegate
      the implementer per step 2 with its delegation line appended and continue
      from step 3. When the allowance is consumed, report BLOCKED naming "retries
@@ -84,6 +85,7 @@ placeholder values substituted and nothing else added:
 Role: s2h-StepImplementer
 Task ID and attempt: <step-id>, attempt <n>
 Paths:
+  - Run directory: <run-dir>
   - Step context: <run-dir>/steps/<step-id>.md
   - Latest checkpoint: <run-dir>/checkpoints/<step-id>.json (when one exists)
   - Verifier report (repair rounds only): <verifier-report-path>
@@ -97,6 +99,7 @@ required validation and commit before returning; report the commit hash
 Role: s2h-StepVerifier
 Task ID and attempt: <step-id>, attempt <n>
 Paths:
+  - Run directory: <run-dir>
   - Step context: <run-dir>/steps/<step-id>.md
   - Implementer handoff: <implementer-handoff-path>
   - Relevant checkpoint: <run-dir>/checkpoints/<step-id>.json (when one exists)

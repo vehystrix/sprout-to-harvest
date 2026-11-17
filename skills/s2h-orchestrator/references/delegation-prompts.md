@@ -37,6 +37,7 @@ step in dependency order; reports only its bounded summary
 Role: s2h-PlanDecomposer
 Task ID and attempt: decomposition, attempt <n>
 Paths and values:
+  - Run directory: <run-dir>
   - Plan: <plan-path>
   - Plan audit: <run-dir>/s2h-plan-audit.json
   - Requirements: <run-dir>/requirements.json (only when the audit ran)

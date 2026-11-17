@@ -1,13 +1,13 @@
 ---
 name: s2h-documentation-phase
-description: "Documentation phase contract for the s2h-DocumentationPhaseOwner tier."
+description: Only use when explicitly invoked
+# description: "Documentation phase contract for the s2h-DocumentationPhaseOwner tier."
 user-invocable: false
 disable-model-invocation: true
 ---
 # Documentation Phase
 
-The `s2h-DocumentationPhaseOwner` owns the documentation phase of one run, which
-begins only after final verification is DONE. It
+The documentation phase of one run begins only after final verification is DONE. It
 builds source-doc assignments for changed files requiring maintainer-facing
 documentation, runs a bounded writer-verifier cycle per assignment, and creates
 and verifies the user-doc assignment last.
@@ -92,6 +92,7 @@ placeholder values substituted and nothing else added:
 Role: s2h-DocumentationWriter
 Task ID and attempt: source-doc/<changed-file>, attempt <n>
 Paths:
+  - Run directory: <run-dir>
   - Documentation context: <run-dir>/documentation/source-doc-context.md
   - Final changed files (one bullet per file):
     - <changed-file-path-1>
@@ -109,6 +110,7 @@ separate documentation commit before returning
 Role: s2h-DocumentationVerifier
 Task ID and attempt: doc-verify/<assignment-id>, attempt <n>
 Paths:
+  - Run directory: <run-dir>
   - Assignment brief: the assignment's Markdown context file
   - Written documentation: the documented file path(s)
 Constraint: read-only
@@ -120,6 +122,7 @@ Constraint: read-only
 Role: s2h-DocumentationWriter
 Task ID and attempt: user-doc, attempt <n>
 Paths:
+  - Run directory: <run-dir>
   - Documentation context: <run-dir>/documentation/user-doc-context.md
   - Final verified requirements: <run-dir>/requirements.json
 Constraint: file-modifying; make a separate documentation commit before returning
@@ -140,14 +143,10 @@ exhausted assignment becomes BLOCKED naming "retries exhausted".
 
 ## Related skills
 
-- `s2h-compaction-recovery`: MUST invoke at session start and re-read after
-  every compaction.
-- `s2h-persistent-state`: MUST use for resume decisions and the atomic write
-  rule.
+- `s2h-compaction-recovery`: MUST invoke at session start and re-read after every compaction.
+- `s2h-persistent-state`: MUST use for resume decisions and the atomic write rule.
 - `s2h-model-routing-adapter`: MUST use to resolve each delegated role's model
   at delegation time, including host mapping lookup and fallback order.
-- `s2h-run-ledger-format`: MUST use for the `delegations.jsonl` line format and
-  its validator.
+- `s2h-run-ledger-format`: MUST use for the `delegations.jsonl` line format and its validator.
 - `s2h-doc-assignment-format`: MUST use to build and persist every assignment.
-- `s2h-handoff`: MUST use to validate every delegated handoff before consuming
-  it.
+- `s2h-handoff`: MUST use to validate every delegated handoff before consuming it.

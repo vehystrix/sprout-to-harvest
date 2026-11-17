@@ -1,12 +1,13 @@
 ---
 name: s2h-implementation-phase
-description: "Implementation phase contract for the s2h-ImplementationPhaseOwner tier."
+description: Only use when explicitly invoked
+# description: "Implementation phase contract for the s2h-ImplementationPhaseOwner tier."
 user-invocable: false
 disable-model-invocation: true
 ---
 # Implementation Phase
 
-The `s2h-ImplementationPhaseOwner` owns the whole step-execution phase of one
+The implementation phase owns the whole step-execution phase of one
 run: it loads the chunk index, selects steps in dependency order, delegates
 exactly one `s2h-StepLoop` per selected step, and tracks every step to
 `completed`. It performs no implementation or verification itself.
@@ -57,6 +58,7 @@ values substituted:
 Role: s2h-StepLoop
 Task ID and attempt: <step-id>, attempt <n>
 Paths and values:
+  - Run directory: <run-dir>
   - Step context: <run-dir>/steps/<step-id>.md
   - Latest checkpoint: <run-dir>/checkpoints/<step-id>.json (when one exists)
   - Per-loop retry cap L: <L>
@@ -96,12 +98,9 @@ step status files: no narrative text, no repetition of acceptance criteria.
 
 ## Related skills
 
-- `s2h-compaction-recovery`: MUST invoke at session start and re-read after
-  every compaction.
+- `s2h-compaction-recovery`: MUST invoke at session start and re-read after every compaction.
 - `s2h-persistent-state`: MUST use for step status files, resume decisions,
   and the atomic write rule.
-- `s2h-step-status-format`: MUST use to create and read
-  `steps/<step-id>-status.json`.
+- `s2h-step-status-format`: MUST use to create and read `steps/<step-id>-status.json`.
 - `s2h-chunk-index-format`: use to read chunk structure and dependencies.
-- `s2h-handoff`: MUST use to validate every delegated handoff before consuming
-  it.
+- `s2h-handoff`: MUST use to validate every delegated handoff before consuming it.

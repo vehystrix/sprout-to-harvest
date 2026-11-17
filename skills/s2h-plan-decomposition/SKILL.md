@@ -74,7 +74,7 @@ For each chunk in dependency order:
    `L` is the run's configured retry limit passed by the orchestrator; counters
    are fresh for every new loop instance.
 5. Only on a `DONE` verdict, persist `doc_status: completed`.
-6. Before completing the chunk, run `s2h-step-context-format/scripts/validate.py`
+6. Before completing the chunk, run the validation script for `s2h-step-context-format`
    on every one of this chunk's step files in a single invocation so the shared-
    `chunk_id` contract check spans them; on any finding, execute Targeted repair
    delegation below internally as fresh loop instances under the same `L`
@@ -178,6 +178,7 @@ templates above.
 Role: s2h-ChunkWriter
 Task ID and attempt: <chunk-id>, attempt <n>
 Paths:
+  - Work root: <work-root>
   - Plan: <plan-path>
   - Chunk index: <work-root>/chunk-index.json
   - Requirements: <work-root>/requirements.json
@@ -193,6 +194,7 @@ commit .agent-work files
 Role: s2h-ChunkVerifier
 Task ID and attempt: <chunk-id>, attempt <n>
 Paths:
+  - Work root: <work-root>
   - Plan: <plan-path>
   - Chunk index: <work-root>/chunk-index.json
   - Requirements: <work-root>/requirements.json
@@ -205,6 +207,7 @@ Constraint: read-only
 Role: s2h-WholePlanVerifier
 Task ID and attempt: whole-plan, attempt <n>
 Paths:
+  - Work root: <work-root>
   - Plan: <plan-path>
   - Chunk index: <work-root>/chunk-index.json
   - Requirements: <work-root>/requirements.json

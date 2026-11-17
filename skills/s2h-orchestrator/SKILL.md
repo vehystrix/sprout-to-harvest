@@ -58,17 +58,13 @@ It does none of the delegated work itself:
   `delegations.jsonl`, `final-report.json`, the frozen catalog and policy copies
   written in step 2, and the SKIPPED audit record when plan audit is skipped. Step
   status files, checkpoints, delegation records, and tier reports are owned by their
-  spawners per their skills; file modification reaches leaf roles `s2h-StepImplementer`
-  and `s2h-DocumentationWriter` only through them.
+  spawners per their skills.
 - MUST NOT run validation commands, tests, format checks, or any verification of its own.
   Running `scripts/validate_delegations.py` (relative to `s2h-run-ledger-format`)
   on a line you just appended, or the owning format skill's validator
   (`scripts/validate.py`, relative to that skill) on an artifact you authored, is
-  ledger bookkeeping, not delegated work; everything else is delegated to the owner tiers -
-  `s2h-ImplementationPhaseOwner`, `s2h-FinalVerificationOwner`, and
-  `s2h-DocumentationPhaseOwner` - and their leaf verifiers `s2h-StepVerifier`,
-  `s2h-FinalVerifier`, and `s2h-DocumentationVerifier`. The step 9 repository check
-  confirms ledger records against Git state only; it runs no tests.
+  ledger bookkeeping, not delegated work; everything else is delegated to the owner tiers.
+  The step 9 repository check confirms ledger records against Git state only; it runs no tests.
 - MUST NOT repair a failed delegation's artifacts itself, and MUST NOT re-delegate
   the same task automatically. A failed, missing, or malformed handoff is always
   `blocked` per the Delegation contract, with its exact resume action recorded;
@@ -143,14 +139,11 @@ procedure.
      with only the plan path from `run.json` and the run directory. Validate its
      handoff using `s2h-handoff` and `s2h-plan-audit-format`, validate the
      `s2h-plan-audit.json` the auditor wrote in the run directory, and record in run
-     state the path of the `requirements.json` the auditor wrote. The auditor
-     self-validates its two documentation context files with
-     `scripts/validate.py` per `s2h-doc-context-format`, located relative to that
-     skill's directory, before handoff; you do not re-check them.
+     state the path of the `requirements.json` the auditor wrote. You do not
+     re-check its documentation context files.
    - Branches:
-     - A `DONE` audit extracts requirements per `s2h-requirements-traceability`, records
-       the path of `requirements.json` in run state, and continues to decomposition; no
-       implementation work starts on assumption.
+     - A `DONE` audit records the path of `requirements.json` in run state and
+       continues to decomposition; no implementation work starts on assumption.
      - A `BLOCKED` status reports the findings (including any required questions) to the
        user and stops as `blocked`.
      - When `Skip plan audit` is `true`, write the `SKIPPED` record defined by
@@ -166,8 +159,7 @@ procedure.
      - The persisted `s2h-plan-audit.json`.
      - When the audit ran, `requirements.json`
 
-    It owns the whole phase end to end, including its internal step-context
-    validation and bounded repair; accept only `DONE`.
+    It owns the whole phase end to end. Accept only `DONE`.
 
    - Validate using `s2h-chunk-index-format`:
      - Every step file path exists.
@@ -180,26 +172,23 @@ procedure.
 6. **Run the implementation phase.** (delegation: s2h-ImplementationPhaseOwner)
    - Persist `phase: step-execution`, `status: running`. Delegate exactly once to
      `s2h-ImplementationPhaseOwner` with only paths and cap L: the run directory,
-     the path of `chunk-index.json`, and the per-loop retry cap. It loads the chunk
-     index, selects steps in dependency order, delegates one `s2h-StepLoop` per step,
-     and tracks every step to `completed`; you do no selection or step work yourself.
+     the path of `chunk-index.json`, and the per-loop retry cap. You do no selection
+     or step work yourself; it reports only its bounded summary.
    - Validate its bounded summary using `s2h-handoff`: a summary pointing at a missing
      or unreadable report is `blocked`, with the raw failure description as its exact
      resume action; never normalize, edit, reinterpret, or auto-retry it.
    - Branches:
      - `DONE` continues to final verification after you confirm every step status file
        reports `completed`. A step is completed only by a verifier `DONE`, never by an
-       implementer `DONE`; the StepLoop enforces that rule and you verify it against
-       the status files.
+       implementer `DONE`; you verify this against the status files.
      - `BLOCKED` persists the blocker and stops, naming the blocked step and its recorded
        resume action.
 
 7. **Run final verification.** (delegation: s2h-FinalVerificationOwner)
    - Persist `phase: final-verification`, `status: running`. Delegate exactly once to
      `s2h-FinalVerificationOwner` with only paths and cap L: the run directory, the plan
-     path from `run.json`, and the per-loop retry cap. It delegates `s2h-FinalVerifier`
-     at most 1 + L times in total, re-invoking one `s2h-StepLoop` per affected step within
-     the cap; you do no verification yourself. Final verification covers implementation
+     path from `run.json`, and the per-loop retry cap. You do no verification yourself;
+     it reports only its bounded summary. Final verification covers implementation
      only; pre-existing documentation is out of scope for this check, and its absence or
      staleness MUST NOT count against `DONE`.
    - Validate its bounded summary using `s2h-handoff`; when a `DONE` follows an
@@ -215,10 +204,8 @@ procedure.
    - Persist `phase: documentation`, `status: running`. Delegate exactly once to
      `s2h-DocumentationPhaseOwner` with only paths and cap L: the run directory, the final
      changed files from the ledger, the path of `documentation/source-doc-context.md`, the
-     path of `documentation/user-doc-context.md`, and the per-loop retry cap. It builds
-     source-doc assignments for the listed files, runs one bounded writer-verifier cycle per
-     assignment, and creates and verifies the user-doc assignment last; you do no
-     documentation work yourself.
+     path of `documentation/user-doc-context.md`, and the per-loop retry cap. You do no
+     documentation work yourself; it reports only its bounded summary.
    - Validate its bounded summary using `s2h-handoff`: a summary pointing at a missing
      or unreadable report is `blocked`, with the raw failure description as its exact
      resume action; never normalize, edit, reinterpret, or auto-retry it.
