@@ -103,7 +103,7 @@ consumed against `maximum_retries`.
 
 `delegations.jsonl` is an append-only record of delegation assignments, one JSON
 line per delegated call, at `.agent-work/<run-id>/delegations.jsonl`. The spawner
-- orchestrator or owner tier - appends its delegation line before the spawn; no
+(orchestrator or owner tier) appends its delegation line before the spawn; no
 earlier line is ever rewritten. Each line is a flat object with exactly these fields:
 
 - `id`: stable delegation identifier, such as `step-002-implementer-1`.

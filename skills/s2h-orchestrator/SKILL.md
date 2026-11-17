@@ -61,8 +61,9 @@ It does none of the delegated work itself:
   spawners per their skills; file modification reaches leaf roles `s2h-StepImplementer`
   and `s2h-DocumentationWriter` only through them.
 - MUST NOT run validation commands, tests, format checks, or any verification of its own.
-  Running `scripts/validate_delegations.py` on a line you just appended is ledger
-  bookkeeping, not delegated work; everything else is delegated to the owner tiers -
+  Running `scripts/validate_delegations.py` on a line you just appended, or
+  `scripts/validate.py` on an artifact you authored, is ledger bookkeeping, not
+  delegated work; everything else is delegated to the owner tiers -
   `s2h-ImplementationPhaseOwner`, `s2h-FinalVerificationOwner`, and
   `s2h-DocumentationPhaseOwner` - and their leaf verifiers `s2h-StepVerifier`,
   `s2h-FinalVerifier`, and `s2h-DocumentationVerifier`. The step 9 repository check
