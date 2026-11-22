@@ -38,6 +38,8 @@ Explain what maintainers or API consumers need to understand about the planned c
 
 ## Requirements
 - REQ-001: Describe the behavior that may require source documentation.
+If no obligation applies, write exactly one bullet: - none: <one-line reason>.
+
 
 ## Topics
 - Public interfaces
@@ -76,6 +78,8 @@ Explain what users must be able to accomplish after the planned change.
 
 ## Requirements
 - REQ-001: Describe the user-visible behavior that may require documentation.
+If no obligation applies, write exactly one bullet: - none: <one-line reason>.
+
 
 ## Workflows
 - Name the workflow users need to follow.
@@ -99,8 +103,21 @@ List implementation files, tests, commands, or examples that should establish th
 
 ## Validation
 
-Require YAML frontmatter with `kind`, `schema`, `run_id`, and the
-correct `context_type`. Require every template heading, at least one
-requirement or an explicit statement that no documentation obligation
-was identified, and no claim that is supported only by the plan when
-implementation evidence is available.
+The frontmatter MUST be flat scalar key-value lines; quoted values are
+supported, and folded or multi-line values, list items, flow collections,
+and comments produce a named FAIL naming the offending key. Require `kind`,
+`schema`, `run_id`, and a `context_type` of source or user; `kind` is
+"documentation-context" and `schema` is "documentation-context/v1".
+
+The H1 title MUST equal the fixed title for that type, and every template
+heading for that type MUST be present. The `## Requirements` section MUST
+contain at least one bullet with a non-empty description; if no documentation
+obligation was identified, write exactly one bullet in the fixed form
+`- none: <one-line reason>`. Prose alone is not enough - id-bearing prose with
+no bullets still fails.
+
+The rules above are enforced by `scripts/validate.py <file> [files...]`, which
+exits 0 only on pass; the script enforces these rules but never defines them.
+Before persisting a documentation context file: MUST run the validator and the
+file MUST pass validation before persistence. The script is located relative to
+this skill's directory.

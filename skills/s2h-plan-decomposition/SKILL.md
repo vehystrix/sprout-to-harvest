@@ -13,7 +13,7 @@ decomposed, chunk-level work items. The `s2h-PlanDecomposer` owns the whole
 decomposition phase for one run: it consumes or derives the requirements
 inventory, writes `chunk-index.json`, runs each chunk's `s2h-ChunkWriter` and
 `s2h-ChunkVerifier` loop, and delegates the `s2h-WholePlanVerifier` pass.
-When redelegated in targeted-repair mode, follow only Targeted repair delegation below.
+When your own step-context validation fails, follow only Targeted repair delegation below.
 
 ## Requirements inventory
 
@@ -61,11 +61,11 @@ as the loops run.
 For each chunk in dependency order:
 
 1. Persist `doc_status: running`.
-2. Delegate to a Chunk Writer with only file paths - the plan, `chunk-index.json`,
+2. Delegate to an `s2h-ChunkWriter` with only file paths - the plan, `chunk-index.json`,
    and `requirements.json`, from which the chunk's contract resolves; on
    repair rounds include the prior findings - using the persisted
    loop model assignments.
-3. On a writer `DONE` or `INCOMPLETE`, delegate to a s2h-ChunkVerifier with the
+3. On a writer `DONE` or `INCOMPLETE`, delegate to an `s2h-ChunkVerifier` with the
    same template minus findings; on a writer `BLOCKED`, record the blocker and
    move on to the next chunk.
 4. On an `INCOMPLETE` verdict, persist `doc_status: verification-failed`,
@@ -74,13 +74,18 @@ For each chunk in dependency order:
    `L` is the run's configured retry limit passed by the orchestrator; counters
    are fresh for every new loop instance.
 5. Only on a `DONE` verdict, persist `doc_status: completed`.
+6. Before completing the chunk, run the validation script for `s2h-step-context-format`
+   on every one of this chunk's step files in a single invocation so the shared-
+   `chunk_id` contract check spans them; on any finding, execute Targeted repair
+   delegation below internally as fresh loop instances under the same `L`
+   allowance, re-running the validator until clean. If findings remain after that
+   allowance is exhausted, return `BLOCKED` naming each failing file and finding
+   per Blocked conditions.
 
 A loop instance that exhausts its allowance is not retried again; its blocker
 becomes one of the blocked conditions below.
-A delegated handoff that deviates in any way from the exact `s2h-handoff` schema -
-including status vocabulary and field naming - MUST NOT be corrected, normalized, or
-edited; record it with the deviation described and the exact resume action, which
-re-delegates that one delegation.
+A delegated handoff that deviates in any way from the exact `s2h-handoff` schema is
+classified per `s2h-deviation-classification`.
 
 ## Model assignments
 
@@ -95,7 +100,8 @@ apply the fallback and config-failure order per the adapter's catalog lookup and
 fallback rules. When the status is `routing-unavailable`, every delegation
 follows the adapter's run-level routing-unavailable handling.
 Persist each assignment into the index with its timestamp and `source: decomposer`;
-a null recommendation stays explicit in `model_recommendations` even when an assignment is persisted.
+a null recommendation stays explicit in `model_recommendations` even when an
+assignment is persisted.
 The decomposer SHOULD consult `models[].selection_advice` as advice when forming
 `model_recommendations`; it does not override `required_capabilities`, `minimum_tier`,
 or a policy `default`.
@@ -126,10 +132,9 @@ decomposition-gap; any other finding is a boundary-mismatch.
 
 ## Targeted repair delegation
 
-When the orchestrator re-delegates you in targeted-repair mode - the task ID is
-`decomposition-repair` and its prompt names each failing step file with its
-findings - do not redo decomposition, inventory, chunking, or any unaffected
-chunk. Only:
+When your own step-context validation fails - the validator names each failing
+step file with its findings - do not redo decomposition, inventory, chunking,
+or any unaffected chunk. Only:
 
 1. For each affected chunk named by the findings, persist `doc_status: running`
    and re-delegate that chunk's writer loop with the delegation's finding lines
@@ -171,6 +176,7 @@ templates above.
 Role: s2h-ChunkWriter
 Task ID and attempt: <chunk-id>, attempt <n>
 Paths:
+  - Work root: <work-root>
   - Plan: <plan-path>
   - Chunk index: <work-root>/chunk-index.json
   - Requirements: <work-root>/requirements.json
@@ -186,6 +192,7 @@ commit .agent-work files
 Role: s2h-ChunkVerifier
 Task ID and attempt: <chunk-id>, attempt <n>
 Paths:
+  - Work root: <work-root>
   - Plan: <plan-path>
   - Chunk index: <work-root>/chunk-index.json
   - Requirements: <work-root>/requirements.json
@@ -198,6 +205,7 @@ Constraint: read-only
 Role: s2h-WholePlanVerifier
 Task ID and attempt: whole-plan, attempt <n>
 Paths:
+  - Work root: <work-root>
   - Plan: <plan-path>
   - Chunk index: <work-root>/chunk-index.json
   - Requirements: <work-root>/requirements.json
@@ -222,6 +230,8 @@ Return `BLOCKED` when:
   `BLOCKED`, or repeated `INCOMPLETE`;
 - Whole-plan findings reveal a contract-level defect that re-delegation within
   the per-loop allowances cannot fix, including findings on the `(L+2)`nd pass.
+- Step files fail the internal step-context validation past that chunk's `L`
+  allowance;
 
 Every other failure mode is repairable inside the loops above; do not escalate it.
 

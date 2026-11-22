@@ -16,7 +16,7 @@ Use this skill when the orchestrator creates `steps/<step-id>-status.json`.
   "schema": "s2h-step-status/v1",
   "run_id": "run-001",
   "step_id": "step-001-implementation",
-  "phase": "step-execution",
+  "phase": "implementation",
   "status": "running",
   "attempt": 1,
   "assigned_agent": "s2h-StepImplementer",

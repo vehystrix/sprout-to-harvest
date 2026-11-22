@@ -85,8 +85,8 @@ Use the project-local form when the workflow should apply to one repository only
 pi install -l git:github.com/vehystrix/sprout-to-harvest
 ```
 
-The installed package contributes the workflow skills and exposes the eleven role files as
-prompt resources. The role files are not copied into a second Pi-specific directory.
+The installed package contributes the workflow skills and exposes the fifteen role files
+as prompt resources. The role files are not copied into a second Pi-specific directory.
 Because the bundled skills set `disable-model-invocation`, hosts that honor the flag omit
 them from automatic model skill discovery; they load only when a role file or another
 skill invokes them by name.
@@ -102,10 +102,11 @@ pi install npm:@tintinweb/pi-subagents
 pi install git:github.com/vehystrix/sprout-to-harvest
 ```
 
-The orchestrator and plan decomposer role files set `allowed_subagents`, so their sessions
-can spawn the roles they delegate to; every other role is a leaf. Model, thinking level,
-and turn limits are inherited from the session or chosen at spawn time, keeping the
-package host-agnostic.
+The orchestrator, plan decomposer, and the four owner-tier role files set
+`allowed_subagents`, so their sessions can spawn the roles they delegate
+to; every other role is a leaf. Model, thinking level, and turn limits are
+inherited from the session or chosen at spawn time, keeping the package
+host-agnostic.
 
 ## Install as a Copilot plugin
 
@@ -258,6 +259,15 @@ the evidence channel for the run.
 3. When confirmed, the `model` field - and its declared `reasoning_effort`,
 if any - is set on each delegation; otherwise no model field is set and
 warnings are recorded.
+
+The tiered delegation graph nests four levels: the orchestrator delegates to
+owner-tier agents; each owner delegates a loop tier such as `s2h-StepLoop` or
+leaf roles directly, and each loop tier delegates its own leaf roles, which
+never spawn further sessions. Hosts must expose a subagent spawn tool to
+sessions at nesting depths one through three when `s2h-OrchestratorAgent` is
+invoked as an agent; on hosts capped shallower, invoke the `s2h-orchestrator`
+skill directly from the root session so every delegating tier stays within
+reach.
 
 ## Inter-agent communication
 

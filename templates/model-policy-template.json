@@ -45,6 +45,31 @@
         "required_capabilities": ["documentation", "verification"],
         "minimum_tier": 2,
         "default": "doc-verification"
+      },
+      "implementation-phase": {
+        "required_capabilities": ["orchestration"],
+        "minimum_tier": 2,
+        "default": "reasoning-pro"
+      },
+      "final-verification-phase": {
+        "required_capabilities": ["orchestration"],
+        "minimum_tier": 2,
+        "default": "reasoning-pro"
+      },
+      "documentation-phase": {
+        "required_capabilities": ["orchestration"],
+        "minimum_tier": 2,
+        "default": "reasoning-pro"
+      },
+      "step-loop": {
+        "required_capabilities": ["orchestration"],
+        "minimum_tier": 2,
+        "default": "reasoning-pro"
+      },
+      "final-verifier": {
+        "required_capabilities": ["verification", "reasoning"],
+        "minimum_tier": 2,
+        "default": "reasoning-pro"
       }
     },
     "fallback": "cheap-general",

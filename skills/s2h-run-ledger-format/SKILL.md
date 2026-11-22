@@ -62,7 +62,7 @@ Required top-level fields:
 ```
 
 Allowed `phase` values are `initialization`, `s2h-plan-audit`, `decomposition`,
-`step-execution`, `final-verification`, `documentation`, and `finalization`.
+`implementation`, `final-verification`, `documentation`, and `finalization`.
 Allowed `status` values are `pending`, `running`, `completed`,
 `verification-failed`, `interrupted`, `blocked`, and
 `abandoned`.
@@ -79,30 +79,35 @@ the schema, author against it, and run `scripts/validate.py <file>`. The file MU
 validation before it may be persisted. Both files are located relative to this skill's
 location.
 
-The `model_routing` block is required whenever dynamic routing is enabled. It records
-the effective catalog and policy sources, the active host identifier, and the
-one-time capability probe result: `catalog_source` and `policy_source` record the
-resolved source of each file - a workspace path, a global repository path, a
-merged descriptor (`merged: <workspace> + <global>`), or `none`; 
-`adapter` is the active host identifier - the value
-appearing under `hosts.*` in the catalog - not a compiled module; and the `preflight`
-block records the capability probe result (`status`, `mechanism`, `evidence_channel`). It
-also holds the canonicalized fingerprints of the confirmed configuration, whether an
-invocation override was explicitly confirmed, and any persisted warning values.
-
-A missing or malformed `model_routing` block is `BLOCKED` before delegated
-implementation work. Fingerprints are canonical SHA-256 values per
-`s2h-model-catalog-format`; they serve as resume, override-review, and audit evidence.
-Resumed runs reuse the copied run-level files when present and compare their
-fingerprints against the current resolved sources before continuing.
-On a fingerprint mismatch, persist `blocked` and request explicit user
-confirmation; on confirmation, recopy the effective configuration, re-run the
-capability probe per `s2h-model-probe`, record a warning, then continue.
+The `model_routing` block is required whenever dynamic routing is enabled; it records
+the effective catalog and policy sources, the active host identifier, the capability
+probe result, the canonicalized configuration fingerprints per `s2h-model-catalog-format`,
+override confirmation, and any persisted warnings. A missing or malformed block is
+`BLOCKED` before delegated implementation work. Resumed runs reuse the copied run-level
+files when present and compare their fingerprints against the current resolved sources;
+on a mismatch, persist `blocked` and request explicit user confirmation - on
+confirmation, recopy the effective configuration, re-run the capability probe per
+`s2h-model-probe`, record a warning, then continue.
 `final_verification_repairs` counts final-verification repair attempts
 consumed against `maximum_retries`.
 
-The optional `delegations` block records one complete caller-owned assignment per
-delegated call - persisted by the orchestrator before delegation, updated with the
-application result after - keyed by a stable delegation identifier such as
-`step-002-implementer-1`. Subagents never author it. Resumed runs read it back to
-reconstruct per-delegation model state without trusting narrative.
+`delegations.jsonl` is an append-only record of delegation assignments, one JSON
+line per delegated call, at `.agent-work/<run-id>/delegations.jsonl`. The spawner
+(orchestrator or owner tier) appends its delegation line before the spawn; no
+earlier line is ever rewritten. Each line is a flat object with exactly these fields:
+
+- `id`: stable delegation identifier, such as `step-002-implementer-1`.
+- `role`: role of the delegated agent, such as `s2h-StepImplementer`.
+- `requested_portable_id`: requested portable model ID, or null when no model
+  was specifically requested.
+- `resolved_model`: resolved model name applied for the delegation.
+- `selection_source`: short token naming where the assignment came from, such
+  as `policy`, `user-override`, or `fallback`.
+- `fallback`: fallback model name used, or null when none was used.
+
+Each appended line MUST be valid JSON carrying exactly those fields with the
+stated types, where `id`, `role`, `resolved_model`, and `selection_source` are
+non-empty; the spawner runs `scripts/validate_delegations.py <file>` after appending
+and repairs the named line in place until it passes. Resumed runs
+and phase-acceptance audits read the file back line by line instead of
+trusting narrative.
