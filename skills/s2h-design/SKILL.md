@@ -55,6 +55,10 @@ or modify are the design document(s) themselves.
      error and edge behavior per unit, ordering between units.
    - Narrow scope (file or group of functions): exact file paths, function and data
      shapes, ordered steps, acceptance criteria for each behavior.
+   A leaf targets no more than five units. Six or seven are acceptable when splitting
+   would fragment a coherent unit set - present that tradeoff per step 3 instead of
+   splitting mechanically. A document MUST NOT be finalized with eight or more units;
+   at that count its content belongs one tier up, and those units become children.
    Do not force low-level detail into a broad design; deepen a section only when the user
    will implement from it.
    If investigation shows a chunk's content already meets the agreed level - existing code or
@@ -64,7 +68,11 @@ or modify are the design document(s) themselves.
    A broad-scope document must be divisible by construction: it explicitly names its
    decomposable units, and each unit carries enough content - goal, boundaries, known
    interfaces, open questions - to start a deeper-level design run on its own without
-   re-deriving the top level. Top-level documents of large systems commonly need two or
+   re-deriving the top level.
+   Each unit is one independently verifiable behavior with its own goal, boundaries,
+   and acceptance criteria. Two behaviors that carry separate acceptance criteria MUST
+   NOT be merged into a single unit to fit under a unit limit.
+   Top-level documents of large systems commonly need two or
    three such refinements before one reaches narrow-scope detail that can serve as the
    orchestrator's `Plan:` input directly.
 5. **Draft and review incrementally.** Present one drafted section (or a small batch)
