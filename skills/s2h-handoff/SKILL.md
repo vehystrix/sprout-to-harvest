@@ -19,6 +19,11 @@ Save the complete handoff as JSON at
 `.agent-work/<run-id>/reports/<phase>-<subject>-<attempt>.json`, where `<run-id>`, `<phase>`,
 `<subject>`, and `<attempt>` are values supplied by your delegation prompt and persistent
 state. Do not save handoffs as Markdown or extensionless files.
+If the target path already exists, do not overwrite it; write the same content
+to a sibling name with a disambiguating suffix appended after `<attempt>` (for
+example `step001-implementer-2a.json`, distinct from an existing
+`step001-implementer-2.json`) and record that actual path in your handoff. No two
+saved reports share one file.
 
 ```json
 {

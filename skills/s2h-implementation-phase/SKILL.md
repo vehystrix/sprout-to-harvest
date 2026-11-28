@@ -47,6 +47,27 @@ it together with every step status file on resume or after compaction.
   - `BLOCKED`: persist the blocker and stop the phase as BLOCKED, naming the
     blocked step and its recorded resume action.
 
+## Model resolution
+
+Resolve each delegated `s2h-StepLoop` at delegation time per
+`s2h-model-routing-adapter`. Read the frozen run copies of catalog and policy under
+the run directory and the probe status from `run.json.model_routing.preflight.status`;
+on resume, confirm their fingerprints are unchanged before use. Evaluate the role's
+policy `required_capabilities` and `minimum_tier`, then select a portable ID: the chunk
+index recommendation for this step when present and satisfying those constraints, else
+the role's policy default; record the selection source. Resolve the host mapping and
+apply the single policy-fallback retry and config-failure handling per the adapter's
+catalog lookup and fallback order. When the status is `routing-unavailable`, every
+delegation follows the adapter's run-level routing-unavailable handling.
+
+Append one line to `delegations.jsonl` before each spawn, with exactly the flat fields
+defined by `s2h-run-ledger-format`: `id`, `role`, `requested_portable_id`,
+`resolved_model`, `selection_source`, `fallback`. Run its
+`scripts/validate_delegations.py <file>` after appending and repair the named line in
+place until it passes. After each delegation, compare the handoff's `model_assignment`
+value with the resolved identity per `s2h-model-routing-adapter`; never copy a
+self-report as adapter confirmation.
+
 ## Delegation prompt template
 
 Every delegation MUST be the verbatim block below, with only placeholder
@@ -62,8 +83,15 @@ Paths and values:
   - Step context: <run-dir>/steps/<step-id>.md
   - Latest checkpoint: <run-dir>/checkpoints/<step-id>.json (when one exists)
   - Per-loop retry cap L: <L>
-Constraint: owns this step's implementer-verifier cycle; persists the step
-status file and appends to delegations.jsonl; reports only its bounded summary
+Duties:
+  - persist this step's status file and append each delegation to delegations.jsonl
+Constraint:
+  - MUST NOT write or modify repository files, run verification, tests, or repairs;
+    delegate that work to subagents
+  - report only your bounded summary
+  - BLOCKED is a valid terminal outcome: once cap L is consumed or a blocker is
+    recorded, stop and report it with its exact resume action; do not spend further
+    attempts reaching DONE
 ```
 
 Placeholders: `<run-dir>` is the run directory; `<step-id>` names the selected
@@ -104,3 +132,4 @@ step status files: no narrative text, no repetition of acceptance criteria.
 - `s2h-step-status-format`: MUST use to create and read `steps/<step-id>-status.json`.
 - `s2h-chunk-index-format`: use to read chunk structure and dependencies.
 - `s2h-handoff`: MUST use to validate every delegated handoff before consuming it.
+- `s2h-model-routing-adapter`: MUST use to resolve each StepLoop's model at delegation time.

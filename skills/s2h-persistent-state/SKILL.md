@@ -64,6 +64,11 @@ and `abandoned`. `completed` is legal only after a verifier returns
 behavioral step, never an implementer outcome.
 `abandoned` marks a user-directed termination set only by the orchestrator;
 resuming an `abandoned` run requires an explicit user instruction.
+`blocked` is a valid terminal outcome, not a failure to be avoided or a last
+resort. Once a loop's retry cap is consumed or a blocker is recorded, an agent
+MUST stop and report `BLOCKED` with its exact resume action; it MUST NOT spend
+further analysis or attempts trying to reach `DONE`. Reporting `blocked` correctly
+is never giving up.
 The step-status file is the authoritative record of step progress:
 `chunk-index.json` step statuses and the ledger mirror it at transitions, and
 on divergence the step-status file wins with a recorded warning.

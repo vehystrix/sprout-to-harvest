@@ -122,3 +122,10 @@ Before persisting a step context file: MUST run the validator on it together
 with every other step file of its chunk in one invocation so the cross-file
 Contract check applies, and the files MUST pass validation before persistence.
 The script is located relative to this skill's directory.
+
+Verbatim identity compares tokens, not newline or indentation placement. A
+Contract bullet's plan excerpt may render a multi-line `requirements.json` entry
+on one line, or keep it across lines; newlines and leading whitespace inside an
+excerpt are non-structural and MUST NOT be treated as a verbatim failure. A
+verifier MUST judge each step file against the token content of its own Contract
+excerpts; it MUST NOT cross-check sibling chunks' formatting to decide consistency.

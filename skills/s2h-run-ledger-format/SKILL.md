@@ -110,4 +110,8 @@ stated types, where `id`, `role`, `resolved_model`, and `selection_source` are
 non-empty; the spawner runs `scripts/validate_delegations.py <file>` after appending
 and repairs the named line in place until it passes. Resumed runs
 and phase-acceptance audits read the file back line by line instead of
-trusting narrative.
+trusting narrative. On resume, confirm the file's lines form a contiguous,
+un-truncated sequence of delegation ids in append order; a missing or rewritten
+prefix line is a named BLOCKED deviation naming the first absent id. Re-delegation
+must continue attempt numbers from persisted state so no re-invocation restarts a
+counter at 1 and overwrites an existing `reports/<phase>-<subject>-<attempt>.json` file.

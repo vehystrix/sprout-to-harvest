@@ -17,6 +17,15 @@ repository files; file modification belongs to the delegated implementer.
 Input is the selected step's context path, its latest checkpoint path (when
 one exists), and the per-loop retry cap `L`.
 
+## Reading boundary
+
+Before delegating, read only the step status file, its checkpoint, the run
+ledger, and the frozen catalog and policy used for model resolution. DO NOT
+open the step's test files, design documents, or source code; DO NOT prototype
+or draft implementation before the implementer is delegated. The implementer
+owns all reading of the work it does. You delegate - you NEVER write repository
+files, verify, or repair the step yourself.
+
 ## Cycle
 
 1. Load or create `steps/<step-id>-status.json` per `s2h-step-status-format`;
@@ -41,6 +50,12 @@ one exists), and the per-loop retry cap `L`.
      evidence, commit, artifacts, repository state, blockers, and `resume_from`.
      Only a verifier `DONE` completes the step; never an implementer `DONE`.
      Report DONE.
+   - Before marking it completed, you MUST confirm the handoff's `repository.branch`
+     matches the run's recorded implementation branch and its `commits` list is non-empty
+     with a `last_commit` that differs from the step's base. A file-modifying step without
+     such a commit on the run branch MUST be reported as BLOCKED naming "no commit
+     recorded for this step"; it is never completed. A read-only step completes on an
+     empty commit set.
    - `INCOMPLETE`: persist `verification-failed` and increment the attempt
      counter in the status file. While repair attempts remain - at most `L` after
      the initial attempt, with counters fresh per loop instance - re-delegate
@@ -87,8 +102,13 @@ Paths:
   - Step context: <run-dir>/steps/<step-id>.md
   - Latest checkpoint: <run-dir>/checkpoints/<step-id>.json (when one exists)
   - Verifier report (repair rounds only): <verifier-report-path>
-Constraint: file-modifying; work only within the step's declared scope; run
-required validation and commit before returning; report the commit hash
+Duties:
+  - run the required validation, then commit before returning and report the commit hash
+Constraint:
+  - file-modifying, within the step's declared scope only
+  - MUST read the `AGENTS.md` at the repository root, plus any `AGENTS.md` in a
+    subdirectory of that repo containing the files your work targets; if none exist,
+    proceed without one; apply everything that is relevant to your work
 ```
 
 **s2h-StepVerifier** (one delegation per attempt)
@@ -101,7 +121,11 @@ Paths:
   - Step context: <run-dir>/steps/<step-id>.md
   - Implementer handoff: <implementer-handoff-path>
   - Relevant checkpoint: <run-dir>/checkpoints/<step-id>.json (when one exists)
-Constraint: read-only
+Constraint:
+  - read-only
+  - MUST read the `AGENTS.md` at the repository root, plus any `AGENTS.md` in a
+    subdirectory of that repo containing the files your work targets; if none exist,
+    proceed without one; apply everything that is relevant to your work
 ```
 
 Placeholders: `<run-dir>` is the run directory; `<step-id>` names the step;

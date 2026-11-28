@@ -85,7 +85,14 @@ Example lookup:
 ## Delegation
 
 When the probe status is `passed`, pass the resolved model name (or an accepted
-role alias for it) as the `model` field on the delegation call. Every passed
+role alias for it) as the `model` field on the delegation call.
+
+You MUST NOT omit the `model` field to rely on a host-assigned default; omission is
+permitted only under `routing-unavailable`. A host default is not the policy
+default and MAY differ from it, so every resolved delegation MUST carry an explicit
+`model` value.
+
+Every passed
 delegation also states its effort explicitly: when the selected entry declares
 `reasoning_effort`, pass that value on the delegation call alongside `model`;
 when no such declaration exists, state no effort - never invent one. When the

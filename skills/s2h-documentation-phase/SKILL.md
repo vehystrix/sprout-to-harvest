@@ -100,8 +100,13 @@ Paths:
   - Relevant step reports (one bullet per report):
     - <step-report-path-1>
     - <step-report-path-2>
-Constraint: file-modifying; edit only the assigned documentation set; make a
-separate documentation commit before returning
+Duties:
+  - make a separate documentation commit before returning
+Constraint:
+  - file-modifying; edit only the assigned documentation set
+  - MUST read the `AGENTS.md` at the repository root, plus any `AGENTS.md` in a
+    subdirectory of that repo containing the files your work targets; if none exist,
+    proceed without one; apply everything that is relevant to your work
 ```
 
 **s2h-DocumentationVerifier** (one per assignment)
@@ -113,7 +118,11 @@ Paths:
   - Run directory: <run-dir>
   - Assignment brief: the assignment's Markdown context file
   - Written documentation: the documented file path(s)
-Constraint: read-only
+Constraint:
+  - read-only
+  - MUST read the `AGENTS.md` at the repository root, plus any `AGENTS.md` in a
+    subdirectory of that repo containing the files your work targets; if none exist,
+    proceed without one; apply everything that is relevant to your work
 ```
 
 **s2h-DocumentationWriter, user-doc assignment**
@@ -125,7 +134,13 @@ Paths:
   - Run directory: <run-dir>
   - Documentation context: <run-dir>/documentation/user-doc-context.md
   - Final verified requirements: <run-dir>/requirements.json
-Constraint: file-modifying; make a separate documentation commit before returning
+Duties:
+  - make a separate documentation commit before returning
+Constraint:
+  - file-modifying
+  - MUST read the `AGENTS.md` at the repository root, plus any `AGENTS.md` in a
+    subdirectory of that repo containing the files your work targets; if none exist,
+    proceed without one; apply everything that is relevant to your work
 ```
 
 Placeholders: `<run-dir>` is the run directory; `<assignment-id>` names the

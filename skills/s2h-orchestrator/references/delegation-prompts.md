@@ -14,8 +14,10 @@ Task ID and attempt: plan-audit, attempt 1
 Paths:
   - Plan: <plan-path>
   - Run directory: <run-dir>
-Constraint: read-only for repository files; writes only the audit report,
-requirements.json, and documentation context files under <run-dir>
+Constraint:
+  - read-only for repository files
+  - write only the audit report, requirements.json, and documentation
+    context files under <run-dir>
 ```
 
 **s2h-ImplementationPhase**
@@ -27,8 +29,15 @@ Paths and values:
   - Run directory: <run-dir>
   - Chunk index: <run-dir>/chunk-index.json
   - Per-loop retry cap L: <L>
-Constraint: owns the implementation phase; delegates one s2h-StepLoop per
-step in dependency order; reports only its bounded summary
+Duties:
+  - delegate one s2h-StepLoop per step in dependency order
+Constraint:
+  - MUST NOT write or modify repository files, run verification, tests, or repairs;
+    delegate that work to subagents
+  - report only your bounded summary
+  - BLOCKED is a valid terminal outcome: once cap L is consumed or a blocker is
+    recorded, stop and report it with its exact resume action; do not spend further
+    attempts reaching DONE
 ```
 
 **s2h-PlanDecomposer**
@@ -42,9 +51,15 @@ Paths and values:
   - Plan audit: <run-dir>/s2h-plan-audit.json
   - Requirements: <run-dir>/requirements.json (only when the audit ran)
   - Per-loop retry cap L: <L>
-Constraint: file-modifying for .agent-work files only, never committed; owns
-the decomposition phase end to end and delegates its own loops per
-s2h-plan-decomposition
+Duties:
+  - delegate your own decomposition loops per s2h-plan-decomposition
+Constraint:
+  - file-modifying for .agent-work files only; never commit them
+  - MUST NOT write or modify repository files, run verification, tests, or repairs;
+    delegate that work to subagents
+  - BLOCKED is a valid terminal outcome: once cap L is consumed or a blocker is
+    recorded, stop and report it with its exact resume action; do not spend further
+    attempts reaching DONE
 ```
 
 **s2h-FinalVerificationPhase**
@@ -56,8 +71,15 @@ Paths and values:
   - Plan: <plan-path>
   - Run directory: <run-dir>
   - Per-loop retry cap L: <L>
-Constraint: owns the final-verification loop; delegates s2h-FinalVerifier and
-re-invokes one s2h-StepLoop per affected step within cap L; reports only its bounded summary
+Duties:
+  - delegate the final verifier, and re-invoke one s2h-StepLoop per affected step within cap L
+Constraint:
+  - MUST NOT write or modify repository files, run verification, tests, or repairs;
+    delegate that work to subagents
+  - report only your bounded summary
+  - BLOCKED is a valid terminal outcome: once cap L is consumed or a blocker is
+    recorded, stop and report it with its exact resume action; do not spend further
+    attempts reaching DONE
 ```
 
 **s2h-DocumentationPhase**
@@ -73,7 +95,15 @@ Paths and values:
   - Source-doc context: <run-dir>/documentation/source-doc-context.md
   - User-doc context: <run-dir>/documentation/user-doc-context.md
   - Per-loop retry cap L: <L>
-Constraint: owns the documentation phase; builds source-doc assignments for the
-listed changed files, runs one bounded writer-verifier cycle per assignment, creates
-and verifies the user-doc assignment last; reports only its bounded summary
+Duties:
+  - build source-doc assignments for the listed changed files
+  - run one bounded writer-verifier cycle per source-doc assignment
+  - create and verify the user-doc assignment last
+Constraint:
+  - MUST NOT write or modify repository files, run verification, tests, or repairs;
+    delegate that work to subagents
+  - report only your bounded summary
+  - BLOCKED is a valid terminal outcome: once cap L is consumed or a blocker is
+    recorded, stop and report it with its exact resume action; do not spend further
+    attempts reaching DONE
 ```

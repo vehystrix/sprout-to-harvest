@@ -95,6 +95,16 @@ to the roles that need the content.
 - File-modifying agents must finish with validation and a commit. Verification
   agents are read-only.
 - Do not commit `.agent-work/`.
+- A `BLOCKED` phase handoff ends this invocation: persist `blocked`, record its
+  exact resume action, and stop.
+- You MUST NOT execute the resume action, raise the retry cap, or delegate any
+  step-level or loop-level agent it names.
+- Resumption requires an explicit user instruction naming the phase or delegation
+  to re-attempt; nothing else authorizes a retry.
+- A recorded resume action is routing information for the user's next invocation;
+  it MUST NOT be treated as an autonomous instruction to resume.
+- When a resume action names a step-level agent (for example an `s2h-ChunkWriter`),
+  re-invoke its owning phase; the orchestrator delegates only its five phase agents.
 
 ## Execution procedure
 
@@ -287,6 +297,9 @@ Placeholders:
 `pending -> running -> verification-failed -> running -> completed`, with
 `interrupted`, `blocked`, or `abandoned` as durable outcomes.
 `BLOCKED` never consumes a repair attempt.
+On any `blocked` outcome you persist the blocker and its exact resume action in
+`run.json` and report them to the user per `s2h-final-report-format`'s response
+structure; you do NOT build `final-report.json`, which step 9 writes only on completion.
 
 ## Outputs
 Maintain `run.json`, `delegations.jsonl`, `s2h-plan-audit.json`, `requirements.json`,

@@ -16,8 +16,8 @@ path - read it for fidelity context - plus `chunk-index.json` and
 do not edit files, and do not propose stylistic rewrites that are not findings.
 
 You own intra-chunk completeness and drift: every material requirement assigned to this
-chunk has documentary traceability evidence in at least one step - its `Requirements
-Covered` names the ID, and the step's work items, interfaces, and validation describe it
+chunk has documentary traceability evidence in at least one step - its `Requirements Covered`
+names the ID, and the step's work items, interfaces, and validation describe it
 against the verbatim excerpt - and every claim is checked for drift per
 `s2h-step-context-format`'s writing guidance. Validation items that cannot be executed in
 document review (for example test runs) are acceptable as `NOT_RUN` with an explicit

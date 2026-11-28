@@ -182,8 +182,12 @@ Paths:
   - Requirements: <work-root>/requirements.json
 Prior findings (repair rounds only, one per line):
   - <finding-id>: <requirement ref> - <one-line description>
-Constraint: file-modifying; write or update only this chunk's step files; never
-commit .agent-work files
+Constraint:
+  - file-modifying; write or update only this chunk's step files
+  - never commit .agent-work files
+  - MUST read the `AGENTS.md` at the repository root, plus any `AGENTS.md` in a
+    subdirectory of that repo containing the files your work targets; if none exist,
+    proceed without one; apply everything that is relevant to your work
 ```
 
 **s2h-ChunkVerifier** (one delegation per attempt)
@@ -196,7 +200,11 @@ Paths:
   - Plan: <plan-path>
   - Chunk index: <work-root>/chunk-index.json
   - Requirements: <work-root>/requirements.json
-Constraint: read-only
+Constraint:
+  - read-only
+  - MUST read the `AGENTS.md` at the repository root, plus any `AGENTS.md` in a
+    subdirectory of that repo containing the files your work targets; if none exist,
+    proceed without one; apply everything that is relevant to your work
 ```
 
 **s2h-WholePlanVerifier** (one delegation per pass)
@@ -209,7 +217,8 @@ Paths:
   - Plan: <plan-path>
   - Chunk index: <work-root>/chunk-index.json
   - Requirements: <work-root>/requirements.json
-Constraint: read-only
+Constraint:
+  - read-only
 ```
 
 ## User-mode run directory

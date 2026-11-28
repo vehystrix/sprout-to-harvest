@@ -85,7 +85,11 @@ Paths and values:
   - Chunk index: <run-dir>/chunk-index.json
   - Handoff reports: every persisted report under <run-dir>/reports/
   - Commit and repository state: as recorded in <run-dir>/run.json
-Constraint: read-only
+Constraint:
+  - read-only; MUST NOT modify repository files.
+  - MUST read the `AGENTS.md` at the repository root, plus any `AGENTS.md` in a
+    subdirectory of that repo containing the files your work targets; if none exist,
+    proceed without one; apply everything that is relevant to your work
 ```
 
 **s2h-StepLoop** (one per affected step, repair rounds only)
@@ -98,8 +102,15 @@ Paths and values:
   - Step context: <run-dir>/steps/<step-id>.md
   - Latest checkpoint: <run-dir>/checkpoints/<step-id>.json (when one exists)
   - Per-loop retry cap L: <L>
-Constraint: owns this step's implementer-verifier cycle; persists the step
-status file and appends to delegations.jsonl; reports only its bounded summary
+Duties:
+  - persist this step's status file and append each delegation to delegations.jsonl
+Constraint:
+  - MUST NOT write or modify repository files, run verification, tests, or repairs;
+    delegate that work to subagents
+  - report only your bounded summary
+  - BLOCKED is a valid terminal outcome: once cap L is consumed or a blocker is
+    recorded, stop and report it with its exact resume action; do not spend further
+    attempts reaching DONE
 ```
 
 Placeholders: `<plan-path>` is the immutable plan path from `run.json`;
